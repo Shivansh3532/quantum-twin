@@ -11,7 +11,7 @@
 - [ ] If private, share with `testing@devpost.com` and `build-week-event@openai.com`
 - [ ] Upload public YouTube video under 3 minutes
 - [ ] Video visibly demos project; audio covers project, Codex, and GPT-5.6
-- [ ] Enter `/feedback` Session ID from primary majority-build session
+- [x] Enter `/feedback` Session ID from primary majority-build session: `019f774d-0364-76a3-bd72-cb806fe0109a`
 - [ ] Add every teammate and confirm invitation acceptance before deadline
 - [ ] Supply developer-tool install, platform, and test-path field
 - [ ] Confirm category is Developer Tools

@@ -8,11 +8,11 @@ Crypto scanners locate legacy algorithms, but one plausible AI patch does not te
 
 ## Solution and operation
 
-Quantum Twin scans a bundled RSA update-manifest service, asks GPT-5.6 for structured classification, creates identical Git worktrees, and gives two Codex builders distinct ML-DSA-65 strategies. External evaluator rejects unsafe candidates, applies deterministic selection, and records reproducible evidence. Dashboard shows finding, execution, gate matrix, winning diff, measurements, explanation, commits, thread IDs, and hashes.
+Quantum Twin scans a bundled RSA update-manifest service, asks GPT-5.6 for structured classification, creates identical Git worktrees, and gives two Codex builders distinct ML-DSA-65 strategies. External evaluator rejects candidates that fail the declared contract, applies deterministic selection, and records reproducible evidence. Dashboard shows finding, execution, gate matrix, selected diff, measurements, explanation, commits, thread IDs, and hashes.
 
 ## Exact Codex and GPT-5.6 use
 
-Codex created majority of core implementation in primary Build Week session. Runtime uses `@openai/codex-sdk@0.144.6` with exact `gpt-5.6-sol` model to independently implement Direct Cutover and Compatibility Bridge. GPT-5.6 also produces schema-validated `CryptoFinding` classification and immutable-evidence explanation. It never controls hard gates or selection.
+Codex created majority of core implementation in primary Build Week session `019f774d-0364-76a3-bd72-cb806fe0109a`. Recorded runs used `@openai/codex-sdk@0.144.6` with exact `gpt-5.6-sol` to independently implement Direct Cutover and Compatibility Bridge, produce schema-validated `CryptoFinding` classification, and explain immutable evidence. Deterministic TypeScript controlled every hard gate and selection decision. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
 
 ## Technical implementation
 
