@@ -13,7 +13,9 @@
     "test": "vitest run",
     "demo": "tsx src/cli.ts demo",
     "preflight": "tsx src/cli.ts preflight",
-    "verify": "tsx src/cli.ts verify"
+    "verify": "tsx src/cli.ts verify",
+    "smoke": "tsx tools/smoke.ts",
+    "secret-scan": "tsx tools/secret-scan.ts"
   },
   "dependencies": {
     "@openai/codex-sdk": "0.144.6",
