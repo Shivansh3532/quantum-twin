@@ -1,0 +1,318 @@
+{
+  "runId": "2026-07-18T22-51-45-756Z",
+  "startedAt": "2026-07-18T22:51:45.755Z",
+  "completedAt": "2026-07-18T22:54:41.463Z",
+  "baselineCommit": "c35e5f614c48a674ea6adac183fe842a80be04ef",
+  "fixtureManifestSha256": "1e0b8044e2fa0d8f7e00dc783d2f3ef5e9cac3b0b6101c3547cb5e6919672173",
+  "nodeVersion": "v24.18.0",
+  "platform": "win32 10.0.26200 x64",
+  "codexSdkVersion": "0.144.6",
+  "model": "gpt-5.6-sol",
+  "constraintProfile": {
+    "legacyCompatibilityRequired": true
+  },
+  "finding": {
+    "primitive": "RSA",
+    "operation": "signing",
+    "keyLocation": "keys.rsaPrivateKey (signing); keys.rsaPublicKey (verification)",
+    "publicBoundary": "envelope.rsa is consumed as a base64-encoded RSA signature during verification",
+    "affectedFiles": [
+      "C:\\Users\\shiva\\Documents\\Quantum Twin\\runs\\2026-07-18T22-51-45-756Z\\baseline\\src\\signatures.ts"
+    ],
+    "confidence": 1,
+    "evidence": [
+      "Line 7 signs payload with SHA-256 and keys.rsaPrivateKey.",
+      "Line 11 verifies payload with SHA-256, keys.rsaPublicKey, and the base64-decoded envelope.rsa signature.",
+      "The evidence demonstrates both RSA signing and verification; operation is reported as signing because the output schema permits only one operation value."
+    ]
+  },
+  "candidates": [
+    {
+      "strategy": "direct",
+      "branch": "candidate/direct",
+      "threadId": "019f776d-e85e-7c61-bd5a-b2d80fdfe15e",
+      "generationDurationMs": 155608,
+      "repairAttempted": false,
+      "generationStatus": "gate_failed",
+      "worktreeCommit": "94ed761d20383ef6a9c342f9590caafcaab6dd0c",
+      "diffSha256": "5f0f06b067c11dd890c87d32689c203f468ef4a6cd56649bef0a1a8f5ea47d74",
+      "diff": "diff --git a/src/signatures.ts b/src/signatures.ts\nindex de04251..81db694 100644\n--- a/src/signatures.ts\n+++ b/src/signatures.ts\n@@ -1,12 +1,24 @@\n import { sign, verify, type KeyLike } from \"node:crypto\";\n \n-export type SigningKeys = { rsaPrivateKey: KeyLike; rsaPublicKey: KeyLike };\n-export type SignatureEnvelope = { rsa: string };\n+export type SigningKeys = {\n+  rsaPrivateKey: KeyLike;\n+  rsaPublicKey: KeyLike;\n+  mlDsaPrivateKey: KeyLike;\n+  mlDsaPublicKey: KeyLike;\n+};\n+export type SignatureEnvelope = { mlDsa: string };\n \n-export function signManifest(payload: Buffer, keys: SigningKeys, _context: string): SignatureEnvelope {\n-  return { rsa: sign(\"sha256\", payload, keys.rsaPrivateKey).toString(\"base64\") };\n+export function signManifest(payload: Buffer, keys: SigningKeys, context: string): SignatureEnvelope {\n+  return {\n+    mlDsa: sign(null, payload, { key: keys.mlDsaPrivateKey, context: Buffer.from(context) }).toString(\"base64\"),\n+  };\n }\n \n-export function verifyManifest(payload: Buffer, envelope: SignatureEnvelope, keys: SigningKeys, _context: string): boolean {\n-  return verify(\"sha256\", payload, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"));\n+export function verifyManifest(payload: Buffer, envelope: SignatureEnvelope, keys: SigningKeys, context: string): boolean {\n+  return verify(\n+    null,\n+    payload,\n+    { key: keys.mlDsaPublicKey, context: Buffer.from(context) },\n+    Buffer.from(envelope.mlDsa, \"base64\"),\n+  );\n }\n",
+      "changedLines": 24,
+      "commands": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile",
+          "exitCode": 0,
+          "durationMs": 516
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0,
+          "durationMs": 1012
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0,
+          "durationMs": 1343
+        }
+      ],
+      "gates": [
+        {
+          "name": "offline frozen install",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 516
+        },
+        {
+          "name": "compilation",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 1012
+        },
+        {
+          "name": "original tests",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 1343
+        },
+        {
+          "name": "baseline integrity",
+          "passed": true,
+          "detail": "package scripts, lockfile, original tests unchanged"
+        },
+        {
+          "name": "evaluator integrity",
+          "passed": true,
+          "detail": "external evaluator manifest unchanged"
+        },
+        {
+          "name": "secret hygiene",
+          "passed": true,
+          "detail": "candidate diff scanned"
+        },
+        {
+          "name": "no dependency changes",
+          "passed": true,
+          "detail": "manifest and lockfile unchanged"
+        },
+        {
+          "name": "approved native API",
+          "passed": true,
+          "detail": "native node:crypto with ML-DSA null algorithm; evaluator supplies ml-dsa-65 keys"
+        },
+        {
+          "name": "ml-dsa verification (pass 1)",
+          "passed": true,
+          "detail": "ML-DSA-65 signature verifies"
+        },
+        {
+          "name": "tamper rejection (pass 1)",
+          "passed": true,
+          "detail": "changed payload rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 1)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 1)",
+          "passed": false,
+          "detail": "frozen RSA verifier result"
+        },
+        {
+          "name": "domain separation (pass 1)",
+          "passed": true,
+          "detail": "wrong context rejected"
+        },
+        {
+          "name": "ml-dsa verification (pass 2)",
+          "passed": true,
+          "detail": "ML-DSA-65 signature verifies"
+        },
+        {
+          "name": "tamper rejection (pass 2)",
+          "passed": true,
+          "detail": "changed payload rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 2)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 2)",
+          "passed": false,
+          "detail": "frozen RSA verifier result"
+        },
+        {
+          "name": "domain separation (pass 2)",
+          "passed": true,
+          "detail": "wrong context rejected"
+        },
+        {
+          "name": "repeatability",
+          "passed": false,
+          "detail": "external verifier completed twice"
+        }
+      ],
+      "measurements": {
+        "rsaSignatures": 0,
+        "envelopeBytes": 4424,
+        "signMedianMs": 1.2871000000159256,
+        "signP95Ms": 4.307900000014342,
+        "verifyMedianMs": 0.3423999999940861,
+        "verifyP95Ms": 0.4517000000050757
+      }
+    },
+    {
+      "strategy": "bridge",
+      "branch": "candidate/bridge",
+      "threadId": "019f776d-e85e-75c1-afa0-dc022c3394f2",
+      "generationDurationMs": 67983,
+      "repairAttempted": false,
+      "generationStatus": "eligible",
+      "worktreeCommit": "2341f8f58e18837360bacf07cc718c70682de4b6",
+      "diffSha256": "255386dc456487d3d0d02b598a7a47f2767f409e227bbadfafde247a143ba828",
+      "diff": "diff --git a/src/signatures.ts b/src/signatures.ts\nindex de04251..820803a 100644\n--- a/src/signatures.ts\n+++ b/src/signatures.ts\n@@ -1,12 +1,25 @@\n import { sign, verify, type KeyLike } from \"node:crypto\";\n \n-export type SigningKeys = { rsaPrivateKey: KeyLike; rsaPublicKey: KeyLike };\n-export type SignatureEnvelope = { rsa: string };\n+export type SigningKeys = {\n+  rsaPrivateKey: KeyLike;\n+  rsaPublicKey: KeyLike;\n+  mlDsaPrivateKey: KeyLike;\n+  mlDsaPublicKey: KeyLike;\n+};\n+export type SignatureEnvelope = { rsa: string; mlDsa: string };\n \n-export function signManifest(payload: Buffer, keys: SigningKeys, _context: string): SignatureEnvelope {\n-  return { rsa: sign(\"sha256\", payload, keys.rsaPrivateKey).toString(\"base64\") };\n+export function signManifest(payload: Buffer, keys: SigningKeys, context: string): SignatureEnvelope {\n+  return {\n+    rsa: sign(\"sha256\", payload, keys.rsaPrivateKey).toString(\"base64\"),\n+    mlDsa: sign(null, payload, { key: keys.mlDsaPrivateKey, context: Buffer.from(context) }).toString(\"base64\"),\n+  };\n }\n \n-export function verifyManifest(payload: Buffer, envelope: SignatureEnvelope, keys: SigningKeys, _context: string): boolean {\n-  return verify(\"sha256\", payload, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"));\n+export function verifyManifest(payload: Buffer, envelope: SignatureEnvelope, keys: SigningKeys, context: string): boolean {\n+  return verify(\n+    null,\n+    payload,\n+    { key: keys.mlDsaPublicKey, context: Buffer.from(context) },\n+    Buffer.from(envelope.mlDsa, \"base64\"),\n+  );\n }\n",
+      "changedLines": 25,
+      "commands": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile",
+          "exitCode": 0,
+          "durationMs": 440
+        },
+        {
+          "command": "pnpm typecheck",
+          "exitCode": 0,
+          "durationMs": 985
+        },
+        {
+          "command": "pnpm test",
+          "exitCode": 0,
+          "durationMs": 1288
+        }
+      ],
+      "gates": [
+        {
+          "name": "offline frozen install",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 440
+        },
+        {
+          "name": "compilation",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 985
+        },
+        {
+          "name": "original tests",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 1288
+        },
+        {
+          "name": "baseline integrity",
+          "passed": true,
+          "detail": "package scripts, lockfile, original tests unchanged"
+        },
+        {
+          "name": "evaluator integrity",
+          "passed": true,
+          "detail": "external evaluator manifest unchanged"
+        },
+        {
+          "name": "secret hygiene",
+          "passed": true,
+          "detail": "candidate diff scanned"
+        },
+        {
+          "name": "no dependency changes",
+          "passed": true,
+          "detail": "manifest and lockfile unchanged"
+        },
+        {
+          "name": "approved native API",
+          "passed": true,
+          "detail": "native node:crypto with ML-DSA null algorithm; evaluator supplies ml-dsa-65 keys"
+        },
+        {
+          "name": "ml-dsa verification (pass 1)",
+          "passed": true,
+          "detail": "ML-DSA-65 signature verifies"
+        },
+        {
+          "name": "tamper rejection (pass 1)",
+          "passed": true,
+          "detail": "changed payload rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 1)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 1)",
+          "passed": true,
+          "detail": "frozen RSA verifier result"
+        },
+        {
+          "name": "domain separation (pass 1)",
+          "passed": true,
+          "detail": "wrong context rejected"
+        },
+        {
+          "name": "ml-dsa verification (pass 2)",
+          "passed": true,
+          "detail": "ML-DSA-65 signature verifies"
+        },
+        {
+          "name": "tamper rejection (pass 2)",
+          "passed": true,
+          "detail": "changed payload rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 2)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 2)",
+          "passed": true,
+          "detail": "frozen RSA verifier result"
+        },
+        {
+          "name": "domain separation (pass 2)",
+          "passed": true,
+          "detail": "wrong context rejected"
+        },
+        {
+          "name": "repeatability",
+          "passed": true,
+          "detail": "external verifier completed twice"
+        }
+      ],
+      "measurements": {
+        "rsaSignatures": 1,
+        "envelopeBytes": 4777,
+        "signMedianMs": 2.770700000022771,
+        "signP95Ms": 4.315700000006473,
+        "verifyMedianMs": 0.35540000000037253,
+        "verifyP95Ms": 0.9239000000234228
+      }
+    }
+  ],
+  "selectedCandidate": "bridge",
+  "verifierManifestSha256": "ca53b850ab03517abcfd3cdbaecf57f84f73eac97d3a8a231ca5c0ee8bddbf69",
+  "explanation": {
+    "summary": "The immutable result selects the Compatibility Bridge candidate. It adds an ML-DSA-65 signature with context binding while retaining the RSA signature required by the frozen legacy verifier. The selected candidate passed every hard gate in both evaluator passes and was repeatable.",
+    "whySelected": "Selection was determined by hard-gate eligibility, not by GPT judgment or performance preference. The Direct Cutover produced valid ML-DSA signatures and passed tamper, wrong-key, and domain-separation checks, but failed legacy compatibility in both passes and therefore failed repeatability, making it ineligible. The Compatibility Bridge passed all gates twice, including legacy compatibility, so it was the only eligible candidate. Its immutable measurements are 1 RSA signature, 4,777 envelope bytes, 2.7707 ms median signing, 4.3157 ms p95 signing, 0.3554 ms median verification, and 0.9239 ms p95 verification.",
+    "limitations": [
+      "Legacy compatibility requires retaining one RSA signature, so this is a transition bridge rather than a complete RSA removal.",
+      "The bridge envelope is 353 bytes larger than the direct candidate: 4,777 versus 4,424 bytes.",
+      "The bridge has higher measured median signing and verification latency than the direct candidate, but measurements cannot override failed hard gates.",
+      "The result applies to baseline commit c35e5f614c48a674ea6adac183fe842a80be04ef and the recorded fixture and verifier manifests."
+    ]
+  },
+  "reportSha256": "b994bcee601b93c35a20939ca30ced73f43d257f09287875a1fc260aef877761"
+}

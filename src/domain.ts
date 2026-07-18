@@ -26,10 +26,14 @@ export type CandidateResult = {
   strategy: "direct" | "bridge";
   branch: string;
   threadId: string | null;
+  generationDurationMs: number;
+  repairAttempted: boolean;
   generationStatus: "eligible" | "generation_timed_out" | "generation_failed" | "gate_failed";
   worktreeCommit: string | null;
   diffSha256: string;
+  diff: string;
   changedLines: number;
+  commands: Array<{ command: string; exitCode: number; durationMs: number }>;
   gates: Gate[];
   measurements: { rsaSignatures: number; envelopeBytes: number; signMedianMs: number; signP95Ms: number; verifyMedianMs: number; verifyP95Ms: number } | null;
   error?: string;

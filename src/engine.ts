@@ -12,6 +12,7 @@ const root = process.cwd();
 const promptBase = `Modify only src/signatures.ts. Use native node:crypto. Target key type ml-dsa-65. sign/verify algorithm must be null. Use the function's context string as Buffer.from(context) via { key, context }. Keep exported signManifest and verifyManifest API compatible with original tests. Key object also provides mlDsaPrivateKey and mlDsaPublicKey. Do not edit tests, package.json, or lockfile. No dependencies. Run tests. `;
 
 async function buildCandidate(strategy: "direct" | "bridge", worktree: string, timeoutMs: number) {
+  const started = performance.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const thread = new Codex().startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
@@ -20,19 +21,22 @@ async function buildCandidate(strategy: "direct" | "bridge", worktree: string, t
     : "Implement Compatibility Bridge: envelope contains rsa and mlDsa signatures; verification for current clients uses ML-DSA; keep RSA output for frozen legacy clients.";
   try {
     await thread.run(`${promptBase}${strategyPrompt}`, { signal: controller.signal });
-    return { threadId: thread.id, status: "ok" as const };
+    return { threadId: thread.id, status: "ok" as const, durationMs: Math.round(performance.now() - started) };
   } catch (error) {
-    return { threadId: thread.id, status: controller.signal.aborted ? "generation_timed_out" as const : "generation_failed" as const, error: error instanceof Error ? error.message : String(error) };
+    return { threadId: thread.id, status: controller.signal.aborted ? "generation_timed_out" as const : "generation_failed" as const, error: error instanceof Error ? error.message : String(error), durationMs: Math.round(performance.now() - started) };
   } finally { clearTimeout(timer); }
 }
 
-async function verifyCandidate(strategy: "direct" | "bridge", worktree: string, baselineHashes: Record<string, string>, evaluatorHash: string): Promise<CandidateResult> {
+async function verifyCandidate(strategy: "direct" | "bridge", worktree: string, baselineHashes: Record<string, string>, evaluatorHash: string, legacyCompatibilityRequired: boolean): Promise<CandidateResult> {
   const gates = [] as CandidateResult["gates"];
+  const commands: CandidateResult["commands"] = [];
   const protect = async (relative: string) => sha256(await readFile(path.join(worktree, relative))) === baselineHashes[relative];
   const install = await command("pnpm", ["install", "--offline", "--frozen-lockfile"], worktree);
+  commands.push({ command: install.command, exitCode: install.exitCode, durationMs: install.durationMs });
   gates.push({ name: "offline frozen install", passed: install.exitCode === 0, detail: `exit ${install.exitCode}`, durationMs: install.durationMs });
   for (const [name, args] of [["compilation", ["typecheck"]], ["original tests", ["test"]]] as const) {
     const result = await command("pnpm", [...args], worktree);
+    commands.push({ command: result.command, exitCode: result.exitCode, durationMs: result.durationMs });
     gates.push({ name, passed: result.exitCode === 0, detail: `exit ${result.exitCode}`, durationMs: result.durationMs });
   }
   const protectedOk = (await Promise.all(Object.keys(baselineHashes).map(protect))).every(Boolean);
@@ -44,11 +48,11 @@ async function verifyCandidate(strategy: "direct" | "bridge", worktree: string, 
   const packageChanged = (await command("git", ["diff", "--quiet", "HEAD", "--", "package.json", "pnpm-lock.yaml"], worktree)).exitCode !== 0;
   gates.push({ name: "no dependency changes", passed: !packageChanged, detail: "manifest and lockfile unchanged" });
   const source = await readFile(path.join(worktree, "src/signatures.ts"), "utf8");
-  gates.push({ name: "approved native API", passed: /node:crypto/.test(source) && /ml-dsa-65/.test(source) && !/from\s+["'](?!node:crypto)/.test(source), detail: "native node:crypto ML-DSA-65" });
+  gates.push({ name: "approved native API", passed: /node:crypto/.test(source) && /sign\(null/.test(source) && /verify\(\s*null/.test(source) && !/from\s+["'](?!node:crypto)/.test(source), detail: "native node:crypto with ML-DSA null algorithm; evaluator supplies ml-dsa-65 keys" });
   let measurements: CandidateResult["measurements"] = null;
   try {
     for (let pass = 1; pass <= 2; pass++) {
-      const result = await evaluateCrypto(worktree, true);
+      const result = await evaluateCrypto(worktree, legacyCompatibilityRequired);
       gates.push(...result.gates.map(g => ({ ...g, name: `${g.name} (pass ${pass})` })));
       measurements = result.measurements;
     }
@@ -59,7 +63,16 @@ async function verifyCandidate(strategy: "direct" | "bridge", worktree: string, 
   const commit = (await command("git", ["rev-parse", "HEAD"], worktree)).stdout.trim();
   const committedDiff = (await command("git", ["show", "--format=", "--numstat", "HEAD"], worktree)).stdout;
   const changedLines = committedDiff.trim().split(/\r?\n/).reduce((sum, line) => sum + line.split("\t").slice(0, 2).reduce((n, x) => n + (Number(x) || 0), 0), 0);
-  return { strategy, branch: `candidate/${strategy}`, threadId: null, generationStatus: gates.every(g => g.passed) ? "eligible" : "gate_failed", worktreeCommit: commit, diffSha256: sha256(diff), changedLines, gates, measurements };
+  return { strategy, branch: `candidate/${strategy}`, threadId: null, generationDurationMs: 0, repairAttempted: false, generationStatus: gates.every(g => g.passed) ? "eligible" : "gate_failed", worktreeCommit: commit, diffSha256: sha256(diff), diff, changedLines, commands, gates, measurements };
+}
+
+async function repairCandidate(threadId: string, worktree: string, failedGates: CandidateResult["gates"]) {
+  const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 600_000);
+  try {
+    const thread = new Codex().resumeThread(threadId, { model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
+    await thread.run(`One repair turn. Modify only src/signatures.ts. Immutable failed-gate report:\n${JSON.stringify(failedGates)}\nFix implementation, run tests, do not edit protected files.`, { signal: controller.signal });
+    return true;
+  } catch { return false; } finally { clearTimeout(timer); }
 }
 
 export function select(candidates: CandidateResult[]) {
@@ -68,12 +81,16 @@ export function select(candidates: CandidateResult[]) {
   return [...eligible].sort((a, b) => (a.measurements!.rsaSignatures - b.measurements!.rsaSignatures) || (a.changedLines - b.changedLines) || (a.measurements!.envelopeBytes - b.measurements!.envelopeBytes))[0]!.strategy;
 }
 
-export async function runDemo() {
+export async function runDemo(legacyCompatibilityRequired = true) {
+  const startedAt = new Date().toISOString();
   const runId = new Date().toISOString().replace(/[:.]/g, "-");
   const runRoot = path.join(root, "runs", runId), baseline = path.join(runRoot, "baseline");
   await mkdir(runRoot, { recursive: true }); await cp(path.join(root, "fixture"), baseline, { recursive: true });
-  await command("pnpm", ["install"], baseline, 300_000);
+  const baselineInstall = await command("pnpm", ["install", "--ignore-workspace"], baseline, 300_000);
+  if (baselineInstall.exitCode) throw new Error(`Baseline install failed: ${baselineInstall.stderr}`);
   await command("git", ["init"], baseline); await command("git", ["add", "."], baseline);
+  await command("git", ["config", "core.autocrlf", "false"], baseline);
+  await command("git", ["reset"], baseline); await command("git", ["add", "."], baseline);
   await command("git", ["-c", "user.name=Quantum Twin", "-c", "user.email=quantum-twin@local", "commit", "-m", "fixture baseline"], baseline);
   const baselineCommit = (await command("git", ["rev-parse", "HEAD"], baseline)).stdout.trim();
   const fixtureManifest = await manifest(baseline);
@@ -92,12 +109,21 @@ export async function runDemo() {
   const candidates: CandidateResult[] = [];
   for (const [index, strategy] of (["direct", "bridge"] as const).entries()) {
     const outcome = built[index]!;
-    if (outcome.status === "rejected") candidates.push({ strategy, branch: `candidate/${strategy}`, threadId: null, generationStatus: "generation_failed", worktreeCommit: null, diffSha256: sha256(""), changedLines: 0, gates: [], measurements: null, error: String(outcome.reason) });
-    else if (outcome.value.status !== "ok") candidates.push({ strategy, branch: `candidate/${strategy}`, threadId: outcome.value.threadId, generationStatus: outcome.value.status, worktreeCommit: null, diffSha256: sha256(""), changedLines: 0, gates: [], measurements: null, error: outcome.value.error });
-    else { const result = await verifyCandidate(strategy, worktrees[strategy], baselineHashes, evaluatorHash); result.threadId = outcome.value.threadId; candidates.push(result); }
+    if (outcome.status === "rejected") candidates.push({ strategy, branch: `candidate/${strategy}`, threadId: null, generationDurationMs: 0, repairAttempted: false, generationStatus: "generation_failed", worktreeCommit: null, diffSha256: sha256(""), diff: "", changedLines: 0, commands: [], gates: [], measurements: null, error: String(outcome.reason) });
+    else if (outcome.value.status !== "ok") candidates.push({ strategy, branch: `candidate/${strategy}`, threadId: outcome.value.threadId, generationDurationMs: outcome.value.durationMs, repairAttempted: false, generationStatus: outcome.value.status, worktreeCommit: null, diffSha256: sha256(""), diff: "", changedLines: 0, commands: [], gates: [], measurements: null, error: outcome.value.error });
+    else {
+      let result = await verifyCandidate(strategy, worktrees[strategy], baselineHashes, evaluatorHash, legacyCompatibilityRequired);
+      result.threadId = outcome.value.threadId; result.generationDurationMs = outcome.value.durationMs;
+      const repairable = result.gates.filter(g => !g.passed && !/^legacy compatibility|^repeatability/.test(g.name));
+      if (repairable.length && outcome.value.threadId && await repairCandidate(outcome.value.threadId, worktrees[strategy], repairable)) {
+        result = await verifyCandidate(strategy, worktrees[strategy], baselineHashes, evaluatorHash, legacyCompatibilityRequired);
+        result.threadId = outcome.value.threadId; result.generationDurationMs = outcome.value.durationMs; result.repairAttempted = true;
+      }
+      candidates.push(result);
+    }
   }
   const selectedCandidate = select(candidates);
-  const immutable = { runId, baselineCommit, fixtureManifestSha256: fixtureManifest.sha256, nodeVersion: process.version, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: true }, finding, candidates, selectedCandidate, verifierManifestSha256: evaluatorHash };
+  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), baselineCommit, fixtureManifestSha256: fixtureManifest.sha256, nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired }, finding, candidates, selectedCandidate, verifierManifestSha256: evaluatorHash };
   let explanation: unknown;
   try { explanation = await explainWithGpt(root, immutable); } catch (error) { explanation = { unavailable: error instanceof Error ? error.message : String(error) }; }
   const withoutHash = JSON.stringify({ ...immutable, explanation }, null, 2);

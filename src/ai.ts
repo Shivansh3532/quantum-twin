@@ -3,7 +3,7 @@ import { cryptoFindingSchema, explanationSchema, MODEL } from "./domain.ts";
 
 const findingJsonSchema = {
   type: "object", properties: {
-    primitive: { const: "RSA" }, operation: { enum: ["signing", "verification"] },
+    primitive: { type: "string", enum: ["RSA"] }, operation: { type: "string", enum: ["signing", "verification"] },
     keyLocation: { type: "string" }, publicBoundary: { type: "string" },
     affectedFiles: { type: "array", items: { type: "string" }, minItems: 1 },
     confidence: { type: "number", minimum: 0, maximum: 1 },

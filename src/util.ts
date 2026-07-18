@@ -9,12 +9,15 @@ export const sha256 = (value: string | Buffer) => createHash("sha256").update(va
 
 export async function command(program: string, args: string[], cwd: string, timeout = 120_000) {
   const started = performance.now();
+  const windowsPnpm = process.platform === "win32" && program === "pnpm";
+  const executable = windowsPnpm ? (process.env.ComSpec ?? "cmd.exe") : program;
+  const executableArgs = windowsPnpm ? ["/d", "/s", "/c", `pnpm ${args.map(arg => `"${arg.replaceAll('"', '""')}"`).join(" ")}`] : args;
   try {
-    const result = await exec(program, args, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000 });
+    const result = await exec(executable, executableArgs, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000 });
     return { command: [program, ...args].join(" "), exitCode: 0, stdout: result.stdout, stderr: result.stderr, durationMs: Math.round(performance.now() - started) };
   } catch (error) {
     const e = error as NodeJS.ErrnoException & { stdout?: string; stderr?: string; code?: number };
-    return { command: [program, ...args].join(" "), exitCode: typeof e.code === "number" ? e.code : 1, stdout: e.stdout ?? "", stderr: e.stderr ?? e.message, durationMs: Math.round(performance.now() - started) };
+    return { command: [program, ...args].join(" "), exitCode: typeof e.code === "number" ? e.code : 1, stdout: e.stdout ?? "", stderr: e.stderr || e.message, durationMs: Math.round(performance.now() - started) };
   }
 }
 

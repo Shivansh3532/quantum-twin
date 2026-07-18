@@ -7,7 +7,8 @@ const context = "quantum-twin:update-manifest:v1";
 
 function keys() {
   const rsa = generateKeyPairSync("rsa", { modulusLength: 2048 });
-  return { rsaPrivateKey: rsa.privateKey, rsaPublicKey: rsa.publicKey };
+  const mlDsa = generateKeyPairSync("ml-dsa-65");
+  return { rsaPrivateKey: rsa.privateKey, rsaPublicKey: rsa.publicKey, mlDsaPrivateKey: mlDsa.privateKey, mlDsaPublicKey: mlDsa.publicKey };
 }
 
 test("sign then verify succeeds", () => {
