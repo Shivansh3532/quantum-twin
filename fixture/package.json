@@ -1,0 +1,9 @@
+{
+  "name": "quantum-twin-rsa-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "node --experimental-strip-types --check src/signatures.ts",
+    "test": "node --experimental-strip-types --test test/original/signatures.test.ts"
+  }
+}

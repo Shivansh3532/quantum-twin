@@ -1,0 +1,9 @@
+node_modules/
+.tools/
+.next/
+dist/
+runs/
+.env
+.env.*
+!.env.example
+*.log

@@ -1,0 +1,15 @@
+{
+  "sourcePrimitive": "RSA",
+  "targetPrimitive": "ML-DSA",
+  "targetParameterSet": "ML-DSA-65",
+  "nodeKeyType": "ml-dsa-65",
+  "signatureContext": "quantum-twin:update-manifest:v1",
+  "legacyCompatibilityRequired": true,
+  "approvedCryptoProvider": "node:crypto",
+  "networkAllowed": false,
+  "candidateBuildTimeoutMs": 600000,
+  "verificationCommandTimeoutMs": 120000,
+  "protectedBaselinePaths": ["package.json", "test/original/**"],
+  "externalEvaluatorId": "quantum-twin-acceptance-v1",
+  "requiredCommands": ["pnpm install --offline --frozen-lockfile", "pnpm typecheck", "pnpm test"]
+}
