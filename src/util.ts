@@ -9,11 +9,11 @@ export const sha256 = (value: string | Buffer) => createHash("sha256").update(va
 
 export async function command(program: string, args: string[], cwd: string, timeout = 120_000) {
   const started = performance.now();
-  const windowsPnpm = process.platform === "win32" && program === "pnpm";
-  const executable = windowsPnpm ? (process.env.ComSpec ?? "cmd.exe") : program;
-  const executableArgs = windowsPnpm ? ["/d", "/s", "/c", `pnpm ${args.map(arg => `"${arg.replaceAll('"', '""')}"`).join(" ")}`] : args;
+  const pnpmEntrypoint = program === "pnpm" ? process.env.npm_execpath : undefined;
+  const executable = pnpmEntrypoint ? process.execPath : program;
+  const executableArgs = pnpmEntrypoint ? [pnpmEntrypoint, ...args] : args;
   try {
-    const result = await exec(executable, executableArgs, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000 });
+    const result = await exec(executable, executableArgs, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000, shell: process.platform === "win32" && !pnpmEntrypoint && program === "pnpm" });
     return { command: [program, ...args].join(" "), exitCode: 0, stdout: result.stdout, stderr: result.stderr, durationMs: Math.round(performance.now() - started) };
   } catch (error) {
     const e = error as NodeJS.ErrnoException & { stdout?: string; stderr?: string; code?: number };
