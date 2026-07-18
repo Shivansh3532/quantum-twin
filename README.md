@@ -35,3 +35,23 @@ Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 Recorded repository tests, negative tests, compatibility checks, dependency policy, static rules, and benchmarks passed declared engineering contract in isolated environment. It does not mean formal verification, FIPS module certification, proof against every side channel, production security approval, or replacement for expert review.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), and [sample/run.json](sample/run.json).
+
+## Hosted recorded demo for judges
+
+The Vercel deployment is intentionally read-only. With Vercel's automatic `VERCEL=1` environment, it renders committed `sample/run.json`, shows **Recorded Verified Run**, rejects tournament POST requests, and never invokes Codex, Git, worktrees, or filesystem writes. Do not configure `OPENAI_API_KEY`.
+
+Import this GitHub repository into Vercel with:
+
+- Framework preset: Next.js
+- Root directory: repository root
+- Node.js version: 24.x
+- Install command: `pnpm install --frozen-lockfile`
+- Build command: `pnpm build`
+- Output directory: leave blank (Next.js default)
+- Environment variables: none
+
+After deployment, test `/` and confirm **Recorded Verified Run** is visible. `/api/runs/latest` must return the committed sample; `POST /api/runs` must return HTTP 403.
+
+## Local live Codex tournament
+
+The hosted demo does not replace live execution. On a local machine with authenticated Codex, run `pnpm demo` to create fresh isolated worktrees, execute both `gpt-5.6-sol` builders, evaluate them twice, and write ignored evidence under `runs/`. This command and its live engine path are unchanged by hosted recorded mode.

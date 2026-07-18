@@ -2,13 +2,14 @@
 import { useEffect, useState } from "react";
 
 type Report = any;
-export default function Dashboard() {
-  const [report, setReport] = useState<Report>(null), [busy, setBusy] = useState(false), [error, setError] = useState(""), [compatibility, setCompatibility] = useState(true);
+export default function Dashboard({ recorded = false, initialReport = null }: { recorded?: boolean; initialReport?: Report }) {
+  const [report, setReport] = useState<Report>(initialReport), [busy, setBusy] = useState(false), [error, setError] = useState(""), [compatibility, setCompatibility] = useState(true);
   const load = () => fetch("/api/runs/latest").then(r => r.ok ? r.json() : null).then(setReport).catch(() => setReport(null));
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!recorded) load(); }, [recorded]);
   async function run() { setBusy(true); setError(""); try { const r = await fetch("/api/runs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ legacyCompatibilityRequired: compatibility }) }); const data = await r.json(); if (!r.ok) throw new Error(data.error); setReport(data); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); } }
   const candidates = report?.candidates ?? [];
-  return <main>
+  return <main className={recorded ? "recorded" : ""}>
+    {recorded && <div className="recorded-label">Recorded Verified Run</div>}
     <header><div><span className="eyebrow">POST-QUANTUM MIGRATION CONTROL</span><h1>Quantum <i>Twin</i></h1></div><div className="status"><b>{report ? "EVIDENCE READY" : "AWAITING RUN"}</b><small>{report?.runId ?? "No recorded run"}</small></div></header>
     <section className="hero"><div><p className="kicker">01 / MIGRATION BRIEF</p><h2>Legacy RSA detected.<br/>Prove the safest path forward.</h2><p className="lede">Two isolated Codex builders migrate one identical repository. External gates decide. GPT-5.6 explains—never overrides.</p><label className="toggle"><input type="checkbox" checked={compatibility} onChange={e=>setCompatibility(e.target.checked)} disabled={busy}/> Legacy client compatibility required</label></div><button onClick={run} disabled={busy}>{busy ? "RUNNING TOURNAMENT…" : "RUN TOURNAMENT"}</button></section>
     {error && <div className="alert"><b>RUN FAILED</b><span>{error}</span><small>Credentials, timeout, and candidate failures stay visible; no fake fallback is shown.</small></div>}
