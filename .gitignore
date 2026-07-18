@@ -2,7 +2,7 @@ node_modules/
 .tools/
 .next/
 dist/
-runs/
+/runs/
 .env
 .env.*
 !.env.example
