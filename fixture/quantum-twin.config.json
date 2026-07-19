@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "repository": { "name": "update-manifest-service" },
+  "includedSourceGlobs": ["src/*.ts", "src/**/*.ts"],
+  "excludedGlobs": [],
+  "writablePaths": ["src/signatures.ts"],
+  "protectedPaths": ["package.json", "pnpm-lock.yaml", "test/original/signatures.test.ts", "quantum-twin.config.json", "quantum-twin.compatibility.ts"],
+  "packageManager": "pnpm",
+  "commands": {
+    "install": ["pnpm", "install", "--ignore-workspace"],
+    "typecheck": ["pnpm", "typecheck"],
+    "test": ["pnpm", "test"]
+  },
+  "compatibilityHarness": "quantum-twin.compatibility.ts",
+  "legacyCompatibilityRequired": true,
+  "target": { "primitive": "ml-dsa-65", "context": "quantum-twin:update-manifest:v1" },
+  "dependencyPolicy": "forbid",
+  "timeouts": { "scanMs": 30000, "commandMs": 120000, "candidateMs": 600000 },
+  "limits": { "maxFiles": 1000, "maxFileBytes": 2000000, "maxTotalBytes": 20000000 }
+}

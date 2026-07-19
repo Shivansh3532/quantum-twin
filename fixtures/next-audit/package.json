@@ -1,0 +1,9 @@
+{
+  "name": "next-audit-receipts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "node --experimental-strip-types --check server/audit-receipt.ts",
+    "test": "node --experimental-strip-types --test test/audit-receipt.test.ts"
+  }
+}

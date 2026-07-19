@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readdir, readFile, stat } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 const exec = promisify(execFile);
@@ -10,8 +11,11 @@ export const sha256 = (value: string | Buffer) => createHash("sha256").update(va
 export async function command(program: string, args: string[], cwd: string, timeout = 120_000) {
   const started = performance.now();
   const pnpmEntrypoint = program === "pnpm" ? process.env.npm_execpath : undefined;
-  const executable = pnpmEntrypoint ? process.execPath : program;
-  const executableArgs = pnpmEntrypoint ? [pnpmEntrypoint, ...args] : args;
+  const npmCandidate = path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", program === "npx" ? "npx-cli.js" : "npm-cli.js");
+  const npmEntrypoint = ["npm", "npx"].includes(program) && existsSync(npmCandidate) ? npmCandidate : undefined;
+  const entrypoint = pnpmEntrypoint ?? npmEntrypoint;
+  const executable = entrypoint ? process.execPath : program;
+  const executableArgs = entrypoint ? [entrypoint, ...args] : args;
   try {
     const result = await exec(executable, executableArgs, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000, shell: process.platform === "win32" && !pnpmEntrypoint && program === "pnpm" });
     return { command: [program, ...args].join(" "), exitCode: 0, stdout: result.stdout, stderr: result.stderr, durationMs: Math.round(performance.now() - started) };

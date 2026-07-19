@@ -11,6 +11,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "qt": "tsx src/cli.ts",
     "demo": "tsx src/cli.ts demo",
     "preflight": "tsx src/cli.ts preflight",
     "verify": "tsx src/cli.ts verify",
