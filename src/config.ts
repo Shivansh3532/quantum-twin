@@ -44,6 +44,11 @@ export const quantumTwinConfigSchema = z.object({
   })
 }).strict().refine(config => config.compatibilityHarness || config.commands.compatibility, {
   message: "compatibilityHarness or commands.compatibility is required"
+}).superRefine((config, context) => {
+  const normalize = (value: string) => value.replaceAll("\\", "/").replace(/\/$/, "");
+  for (const writable of config.writablePaths.map(normalize)) for (const protectedPath of config.protectedPaths.map(normalize)) {
+    if (writable === protectedPath || writable.startsWith(`${protectedPath}/`) || protectedPath.startsWith(`${writable}/`)) context.addIssue({ code: "custom", path: ["writablePaths"], message: `writable and protected paths overlap: ${writable}, ${protectedPath}` });
+  }
 });
 
 export type QuantumTwinConfig = z.infer<typeof quantumTwinConfigSchema>;

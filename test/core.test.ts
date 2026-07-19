@@ -5,7 +5,7 @@ import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import { scanCrypto, scanRepository } from "../src/scanner.ts";
 import { select } from "../src/engine.ts";
-import { fileSha256, sha256 } from "../src/util.ts";
+import { command, fileSha256, sha256 } from "../src/util.ts";
 import { quantumTwinConfigSchema, detectPackageManager } from "../src/config.ts";
 import { assertSafeTree, contained } from "../src/repository.ts";
 import { isRecordedMode } from "../src/mode.ts";
@@ -72,6 +72,14 @@ describe("general repository boundary", () => {
     expect(quantumTwinConfigSchema.parse(base).commands.install).toEqual(["pnpm", "install"]);
     expect(() => quantumTwinConfigSchema.parse({ ...base, writablePaths: ["../escape.ts"] })).toThrow(/contained/);
     expect(() => quantumTwinConfigSchema.parse({ ...base, commands: { ...base.commands, install: "pnpm install" } })).toThrow();
+    expect(() => quantumTwinConfigSchema.parse({ ...base, writablePaths: ["test"] })).toThrow(/overlap/);
+  });
+
+  test("command arguments are passed without shell interpolation", async () => {
+    const marker = "literal; echo not-executed";
+    const result = await command(process.execPath, ["-e", "console.log(process.argv[1])", marker], process.cwd());
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout.trim()).toBe(marker);
   });
 
   test("path containment and symlink rejection protect copied repositories", async () => {
