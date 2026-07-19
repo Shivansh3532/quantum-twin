@@ -2,6 +2,7 @@ import path from "node:path";
 import { inspectRepository } from "./capabilities.ts";
 import { runDemo, runRepository } from "./engine.ts";
 import { preflight } from "./preflight.ts";
+import { verifyReportFile } from "./report.ts";
 
 const args = process.argv.slice(2);
 const action = args[0];
@@ -21,5 +22,9 @@ else if (action === "demo" || action === "demo-no-compat") {
   const report = await runRepository(required("--repo"), path.resolve(required("--config")), args.includes("--allow-exec"));
   console.log(JSON.stringify({ runId: report.runId, selectedCandidate: report.selectedCandidate, reportSha256: report.reportSha256 }, null, 2));
   if (!report.selectedCandidate) process.exitCode = 1;
-} else if (action === "verify") console.log("Use pnpm demo to create and verify a run twice.");
+} else if (action === "verify") {
+  const result = await verifyReportFile(required("--report"));
+  console.log(JSON.stringify(result, null, 2));
+  if (!result.valid) process.exitCode = 1;
+}
 else throw new Error(`Unknown command: ${action ?? "(missing)"}`);

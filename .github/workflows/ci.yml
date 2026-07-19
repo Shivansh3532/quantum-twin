@@ -20,5 +20,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm verify-samples
       - run: pnpm build
       - run: pnpm secret-scan

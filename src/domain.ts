@@ -32,9 +32,10 @@ export type CapabilityReport = {
   configuration: "found" | "needed";
 };
 
+export const cryptoOperationSchema = z.enum(["signing", "verification"]);
 export const cryptoFindingSchema = z.object({
   primitive: z.literal("RSA"),
-  operation: z.enum(["signing", "verification"]),
+  operations: z.array(cryptoOperationSchema).min(1).refine(values => new Set(values).size === values.length, "operations must be unique"),
   keyLocation: z.string(),
   publicBoundary: z.string(),
   affectedFiles: z.array(z.string()).min(1),
@@ -42,6 +43,8 @@ export const cryptoFindingSchema = z.object({
   evidence: z.array(z.string()).min(1)
 });
 export type CryptoFinding = z.infer<typeof cryptoFindingSchema>;
+export const historicalCryptoFindingSchema = cryptoFindingSchema.omit({ operations: true }).extend({ operation: cryptoOperationSchema });
+export type HistoricalCryptoFinding = z.infer<typeof historicalCryptoFindingSchema>;
 
 export const explanationSchema = z.object({
   summary: z.string(),
@@ -82,18 +85,17 @@ export type RunReport = {
   codexSdkVersion: string;
   model: string;
   constraintProfile: { legacyCompatibilityRequired: boolean };
-  finding: CryptoFinding;
+  repositoryContract?: {
+    version: 1;
+    target: { primitive: "ml-dsa-65"; context: string };
+    writablePaths: string[];
+    protectedPaths: string[];
+    dependencyPolicy: "forbid" | "allow-declared";
+  };
+  finding: CryptoFinding | HistoricalCryptoFinding;
   candidates: CandidateResult[];
   selectedCandidate: "direct" | "bridge" | null;
   verifierManifestSha256: string;
   explanation: unknown;
-  reportSha256?: string;
-  sourceReportSha256?: string;
-  presentationReportSha256?: string;
-  redaction?: {
-    applied: true;
-    scope: string;
-    description: string;
-    byteIdenticalToSourceReport: false;
-  };
+  reportSha256: string;
 };

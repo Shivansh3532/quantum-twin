@@ -16,6 +16,7 @@
     "demo-no-compat": "tsx src/cli.ts demo-no-compat",
     "preflight": "tsx src/cli.ts preflight",
     "verify": "tsx src/cli.ts verify",
+    "verify-samples": "tsx tools/verify-samples.ts",
     "smoke": "tsx tools/smoke.ts",
     "secret-scan": "tsx tools/secret-scan.ts"
   },

@@ -5,11 +5,13 @@ import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import { scanCrypto, scanRepository } from "../src/scanner.ts";
 import { select } from "../src/engine.ts";
-import { command, fileSha256, sha256 } from "../src/util.ts";
+import { command, fileSha256 } from "../src/util.ts";
 import { quantumTwinConfigSchema, detectPackageManager } from "../src/config.ts";
 import { assertSafeTree, contained } from "../src/repository.ts";
 import { isRecordedMode } from "../src/mode.ts";
 import { POST } from "../app/api/runs/route.ts";
+import { GET as getRecordedRun } from "../app/api/runs/latest/route.ts";
+import { verifyReportData } from "../src/report.ts";
 
 describe("deterministic core", () => {
   test("scanner identifies RSA sign and verify", async () => {
@@ -22,23 +24,22 @@ describe("deterministic core", () => {
     expect(select([candidate("direct", false, 0), candidate("bridge", true, 1)])).toBe("bridge");
     expect(select([candidate("direct", false, 0), candidate("bridge", false, 1)])).toBeNull();
   });
-  test("sample report hash verifies and text hashes are cross-platform", async () => {
+  test("sample report verifies and text hashes are cross-platform", async () => {
     const report = JSON.parse(await readFile(path.join(process.cwd(), "sample/run.json"), "utf8"));
-    const expected = report.presentationReportSha256;
-    delete report.presentationReportSha256;
-    expect(sha256(JSON.stringify(report, null, 2))).toBe(expected);
-    expect(report.sourceReportSha256).toBe("b994bcee601b93c35a20939ca30ced73f43d257f09287875a1fc260aef877761");
-    expect(report.redaction).toMatchObject({ applied: true, scope: "local filesystem path only", byteIdenticalToSourceReport: false });
+    expect(verifyReportData(report, "sample/run.json").valid).toBe(true);
     expect(fileSha256(Buffer.from("portable\r\ntext\r\n"))).toBe(fileSha256(Buffer.from("portable\ntext\n")));
   });
-  test("tracked files contain no absolute Windows user paths", async () => {
+  test("tracked files contain no absolute personal paths", async () => {
     const tracked = await command("git", ["ls-files", "-z"], process.cwd());
     expect(tracked.exitCode).toBe(0);
-    const prefixes = [["C:", "Users"].join("\\") + "\\", ["C:", "Users"].join("/") + "/"];
+    const patterns = [new RegExp(`[A-Za-z]:[\\\\/]${"Users"}[\\\\/][^\\\\/]+`, "i"), new RegExp(["", "Users", "[^/]+", ""].join("/")), new RegExp(["", "home", "[^/]+", ""].join("/"))];
     const hits: string[] = [];
     for (const file of tracked.stdout.split("\0").filter(Boolean)) {
-      const content = await readFile(path.join(process.cwd(), file), "utf8");
-      if (prefixes.some(prefix => content.includes(prefix))) hits.push(file);
+      let content: string;
+      try { content = await readFile(path.join(process.cwd(), file), "utf8"); }
+      catch (error) { if ((error as NodeJS.ErrnoException).code === "ENOENT") continue; throw error; }
+      content = content.replaceAll("\\\\", "\\");
+      if (patterns.some(pattern => pattern.test(content))) hits.push(file);
     }
     expect(hits).toEqual([]);
   });
@@ -119,6 +120,21 @@ describe("general repository boundary", () => {
     try {
       const response = await POST(new Request("http://localhost/api/runs", { method: "POST", body: "{}" }));
       expect(response.status).toBe(403);
+    } finally { if (previous === undefined) delete process.env.VERCEL; else process.env.VERCEL = previous; }
+  });
+
+  test("Vercel GET exposes only the two committed recorded scenarios", async () => {
+    const previous = process.env.VERCEL;
+    process.env.VERCEL = "1";
+    try {
+      const compatibility = await getRecordedRun(new Request("http://localhost/api/runs/latest"));
+      const direct = await getRecordedRun(new Request("http://localhost/api/runs/latest?scenario=direct"));
+      const invalid = await getRecordedRun(new Request("http://localhost/api/runs/latest?scenario=../private"));
+      expect(compatibility.status).toBe(200);
+      expect((await compatibility.json()).selectedCandidate).toBe("bridge");
+      expect(direct.status).toBe(200);
+      expect((await direct.json()).selectedCandidate).toBe("direct");
+      expect(invalid.status).toBe(400);
     } finally { if (previous === undefined) delete process.env.VERCEL; else process.env.VERCEL = previous; }
   });
 

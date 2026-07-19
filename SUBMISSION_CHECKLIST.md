@@ -7,12 +7,14 @@
 - [x] README includes setup, sample fixtures, supported platforms, local/hosted distinction, exact commands, and test path.
 - [x] Repository documents where Codex accelerated work, key deterministic decisions, and exact GPT-5.6/Codex use.
 - [x] Developer-tool installation, supported platforms, and no-rebuild judge path prepared.
+- [x] Two genuine current-format hosted scenarios and deterministic report-verification command prepared.
+- [x] Copy-ready Devpost, video, judge-test, authoritative impact, novelty, and third-party notices prepared.
 - [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 - [x] Merge verified productization branch and confirm deployed main SHA.
 - [ ] Record and upload public YouTube video under 3 minutes.
 - [ ] Video visibly shows product and audio covers project, Codex, and GPT-5.6.
 - [ ] Create Devpost project; add description, repository, hosted demo, video, category, and test instructions.
-- [ ] Add every teammate and confirm invitation acceptance.
+- [ ] Confirm team status; if solo, enter teammate acceptance as N/A; otherwise add every teammate and confirm acceptance.
 - [ ] Submit before July 21, 2026, 5:00 PM PT; verify status is not Draft.
 
 Official source checked July 19, 2026: https://openai.devpost.com/.

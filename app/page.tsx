@@ -1,9 +1,11 @@
 import Dashboard from "./ui";
-import recordedRun from "@/sample/run.json";
+import compatibilityRun from "@/sample/release-cli-compatibility.json";
+import directRun from "@/sample/release-cli-direct.json";
 import { isRecordedMode } from "../src/mode.ts";
 import type { RunReport } from "../src/domain.ts";
 
 export default function Page() {
   const recorded = isRecordedMode();
-  return <Dashboard recorded={recorded} initialReport={recorded ? recordedRun as RunReport : null} />;
+  const recordedReports = recorded ? { compatibility: compatibilityRun as RunReport, direct: directRun as RunReport } : undefined;
+  return <Dashboard recorded={recorded} initialReport={recorded ? recordedReports!.compatibility : null} recordedReports={recordedReports} />;
 }

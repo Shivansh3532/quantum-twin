@@ -1,26 +1,21 @@
-# Quantum Twin — Developer Tools
+# Quantum Twin — Developer Tools submission
 
-**Pitch:** Codex builds competing post-quantum migrations; external deterministic gates prove which candidate satisfies developer’s compatibility contract.
-
-## Problem and product
-
-Crypto scanners locate legacy algorithms. One generated patch does not prove compatibility or negative security behavior. Quantum Twin accepts a constrained local Node repository contract, recursively records RSA evidence, creates identical Git baselines, and gives two isolated `gpt-5.6-sol` Codex builders different strategies: Direct Cutover and Compatibility Bridge. External code disqualifies failures, applies deterministic selection, and hashes complete evidence. No eligible candidate produces **NO SAFE WINNER**.
+**Differentiator:** Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
 
 Hosted demo: https://quantum-twin.vercel.app
-Public repository: https://github.com/Shivansh3532/quantum-twin
+Repository: https://github.com/Shivansh3532/quantum-twin
 
-## Codex and GPT-5.6 use
+Quantum Twin recursively discovers native RSA signing and verification in a constrained local Node repository, freezes a versioned compatibility contract, and gives identical source and policy to two isolated `gpt-5.6-sol` Codex SDK builders. Direct Cutover removes RSA output; Compatibility Bridge retains declared RSA continuity. A copied external harness runs twice. Deterministic TypeScript disqualifies failed candidates, selects only among eligible results, and returns **NO SAFE WINNER** when none qualify.
 
-Majority core was created in Build Week session `019f774d-0364-76a3-bd72-cb806fe0109a`. Recorded runs used `@openai/codex-sdk@0.144.6` with exact `gpt-5.6-sol`. Two SDK threads independently create migration candidates. GPT-5.6 converts deterministic scanner evidence into schema-validated classification and explains immutable results. Deterministic TypeScript owns gates, eligibility, measurements, and selection. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
+Two genuine CommonJS/npm release-fixture reports show the core decision:
 
-## Implementation evidence
+- Compatibility required: run `2026-07-19T18-04-56-297Z`; Direct fails compatibility twice; Bridge selected.
+- Compatibility disabled: run `2026-07-19T18-08-18-178Z`; both qualify; Direct selected because it retains fewer RSA signatures.
 
-Node 24.18.0, TypeScript/JavaScript, ESM/CommonJS, npm/pnpm, native `node:crypto`, Git worktrees, Zod, Vitest, Next.js. Three fixtures use different paths, functions, module formats, and package managers. A real CommonJS/npm non-original fixture tournament selected Bridge after Direct failed declared compatibility twice.
+`@openai/codex-sdk@0.144.6` created both candidate worktrees with exact `gpt-5.6-sol`. GPT-5.6 performs schema-validated classification and explains immutable evidence after selection. Deterministic post-validation rejects GPT files or operations that contradict scanner evidence. GPT cannot control gates, measurements, eligibility, or result. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
 
-## Audience and impact
+NIST standardized the first post-quantum cryptography algorithms in 2024 and urges migration. NCCoE separates discovery from interoperability testing, while CISA/NSA/NIST urge early planning and inventory. Quantum Twin focuses on the next developer-level step: compare concrete implementations against frozen compatibility evidence.
 
-Application security engineers, platform/security engineering teams, maintainers of Node services with deployed RSA verifiers, and teams planning staged post-quantum migration without breaking legacy clients can compare migration strategies against explicit evidence rather than accept one opaque rewrite.
+Automatic scope remains Node.js 24 TypeScript/JavaScript, ESM/CommonJS, npm/pnpm, native `node:crypto` RSA sign/verify, local paths, and explicit external harnesses. No URL ingestion, private credentials, automatic PRs, HSM/KMS/TLS migration, hostile-code sandbox, formal verification, certification, security guarantee, or deployment approval.
 
-## Limits
-
-Local-path Node repository contracts only. Discovery-only findings never generate patches. No public URL ingestion, private credentials, HSM/KMS/TLS migration, hostile-code sandbox, formal verification, FIPS module certification, side-channel proof, guaranteed security, production approval, or claim that an entire system becomes quantum-safe.
+Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
