@@ -9,6 +9,7 @@
 - [x] Developer-tool installation, supported platforms, and no-rebuild judge path prepared.
 - [x] Two genuine current-format hosted scenarios and deterministic report-verification command prepared.
 - [x] Copy-ready Devpost, video, judge-test, authoritative impact, novelty, and third-party notices prepared.
+- [x] Ten-second product flow, 60-second hosted judge path, local-runner path, NO SAFE WINNER principle, strict scenario URLs, accessibility, and application metadata prepared.
 - [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 - [x] Merge verified productization branch and confirm deployed main SHA.
 - [ ] Record and upload public YouTube video under 3 minutes.

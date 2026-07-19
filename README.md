@@ -2,16 +2,21 @@
 
 > Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
 
-## For judges — 30 seconds
+## For judges — 60 seconds
 
-1. Open the no-credential hosted evidence explorer: **https://quantum-twin.vercel.app**.
+1. Open the no-credential hosted evidence explorer: **https://quantum-twin.vercel.app** and read **SCAN → COMPETE → PROVE**.
 2. Confirm **Recorded Verified Run** and **Genuine Recorded Codex Run**.
 3. Switch between:
    - **Legacy compatibility required — Bridge selected**
    - **Legacy compatibility disabled — Direct selected**
-4. Expand scanner evidence, candidate diffs, commands, measurements, hashes, and both evaluator passes.
+4. Follow the visible **For judges: 60-second path**: result change, candidate diff, decisive gates, complete matrix, report download.
 
 Same CommonJS/npm repository. Same two strategies. One declared compatibility constraint changes which candidate is eligible. Hosted mode is read-only and never runs Codex, Git, worktrees, repository commands, or file writes.
+
+Shareable evidence states:
+
+- [Compatibility required — Bridge](https://quantum-twin.vercel.app/?scenario=compatibility)
+- [Compatibility disabled — Direct](https://quantum-twin.vercel.app/?scenario=direct)
 
 ## Genuine hosted evidence
 
@@ -76,9 +81,17 @@ Discovery identifies where cryptography exists. It does not prove that a concret
 
 | Approach | Produces |
 |---|---|
-| Traditional scanner | Finds cryptography; does not implement or compare migrations. |
-| One coding-agent prompt | Produces one candidate; does not independently prove frozen compatibility. |
-| Quantum Twin | Creates isolated competing implementations, externally disqualifies failures, changes result with declared constraints, preserves provenance, and supports NO SAFE WINNER. |
+| Traditional scanner | Finds crypto locations; does not implement and independently compare migrations. |
+| One coding-agent patch | Creates one plausible implementation; does not prove it against an immutable external compatibility contract. |
+| Quantum Twin | Creates isolated competing implementations, evaluates outside worktrees, disqualifies failures deterministically, preserves provenance, changes results with constraints, and refuses when nothing qualifies. |
+
+## Who this is for
+
+Application-security engineers, platform-security teams, and maintainers of Node services whose RSA-signed data is consumed by deployed or frozen verifiers. Quantum Twin covers the step after discovery: compare concrete ML-DSA-65 migrations against frozen compatibility evidence without claiming whole-system quantum safety.
+
+## NO SAFE WINNER
+
+If every candidate fails a hard gate, deterministic TypeScript refuses to select a migration. GPT-5.6 cannot promote a failed candidate. This behavior is tested; it is not a hosted fabricated scenario.
 
 ## Supported scope
 

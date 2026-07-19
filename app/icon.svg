@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="8" fill="#11130f"/>
+  <path d="M18 18h28v28H18z" fill="none" stroke="#d7ff3f" stroke-width="3"/>
+  <text x="32" y="38" text-anchor="middle" font-family="monospace" font-size="16" font-weight="700" fill="#d7ff3f">QT</text>
+</svg>

@@ -1,12 +1,13 @@
 # Judge test paths
 
-## 30-second hosted path
+## 60-second hosted path
 
-1. Open https://quantum-twin.vercel.app. No login or credential required.
-2. Confirm **Recorded Verified Run** and **Genuine Recorded Codex Run**.
-3. Observe compatibility-required result: Bridge.
-4. Select **Legacy compatibility disabled — Direct selected**.
-5. Observe result change to Direct and expand one candidate/evidence section.
+1. Open https://quantum-twin.vercel.app/?scenario=compatibility. No login or credential required.
+2. Read **SCAN / COMPETE / PROVE** and confirm **Recorded Verified Run** plus **Genuine Recorded Codex Run**.
+3. Observe Bridge, failed Direct compatibility gates, gate counts, report hash, and download.
+4. Open https://quantum-twin.vercel.app/?scenario=direct or use the selector.
+5. Observe Direct, expand its diff, then open **Inspect all hard gates**.
+6. Review **Run on your repository**, **NO SAFE WINNER**, audience, and honest scope.
 
 Expected: same `fixtures/release-cli` source identity and commit; only compatibility constraint changes. Hosted POST remains 403.
 

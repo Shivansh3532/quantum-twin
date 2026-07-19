@@ -27,6 +27,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] `final-productization` merged to `main`; GitHub Actions passed on Windows and Ubuntu.
 - [x] Public Vercel alias verified against deployed `main`: page 200, recorded evidence renders, download works, POST returns 403.
 - [x] `final-judge-polish` passed local and clean-clone release gates; final main CI, Vercel parity, and `build-week-judge-ready` are recorded in the release handoff.
+- [x] Final product-experience pass adds ten-second flow, 60-second judge path, hosted/local unity, decisive-gate hierarchy, visible refusal principle, strict shareable scenarios, accessibility landmarks, and complete metadata without changing genuine evidence.
 
 ## Submission blockers
 

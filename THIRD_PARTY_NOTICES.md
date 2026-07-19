@@ -13,4 +13,4 @@ Relevant transitive assets in the pinned installation include MIT, Apache-2.0, I
 pnpm licenses list --prod
 ```
 
-The hosted UI uses CSS, text, and system fonts. Repository contains no third-party images, icons, logos, stock footage, music, or screenshots. Competition video should show only Quantum Twin UI, repository-owned fixture code, terminal output, repository files, and evidence reports.
+The hosted UI uses project-owned CSS, text, and an original QT SVG app icon with system fonts. Repository contains no third-party images, icons, logos, stock footage, music, or screenshots. Competition video should show only Quantum Twin UI, repository-owned fixture code, terminal output, repository files, and evidence reports.
