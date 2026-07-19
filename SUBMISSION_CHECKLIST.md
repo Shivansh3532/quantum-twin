@@ -8,7 +8,7 @@
 - [x] Repository documents where Codex accelerated work, key deterministic decisions, and exact GPT-5.6/Codex use.
 - [x] Developer-tool installation, supported platforms, and no-rebuild judge path prepared.
 - [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
-- [ ] Merge verified productization branch and confirm deployed main SHA.
+- [x] Merge verified productization branch and confirm deployed main SHA.
 - [ ] Record and upload public YouTube video under 3 minutes.
 - [ ] Video visibly shows product and audio covers project, Codex, and GPT-5.6.
 - [ ] Create Devpost project; add description, repository, hosted demo, video, category, and test instructions.

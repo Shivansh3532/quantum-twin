@@ -17,13 +17,13 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] Windows/Ubuntu non-Codex GitHub Actions workflow on Node 24.
 - [x] Real non-original CommonJS/npm release fixture live tournament: Bridge selected; Direct failed compatibility twice.
 
-## Final verification pending
+## Final verification
 
 - [x] Compatibility-disabled generalized run selects Direct.
 - [x] Clean-clone install/typecheck/test/build/secret scan.
 - [!] Absolute-user-path scan: inherited immutable `sample/run.json` contains one recorded Windows source path; preserving sample/hash prevents silent rewrite.
-- [ ] Merge `final-productization` to `main`, push, and verify GitHub/Vercel commit parity.
-- [ ] Create annotated `build-week-final` only after deployed verification.
+- [x] `final-productization` merged to `main`; GitHub Actions passed on Windows and Ubuntu.
+- [x] Public Vercel alias verified against deployed `main`: page 200, recorded evidence renders, download works, POST returns 403.
 
 ## Submission blockers
 
