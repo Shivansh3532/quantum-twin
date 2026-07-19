@@ -1,14 +1,14 @@
 import { Codex } from "@openai/codex-sdk";
-import { cryptoFindingSchema, explanationSchema, MODEL } from "./domain.ts";
+import { cryptoFindingSchema, explanationSchema, MODEL, type CryptoFinding, type ScannerHit } from "./domain.ts";
 
 const findingJsonSchema = {
   type: "object", properties: {
-    primitive: { type: "string", enum: ["RSA"] }, operation: { type: "string", enum: ["signing", "verification"] },
+    primitive: { type: "string", enum: ["RSA"] }, operations: { type: "array", items: { type: "string", enum: ["signing", "verification"] }, minItems: 1 },
     keyLocation: { type: "string" }, publicBoundary: { type: "string" },
     affectedFiles: { type: "array", items: { type: "string" }, minItems: 1 },
     confidence: { type: "number", minimum: 0, maximum: 1 },
     evidence: { type: "array", items: { type: "string" }, minItems: 1 }
-  }, required: ["primitive", "operation", "keyLocation", "publicBoundary", "affectedFiles", "confidence", "evidence"], additionalProperties: false
+  }, required: ["primitive", "operations", "keyLocation", "publicBoundary", "affectedFiles", "confidence", "evidence"], additionalProperties: false
 } as const;
 
 const explanationJsonSchema = {
@@ -23,12 +23,22 @@ const readOnlyThread = (workingDirectory: string) => new Codex().startThread({
   sandboxMode: "read-only", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never"
 });
 
-export async function classifyWithGpt(workingDirectory: string, scannerEvidence: unknown) {
+export function validateClassification(finding: CryptoFinding, scannerEvidence: ScannerHit[]) {
+  const expectedFiles = [...new Set(scannerEvidence.map(item => item.file))].sort();
+  const expectedOperations = [...new Set(scannerEvidence.map(item => item.operation).filter((operation): operation is "signing" | "verification" => operation === "signing" || operation === "verification"))].sort();
+  const actualFiles = [...new Set(finding.affectedFiles)].sort();
+  const actualOperations = [...finding.operations].sort();
+  if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) throw new Error("GPT affectedFiles contradict deterministic scanner evidence");
+  if (JSON.stringify(actualOperations) !== JSON.stringify(expectedOperations)) throw new Error("GPT operations contradict deterministic scanner evidence");
+  return finding;
+}
+
+export async function classifyWithGpt(workingDirectory: string, scannerEvidence: ScannerHit[]) {
   const turn = await readOnlyThread(workingDirectory).run(
     `Classify this deterministic scanner evidence. Do not claim more than evidence supports. JSON only.\n${JSON.stringify(scannerEvidence)}`,
     { outputSchema: findingJsonSchema }
   );
-  return cryptoFindingSchema.parse(JSON.parse(turn.finalResponse));
+  return validateClassification(cryptoFindingSchema.parse(JSON.parse(turn.finalResponse)), scannerEvidence);
 }
 
 export async function explainWithGpt(workingDirectory: string, immutableEvidence: unknown) {

@@ -1,12 +1,40 @@
 # Quantum Twin
 
-## For Judges — 60 Second Path
+> Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
 
-1. Open the no-credential recorded demo: **https://quantum-twin.vercel.app**.
-2. Confirm **Recorded Verified Run** and **Public presentation artifact — local path redacted**, compare Direct Cutover with Compatibility Bridge, inspect both report hashes and the two-pass gate matrix, then download `run.json`.
-3. Review the public MIT-licensed repository: **https://github.com/Shivansh3532/quantum-twin**.
+## For judges — 30 seconds
 
-Local live path on Windows, macOS, or Linux:
+1. Open the no-credential hosted evidence explorer: **https://quantum-twin.vercel.app**.
+2. Confirm **Recorded Verified Run** and **Genuine Recorded Codex Run**.
+3. Switch between:
+   - **Legacy compatibility required — Bridge selected**
+   - **Legacy compatibility disabled — Direct selected**
+4. Expand scanner evidence, candidate diffs, commands, measurements, hashes, and both evaluator passes.
+
+Same CommonJS/npm repository. Same two strategies. One declared compatibility constraint changes which candidate is eligible. Hosted mode is read-only and never runs Codex, Git, worktrees, repository commands, or file writes.
+
+## Genuine hosted evidence
+
+| Scenario | Run ID | Deterministic result | Report SHA-256 |
+|---|---|---|---|
+| Compatibility required | `2026-07-19T18-04-56-297Z` | Bridge | `077f8dfc267bb6f64fcec12b1919eefd6e0fb338e1f0cb6218e405301e93f9e9` |
+| Compatibility disabled | `2026-07-19T18-08-18-178Z` | Direct | `02546c9b3ef20586dd1e502f38643256b806ff64f08a6b6b1e4ef4fc24ac1311` |
+
+Both reports came from real `@openai/codex-sdk@0.144.6` runs using exact `gpt-5.6-sol`. They use the generalized repository engine, plural signing/verification classification, relative source identity, versioned contract, genuine Codex thread IDs and candidate commits, complete gates, and current report hashing. [`sample/run.json`](sample/run.json) is a byte-identical alias of the compatibility-required report.
+
+Verify either artifact without trusting the UI:
+
+```bash
+pnpm qt verify --report sample/release-cli-compatibility.json
+pnpm verify -- --report sample/release-cli-direct.json
+pnpm verify-samples
+```
+
+Invalid JSON, altered hashes or diffs, invalid selection, missing evaluator passes, contradictory repeatability, absolute personal paths, and obvious secret material return a nonzero exit code.
+
+## Local live tournament
+
+Requirements: Node.js 24.18.0, Git, pnpm 11.9.0, and authenticated Codex. `OPENAI_API_KEY` is not required for the Codex SDK path.
 
 ```bash
 npx --yes pnpm@11.9.0 install --frozen-lockfile
@@ -15,17 +43,9 @@ npx --yes pnpm@11.9.0 demo
 npx --yes pnpm@11.9.0 dev
 ```
 
-Requires Node.js 24.18.0, Git, and authenticated Codex for live tournaments. No `OPENAI_API_KEY` is required for the Codex SDK path. Hosted demo needs no credentials. Automatic migration is limited to declared Node.js repository contracts using native `node:crypto` RSA signing and verification; see [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md).
+`preflight` verifies exact model/SDK/runtime, Codex authentication, ML-DSA-65 support, context separation, and cancellation. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
 
-## What it changes
-
-Crypto scanners identify algorithms. A coding agent can produce one plausible patch. Quantum Twin instead gives the same immutable repository contract to two isolated Codex SDK builders—Direct Cutover and Compatibility Bridge—then lets external deterministic gates decide which candidate satisfies declared compatibility. Failed candidates cannot be selected. Zero eligible candidates produces **NO SAFE WINNER**.
-
-Audience: application security engineers, platform/security engineering teams, maintainers of Node services with deployed RSA verifiers, and teams planning staged post-quantum migration without breaking legacy clients.
-
-## Inspect another local repository
-
-Quantum Twin never edits source repository. Scan and capabilities are read-only. `run` copies source into ignored `runs/<run-id>/`, rejects symlinks, enforces containment and size limits, then executes only after explicit acknowledgment.
+Inspect another trusted local repository:
 
 ```bash
 pnpm qt scan --repo ./path/to/repository
@@ -33,47 +53,71 @@ pnpm qt capabilities --repo ./path/to/repository
 pnpm qt run --repo ./path/to/repository --config ./path/to/repository/quantum-twin.config.json --allow-exec
 ```
 
-Normal setup commands:
+Quantum Twin never edits the source repository. `run` copies it into ignored `runs/<run-id>/`, rejects symlinks and path escapes, enforces size limits, and executes declared commands only after explicit acknowledgment. Do not run untrusted repositories.
+
+## How it works
+
+1. Recursive deterministic scanner finds supported RSA signing and verification evidence.
+2. Versioned `quantum-twin.config.json` freezes source scope, writable/protected paths, commands, ML-DSA-65 target, exact domain context, compatibility harness, dependency policy, and limits.
+3. Two isolated Codex SDK builders receive the same contract:
+   - **Direct Cutover:** ML-DSA-65 only.
+   - **Compatibility Bridge:** ML-DSA-65 plus declared RSA continuity.
+4. Copied external harness runs twice. TypeScript gates compilation, original tests, protected files, writable boundaries, dependencies, native API use, signature validity, tamper rejection, wrong-key rejection, domain separation, compatibility, repeatability, and hashes.
+5. Failed candidates are ineligible. Deterministic policy selects among eligible candidates; no eligible candidate returns **NO SAFE WINNER**.
+6. GPT-5.6 explains immutable evidence after selection. It cannot change gates, measurements, eligibility, or result.
+
+## Why this matters now
+
+[NIST standardized the first post-quantum cryptography algorithms in 2024](https://csrc.nist.gov/projects/post-quantum-cryptography) and says organizations should begin migration. [NCCoE’s migration project](https://www.nccoe.nist.gov/applied-cryptography/migration-to-pqc) treats discovery and interoperability testing as separate workstreams. [CISA, NSA, and NIST guidance](https://www.cisa.gov/resources-tools/resources/quantum-readiness-migration-post-quantum-cryptography) urges early roadmaps, inventory, risk assessment, and vendor engagement.
+
+Discovery identifies where cryptography exists. It does not prove that a concrete migration preserves compatibility. Quantum Twin demonstrates the next developer-level decision: compare competing implementations against an immutable compatibility contract.
+
+## What is novel
+
+| Approach | Produces |
+|---|---|
+| Traditional scanner | Finds cryptography; does not implement or compare migrations. |
+| One coding-agent prompt | Produces one candidate; does not independently prove frozen compatibility. |
+| Quantum Twin | Creates isolated competing implementations, externally disqualifies failures, changes result with declared constraints, preserves provenance, and supports NO SAFE WINNER. |
+
+## Supported scope
+
+Automatic migration is intentionally limited to Node.js 24 TypeScript/JavaScript repositories using native `node:crypto` RSA sign/verify paths, ESM or CommonJS, npm or pnpm, a validated version-1 contract, and an external compatibility harness.
+
+Discovery only: TLS/X.509, JWT, Cloud KMS, HSM/PKCS#11, third-party cryptography, Java, Python, .NET, Go, and Rust. These produce evidence and adapter requirements, never patches.
+
+Unsupported: public/private repository URL ingestion, credentials, SSH, automatic PRs, browser/Vercel repository execution, non-Node automatic migration, hostile-code sandboxing, HSM/KMS/certificate/TLS migration, formal verification, certification, side-channel proof, or deployment approval. See [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md).
+
+## Fixtures and tests
+
+- `fixture/`: TypeScript ESM update-manifest service.
+- `fixtures/release-cli/`: JavaScript CommonJS npm release signer used by hosted reports.
+- `fixtures/next-audit/`: TypeScript namespace-import server utility.
+
+Each fixture, its tests, configuration, and external harness are original project-owned material released under MIT. Run:
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm preflight
 pnpm typecheck
 pnpm test
+pnpm verify-samples
 pnpm build
-pnpm demo
-pnpm demo-no-compat
-pnpm dev
+pnpm secret-scan
 ```
 
-`--allow-exec` means declared install, typecheck, test, optional build, and compatibility commands may run inside isolated copy. Do not use it on untrusted repositories. Public GitHub URL ingestion, private credentials, SSH URLs, arbitrary protocols, and automatic pull requests are not implemented.
+GitHub Actions runs frozen install, typecheck, tests, sample verification, build, and secret scan on Windows and Ubuntu with Node 24.18.0.
 
-## Versioned repository contract
+## Codex and GPT-5.6 collaboration
 
-`quantum-twin.config.json` version 1 declares repository name, included/excluded globs, writable/protected paths, npm/pnpm command arrays, external compatibility harness, legacy compatibility requirement, `ml-dsa-65`, exact context string, dependency policy, timeouts, and scan limits. Commands are program-plus-argument arrays; shell command strings are rejected.
+Codex accelerated repository intake, recursive scanner work, safe command execution, generalized fixtures, UI implementation, tests, and documentation. Two real SDK threads create migration candidates independently in isolated worktrees. Key human-controlled product decisions remain explicit: two strategies, external harness authority, protected boundaries, deterministic eligibility, no-safe-winner behavior, read-only hosting, and narrow supported scope.
 
-Three fixtures prove non-hardcoding:
-
-- `fixture/`: TypeScript ESM update-manifest service, `src/signatures.ts`.
-- `fixtures/release-cli/`: JavaScript CommonJS npm release signer, `lib/release-signer.cjs`, different exports.
-- `fixtures/next-audit/`: TypeScript namespace-import server utility, `server/audit-receipt.ts`, different exports.
-
-## Codex and GPT-5.6
-
-Recorded core run used `@openai/codex-sdk@0.144.6` with exact `gpt-5.6-sol`. Two real SDK threads independently implemented Direct Cutover and Compatibility Bridge. GPT-5.6 produces schema-validated classification and explains immutable results. Deterministic TypeScript owns eligibility, measurements, and selection. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
+GPT-5.6 performs schema-validated classification and post-selection explanation. Deterministic post-validation requires GPT files and operations to match scanner evidence exactly; contradiction fails classification. TypeScript alone controls all gates and selection.
 
 Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 
-## Hosted recorded demo
+## Hosted mode and licensing
 
-Vercel automatically sets `VERCEL=1`, forcing recorded read-only mode. `QT_RECORDED_MODE=1` provides same boundary elsewhere. Hosted mode imports committed `sample/run.json`, never invokes Codex, Git, worktrees, repository commands, or runtime artifact writes, and returns HTTP 403 from `POST /api/runs`. The public sample replaces one local filesystem path with `fixture/src/signatures.ts`; it preserves the original source report hash as `sourceReportSha256`, records the limited redaction, states that it is not byte-identical to the source report, and has its own `presentationReportSha256`.
+Vercel sets `VERCEL=1`, forcing committed-sample mode. `POST /api/runs` returns 403. Recorded scenario downloads accept only `compatibility` or `direct`; no path or arbitrary JSON parameter exists. Vercel needs no environment variables and must never receive `OPENAI_API_KEY`.
 
-Vercel settings: Next.js, repository root, Node 24.x, install `pnpm install --frozen-lockfile`, build `pnpm build`, default output directory, no environment variables. Never add `OPENAI_API_KEY`.
+Repository is MIT licensed. UI uses project-owned text/CSS and system fonts; no external images, icons, logos, screenshots, music, or stock media. Dependency notices: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-## Evidence and limits
-
-Runs record source identity, isolated baseline commit and manifest, scanner findings, contract/config hashes, Codex thread IDs, candidate commits and diffs, commands, exit codes, timings, two evaluator passes, measurements, model/runtime versions, evaluator hash, deterministic result, GPT explanation, and final report hash.
-
-“Verified” means recorded engineering-contract tests and negative checks passed in isolated evaluation. It does not mean formal verification, FIPS module certification, side-channel safety, guaranteed cryptographic security, production approval, or that an entire organization, application, website, or system is quantum-safe.
-
-See [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md), [JUDGING.md](JUDGING.md), and [sample/run.json](sample/run.json).
+More detail: [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), [JUDGING.md](JUDGING.md), [JUDGE_TEST.md](JUDGE_TEST.md), [DEVPOST_FINAL.md](DEVPOST_FINAL.md), and [VIDEO_FINAL.md](VIDEO_FINAL.md).

@@ -1,7 +1,7 @@
 {
-  "runId": "2026-07-19T18-04-56-297Z",
-  "startedAt": "2026-07-19T18:04:56.297Z",
-  "completedAt": "2026-07-19T18:07:38.773Z",
+  "runId": "2026-07-19T18-08-18-178Z",
+  "startedAt": "2026-07-19T18:08:18.178Z",
+  "completedAt": "2026-07-19T18:10:24.598Z",
   "repository": {
     "name": "release-artifact-cli",
     "source": "local:release-artifact-cli",
@@ -71,7 +71,7 @@
     "automaticMigrationSupported": true,
     "configuration": "found"
   },
-  "baselineCommit": "e49dc4eb21b2372e79ab2082652fabe5f5d51aba",
+  "baselineCommit": "865cb76aba454dfd6638b6947cae297be729a886",
   "fixtureManifestSha256": "240a4356f13485a535b36fb42757da306a751ea468c1b9b0fd61cdcddb7578b5",
   "configSha256": "da8ec4939d7852225f7c69d4f0b347e1f97ee7fea9d51931d0f9059dbd525054",
   "nodeVersion": "v24.18.0",
@@ -79,7 +79,7 @@
   "codexSdkVersion": "0.144.6",
   "model": "gpt-5.6-sol",
   "constraintProfile": {
-    "legacyCompatibilityRequired": true
+    "legacyCompatibilityRequired": false
   },
   "repositoryContract": {
     "version": 1,
@@ -105,45 +105,44 @@
       "signing",
       "verification"
     ],
-    "keyLocation": "keys.rsaPrivateKey and keys.rsaPublicKey; their storage or origin is not shown",
-    "publicBoundary": "The RSA signature is read from envelope.rsa as base64 during verification; no broader API boundary is evidenced",
+    "keyLocation": "keys.rsaPrivateKey for signing; keys.rsaPublicKey for verification",
+    "publicBoundary": "Base64-encoded RSA signature at envelope.rsa; verification consumes the public key reference keys.rsaPublicKey",
     "affectedFiles": [
       "lib/release-signer.cjs"
     ],
     "confidence": 0.98,
     "evidence": [
-      "Line 4 signs bytes with crypto.sign(\"sha384\", bytes, keys.rsaPrivateKey)",
-      "Line 8 verifies bytes with crypto.verify(\"sha384\", bytes, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"))",
-      "The evidence establishes native node:crypto RSA signing and verification using SHA-384, but does not establish the RSA padding mode, key size, or key provenance"
+      "lib/release-signer.cjs:4 calls crypto.sign(\"sha384\", bytes, keys.rsaPrivateKey)",
+      "lib/release-signer.cjs:8 calls crypto.verify(\"sha384\", bytes, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"))"
     ]
   },
   "candidates": [
     {
       "strategy": "direct",
       "branch": "candidate/direct",
-      "threadId": "019f7b8d-a0a9-7fe2-9060-3e82620a6657",
-      "generationDurationMs": 149440,
+      "threadId": "019f7b90-b188-7ec2-9337-5a55a3339d03",
+      "generationDurationMs": 74309,
       "repairAttempted": false,
-      "generationStatus": "gate_failed",
-      "worktreeCommit": "5420dbbb7c2beaf11b279ebfead7cf895a27fc2c",
-      "diffSha256": "04493ed05e95ad75597ac9c21f50e9c76b4719fdf8425c4f72cfc0ad1ecc86f6",
-      "diff": "diff --git a/lib/release-signer.cjs b/lib/release-signer.cjs\nindex 9fa4aeb..8c28dc2 100644\n--- a/lib/release-signer.cjs\n+++ b/lib/release-signer.cjs\n@@ -1,11 +1,13 @@\n const crypto = require(\"node:crypto\");\r\n \r\n-function stampArtifact(bytes, keys, _context) {\r\n-  return { rsa: crypto.sign(\"sha384\", bytes, keys.rsaPrivateKey).toString(\"base64\") };\r\n-}\r\n-\r\n-function checkArtifact(bytes, envelope, keys, _context) {\r\n-  return crypto.verify(\"sha384\", bytes, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"));\r\n-}\r\n+function stampArtifact(bytes, keys, context) {\n+  const key = { key: keys.mlDsaPrivateKey, context: Buffer.from(context) };\n+  return { mlDsa: crypto.sign(null, bytes, key).toString(\"base64\") };\n+}\n+\n+function checkArtifact(bytes, envelope, keys, context) {\n+  const key = { key: keys.mlDsaPublicKey, context: Buffer.from(context) };\n+  return crypto.verify(null, bytes, key, Buffer.from(envelope.mlDsa, \"base64\"));\n+}\n \r\n module.exports = { stampArtifact, checkArtifact };\r\n",
-      "changedLines": 16,
+      "generationStatus": "eligible",
+      "worktreeCommit": "1dd488170117755126f6739cf17fd74ed476b506",
+      "diffSha256": "e636bfd3286208522926b4532114fcfdf88f208b17b3c65ea528153513ca533b",
+      "diff": "diff --git a/lib/release-signer.cjs b/lib/release-signer.cjs\nindex 9fa4aeb..11e7971 100644\n--- a/lib/release-signer.cjs\n+++ b/lib/release-signer.cjs\n@@ -1,11 +1,11 @@\n const crypto = require(\"node:crypto\");\r\n \r\n-function stampArtifact(bytes, keys, _context) {\r\n-  return { rsa: crypto.sign(\"sha384\", bytes, keys.rsaPrivateKey).toString(\"base64\") };\r\n-}\r\n-\r\n-function checkArtifact(bytes, envelope, keys, _context) {\r\n-  return crypto.verify(\"sha384\", bytes, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"));\r\n-}\r\n+function stampArtifact(bytes, keys, context) {\n+  return { mlDsa: crypto.sign(null, bytes, { key: keys.mlDsaPrivateKey, context: Buffer.from(context) }).toString(\"base64\") };\n+}\n+\n+function checkArtifact(bytes, envelope, keys, context) {\n+  return crypto.verify(null, bytes, { key: keys.mlDsaPublicKey, context: Buffer.from(context) }, Buffer.from(envelope.mlDsa, \"base64\"));\n+}\n \r\n module.exports = { stampArtifact, checkArtifact };\r\n",
+      "changedLines": 14,
       "commands": [
         {
           "command": "npm ci --ignore-scripts",
           "exitCode": 0,
-          "durationMs": 419
+          "durationMs": 421
         },
         {
           "command": "npm run typecheck",
           "exitCode": 0,
-          "durationMs": 215
+          "durationMs": 270
         },
         {
           "command": "npm test",
           "exitCode": 0,
-          "durationMs": 307
+          "durationMs": 311
         }
       ],
       "gates": [
@@ -151,19 +150,19 @@
           "name": "install",
           "passed": true,
           "detail": "exit 0",
-          "durationMs": 419
+          "durationMs": 421
         },
         {
           "name": "typecheck",
           "passed": true,
           "detail": "exit 0",
-          "durationMs": 215
+          "durationMs": 270
         },
         {
           "name": "original tests",
           "passed": true,
           "detail": "exit 0",
-          "durationMs": 307
+          "durationMs": 311
         },
         {
           "name": "baseline integrity",
@@ -212,8 +211,8 @@
         },
         {
           "name": "legacy compatibility (pass 1)",
-          "passed": false,
-          "detail": "frozen RSA consumer"
+          "passed": true,
+          "detail": "not required"
         },
         {
           "name": "domain separation (pass 1)",
@@ -242,8 +241,8 @@
         },
         {
           "name": "legacy compatibility (pass 2)",
-          "passed": false,
-          "detail": "frozen RSA consumer"
+          "passed": true,
+          "detail": "not required"
         },
         {
           "name": "domain separation (pass 2)",
@@ -252,27 +251,27 @@
         },
         {
           "name": "repeatability",
-          "passed": false,
+          "passed": true,
           "detail": "complete external evaluator ran twice"
         }
       ],
       "measurements": {
         "rsaSignatures": 0,
         "envelopeBytes": 4424,
-        "signMedianMs": 0.2748000000137836,
-        "signP95Ms": 1.458699999988312,
-        "verifyMedianMs": 0.10739999997895211,
-        "verifyP95Ms": 0.11729999998351559
+        "signMedianMs": 0.4372999999905005,
+        "signP95Ms": 1.0957000000053085,
+        "verifyMedianMs": 0.10940000000118744,
+        "verifyP95Ms": 0.13160000000789296
       }
     },
     {
       "strategy": "bridge",
       "branch": "candidate/bridge",
-      "threadId": "019f7b8d-a0de-7401-87c8-90821fee8dfb",
-      "generationDurationMs": 104276,
+      "threadId": "019f7b90-b162-7691-8d7d-a865d3f0f28d",
+      "generationDurationMs": 114125,
       "repairAttempted": false,
       "generationStatus": "eligible",
-      "worktreeCommit": "09d09e0d42e1207f849ac6d7163555fe4185cc0d",
+      "worktreeCommit": "cc510b5c3c4c4cbdcd18bcfb0dd10837378bf5db",
       "diffSha256": "55fdc5f75d1337f52e927d9d4148be76970b1eb64e73ff9135e6175d192a0baa",
       "diff": "diff --git a/lib/release-signer.cjs b/lib/release-signer.cjs\nindex 9fa4aeb..adc6e9e 100644\n--- a/lib/release-signer.cjs\n+++ b/lib/release-signer.cjs\n@@ -1,11 +1,14 @@\n const crypto = require(\"node:crypto\");\r\n \r\n-function stampArtifact(bytes, keys, _context) {\r\n-  return { rsa: crypto.sign(\"sha384\", bytes, keys.rsaPrivateKey).toString(\"base64\") };\r\n-}\r\n-\r\n-function checkArtifact(bytes, envelope, keys, _context) {\r\n-  return crypto.verify(\"sha384\", bytes, keys.rsaPublicKey, Buffer.from(envelope.rsa, \"base64\"));\r\n-}\r\n+function stampArtifact(bytes, keys, context) {\n+  return {\n+    mlDsa: crypto.sign(null, bytes, { key: keys.mlDsaPrivateKey, context: Buffer.from(context) }).toString(\"base64\"),\n+    rsa: crypto.sign(\"sha384\", bytes, keys.rsaPrivateKey).toString(\"base64\"),\n+  };\n+}\n+\n+function checkArtifact(bytes, envelope, keys, context) {\n+  return crypto.verify(null, bytes, { key: keys.mlDsaPublicKey, context: Buffer.from(context) }, Buffer.from(envelope.mlDsa, \"base64\"));\n+}\n \r\n module.exports = { stampArtifact, checkArtifact };\r\n",
       "changedLines": 17,
@@ -280,17 +279,17 @@
         {
           "command": "npm ci --ignore-scripts",
           "exitCode": 0,
-          "durationMs": 386
+          "durationMs": 448
         },
         {
           "command": "npm run typecheck",
           "exitCode": 0,
-          "durationMs": 207
+          "durationMs": 210
         },
         {
           "command": "npm test",
           "exitCode": 0,
-          "durationMs": 300
+          "durationMs": 333
         }
       ],
       "gates": [
@@ -298,19 +297,19 @@
           "name": "install",
           "passed": true,
           "detail": "exit 0",
-          "durationMs": 386
+          "durationMs": 448
         },
         {
           "name": "typecheck",
           "passed": true,
           "detail": "exit 0",
-          "durationMs": 207
+          "durationMs": 210
         },
         {
           "name": "original tests",
           "passed": true,
           "detail": "exit 0",
-          "durationMs": 300
+          "durationMs": 333
         },
         {
           "name": "baseline integrity",
@@ -360,7 +359,7 @@
         {
           "name": "legacy compatibility (pass 1)",
           "passed": true,
-          "detail": "frozen RSA consumer"
+          "detail": "not required"
         },
         {
           "name": "domain separation (pass 1)",
@@ -390,7 +389,7 @@
         {
           "name": "legacy compatibility (pass 2)",
           "passed": true,
-          "detail": "frozen RSA consumer"
+          "detail": "not required"
         },
         {
           "name": "domain separation (pass 2)",
@@ -406,25 +405,23 @@
       "measurements": {
         "rsaSignatures": 1,
         "envelopeBytes": 4777,
-        "signMedianMs": 0.8322999999800231,
-        "signP95Ms": 1.5438999999896623,
-        "verifyMedianMs": 0.11599999997997656,
-        "verifyP95Ms": 0.19460000001708977
+        "signMedianMs": 0.9097000000037951,
+        "signP95Ms": 2.0760000000009313,
+        "verifyMedianMs": 0.1205000000045402,
+        "verifyP95Ms": 0.21580000000540167
       }
     }
   ],
-  "selectedCandidate": "bridge",
+  "selectedCandidate": "direct",
   "verifierManifestSha256": "dcd8d446bc8f9829cd53691a7ec4e7a8d871e8799ba4907584b5958364ff5ef7",
   "explanation": {
-    "summary": "The immutable result selects the Compatibility Bridge candidate. It adds context-bound native node:crypto ML-DSA-65 signing and verification while retaining an RSA signature in the envelope for the frozen legacy consumer. The bridge was eligible and passed every hard gate in both evaluator runs, including ML-DSA verification, tamper rejection, wrong-key rejection, legacy compatibility, domain separation, evaluator integrity, and repeatability. Its measured envelope size was 4,777 bytes; signing median/p95 was 0.8323/1.5439 ms; verification median/p95 was 0.1160/0.1946 ms; and it emitted one RSA compatibility signature.",
-    "whySelected": "Selection was determined by hard-gate eligibility, not by GPT judgment or performance preference. The Direct Cutover passed ML-DSA security checks but failed legacy compatibility in both evaluator passes because it removed the RSA envelope field required by the frozen consumer; it was therefore gate_failed and non-repeatable as a complete successful evaluation. The bridge preserved that RSA field, passed legacy compatibility twice, and was the only eligible candidate. Accordingly, selectedCandidate remains bridge, with no changes to selection, gates, or measurements.",
+    "summary": "Run 2026-07-19T18-08-18-178Z selected the direct candidate. It replaced RSA signing and verification with native node:crypto ML-DSA-65, bound signatures to the required quantum-twin:release-artifact:v1 context, and emitted no RSA signatures. Every required gate passed twice, including valid-signature verification, tamper rejection, wrong-key rejection, domain separation, evaluator integrity, and repeatability.",
+    "whySelected": "Both candidates were eligible, but legacy compatibility was not required. The direct candidate therefore satisfied the contract without retaining RSA. Compared with the bridge, it produced 0 instead of 1 RSA signatures, a smaller envelope (4424 vs 4777 bytes), fewer changed lines (14 vs 17), and lower measured signing and verification latency. The immutable selectedCandidate field confirms direct as the deterministic result.",
     "limitations": [
-      "The bridge retains RSA signing solely for required legacy compatibility, so this is not a complete RSA removal.",
-      "The bridge has a larger measured envelope than Direct Cutover: 4,777 bytes versus 4,424 bytes.",
-      "The bridge's measured signing latency is higher than Direct Cutover's: median 0.8323 ms versus 0.2748 ms; these measurements do not override gate eligibility.",
-      "The supplied evidence does not establish the legacy RSA padding mode, key size, key provenance, storage, or a broader public API boundary.",
-      "Results apply to commit f41e83967c5fe1dd43a4b1b4303fbcbc85cb4e47, the declared configuration and hashes, Node v24.18.0 on win32 10.0.26200 x64, and the frozen evaluator used for this run."
+      "This explanation does not alter the selected candidate, gate outcomes, diffs, hashes, or measurements.",
+      "The measurements describe this recorded Windows and Node v24.18.0 run and should not be generalized as universal performance guarantees.",
+      "The result establishes compliance with the supplied contract and evaluator; it does not claim compatibility with legacy RSA consumers because legacy compatibility was explicitly not required."
     ]
   },
-  "reportSha256": "077f8dfc267bb6f64fcec12b1919eefd6e0fb338e1f0cb6218e405301e93f9e9"
+  "reportSha256": "02546c9b3ef20586dd1e502f38643256b806ff64f08a6b6b1e4ef4fc24ac1311"
 }

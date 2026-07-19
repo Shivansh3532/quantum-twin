@@ -21,9 +21,12 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 
 - [x] Compatibility-disabled generalized run selects Direct.
 - [x] Clean-clone install/typecheck/test/build/secret scan.
-- [x] Public presentation artifact contains no absolute user path; it preserves the original source report hash, explicitly records the path-only redaction, and stores a separate presentation hash.
+- [x] Two genuine current-format CommonJS/npm reports: required compatibility selects Bridge; disabled compatibility selects Direct.
+- [x] Public samples contain plural scanner-backed operations, relative source identity, repository contract, genuine threads/commits, complete gates, and valid hashes.
+- [x] Deterministic report verifier and negative tests cover schema, hashes, selection, passes, repeatability, privacy, and secret material.
 - [x] `final-productization` merged to `main`; GitHub Actions passed on Windows and Ubuntu.
 - [x] Public Vercel alias verified against deployed `main`: page 200, recorded evidence renders, download works, POST returns 403.
+- [ ] Merge `final-judge-polish`, verify GitHub Actions/Vercel commit parity, and create `build-week-judge-ready`.
 
 ## Submission blockers
 

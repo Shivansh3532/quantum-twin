@@ -1,25 +1,35 @@
-# Judging Map
+# Judging map
 
-## Technological Implementation
+## Technological implementation
 
-- Real orchestration: `src/engine.ts`; run `pnpm demo` or `pnpm qt run ... --allow-exec`.
-- Two isolated `gpt-5.6-sol` Codex SDK builders: candidate thread IDs in dashboard and `run.json`.
-- Recursive AST scanner: `src/scanner.ts`; run `pnpm qt capabilities --repo fixtures/release-cli`.
-- Versioned contract and validation: `src/config.ts` plus fixture configs.
-- AI-independent gates, copied harness integrity, two passes, no-safe-winner, deterministic tie-breaking, hashes: `src/engine.ts`, fixture harnesses, `test/core.test.ts`.
+- Two real isolated `gpt-5.6-sol` builders: `src/engine.ts`; genuine thread IDs and commits in both public reports.
+- Recursive AST scanner and deterministic GPT contradiction check: `src/scanner.ts`, `src/ai.ts`.
+- Versioned repository contract and containment: `src/config.ts`, `src/repository.ts`.
+- Copied external harness, two passes, immutable boundaries, deterministic selection, NO SAFE WINNER, hashes: `src/engine.ts`.
+- Independent machine-readable verifier and negative cases: `src/report.ts`, `test/report.test.ts`, `pnpm verify-samples`.
+- Cross-platform CI: frozen install, typecheck, 20 tests, sample verification, build, secret scan on Windows and Ubuntu.
 
 ## Design
 
-- Hosted evidence workspace: https://quantum-twin.vercel.app.
-- Recorded/local badge, exact commands, scanner summary, candidate diffs, gate details, provenance, download, supported/unsupported scope: `app/ui.tsx`.
-- Responsive/accessibility behavior: semantic headings/table/details, keyboard focus, live status, bounded gate scroll, mobile/desktop CSS in `app/globals.css`.
+- Hosted two-scenario explorer: https://quantum-twin.vercel.app.
+- Compatibility switch changes genuine report instantly without writes or arbitrary fetching.
+- Default hierarchy shows decision; expandable sections expose scanner findings, contracts, threads, commits, commands, diffs, measurements, hashes, passes, and limitations.
+- Semantic headings, native selector, aria-live announcement, details/summary, accessible tables, visible focus, bounded scrolling, and responsive CSS.
 
-## Potential Impact
+## Potential impact
 
-Audience: application security engineers, platform/security engineering teams, maintainers of Node services with deployed RSA verifiers, and teams planning staged post-quantum migration without breaking legacy clients. Quantum Twin improves the migration-strategy decision by testing competing implementations against declared compatibility instead of accepting one generated patch.
+Audience: application security engineers, platform/security teams, and maintainers of Node services with deployed RSA verifiers. NIST/NCCoE/CISA sources establish current migration and inventory need. Quantum Twin demonstrates how maintainers can compare implementations against explicit compatibility rather than accept one generated rewrite.
 
-Generality evidence: update service, CommonJS npm release CLI, and Next-style audit receipt fixtures under `fixture/` and `fixtures/`.
+Generality evidence: TypeScript ESM update service, CommonJS npm release CLI, and Next-style TypeScript server utility. Automatic scope remains deliberately narrow.
 
-## Quality of the Idea
+## Quality of idea
 
-Scanner discovery, candidate generation, and independent selection remain separate. Direct Cutover can fail declared compatibility while Bridge passes; disabling compatibility makes Direct eligible and deterministic selection prefers fewer RSA signatures. GPT explains evidence but cannot alter gates or select failed work. Zero eligible candidates remains **NO SAFE WINNER**.
+Traditional scanners identify cryptography. One coding-agent prompt produces one candidate. Quantum Twin separates discovery, competing implementation, external evaluation, and deterministic selection. Same release fixture selects Bridge when compatibility is required and Direct when disabled. GPT explains but cannot overrule evidence.
+
+## Fast verification
+
+```bash
+pnpm verify-samples
+pnpm qt verify --report sample/release-cli-compatibility.json
+pnpm qt verify --report sample/release-cli-direct.json
+```

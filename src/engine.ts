@@ -150,7 +150,8 @@ export async function runRepository(source: string, configPath: string, allowExe
     candidates.push(result);
   }
   const selectedCandidate = select(candidates);
-  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), repository: inspected.report.repository, capabilities: inspected.report, baselineCommit, fixtureManifestSha256: baselineManifest.sha256, configSha256: fileSha256(await readFile(configPath)), nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: config.legacyCompatibilityRequired }, finding, candidates, selectedCandidate, verifierManifestSha256: harnessHash };
+  const repositoryContract = { version: config.version, target: config.target, writablePaths: config.writablePaths, protectedPaths: config.protectedPaths, dependencyPolicy: config.dependencyPolicy };
+  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), repository: inspected.report.repository, capabilities: inspected.report, baselineCommit, fixtureManifestSha256: baselineManifest.sha256, configSha256: fileSha256(await readFile(configPath)), nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: config.legacyCompatibilityRequired }, repositoryContract, finding, candidates, selectedCandidate, verifierManifestSha256: harnessHash };
   let explanation: unknown;
   try { explanation = await explainWithGpt(root, immutable); } catch (error) { explanation = { unavailable: error instanceof Error ? error.message : String(error) }; }
   const withoutHash = JSON.stringify({ ...immutable, explanation }, null, 2);
