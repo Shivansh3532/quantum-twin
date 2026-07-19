@@ -7,6 +7,7 @@ import path from "node:path";
 
 const exec = promisify(execFile);
 export const sha256 = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
+export const fileSha256 = (value: Buffer) => sha256(value.includes(0) ? value : value.toString("utf8").replaceAll("\r\n", "\n"));
 
 export async function command(program: string, args: string[], cwd: string, timeout = 120_000) {
   const started = performance.now();
@@ -33,7 +34,7 @@ export async function manifest(root: string) {
       const absolute = path.join(dir, name);
       const relative = path.relative(root, absolute).replaceAll("\\", "/");
       if ((await stat(absolute)).isDirectory()) await walk(absolute);
-      else entries.push(`${sha256(await readFile(absolute))}  ${relative}`);
+      else entries.push(`${fileSha256(await readFile(absolute))}  ${relative}`);
     }
   }
   await walk(root);

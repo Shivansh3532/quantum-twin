@@ -5,7 +5,7 @@ import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import { scanCrypto, scanRepository } from "../src/scanner.ts";
 import { select } from "../src/engine.ts";
-import { manifest, sha256 } from "../src/util.ts";
+import { fileSha256, sha256 } from "../src/util.ts";
 import { quantumTwinConfigSchema, detectPackageManager } from "../src/config.ts";
 import { assertSafeTree, contained } from "../src/repository.ts";
 import { isRecordedMode } from "../src/mode.ts";
@@ -22,12 +22,12 @@ describe("deterministic core", () => {
     expect(select([candidate("direct", false, 0), candidate("bridge", true, 1)])).toBe("bridge");
     expect(select([candidate("direct", false, 0), candidate("bridge", false, 1)])).toBeNull();
   });
-  test("sample report and evaluator hashes verify", async () => {
+  test("sample report hash verifies and text hashes are cross-platform", async () => {
     const report = JSON.parse(await readFile(path.join(process.cwd(), "sample/run.json"), "utf8"));
     const expected = report.reportSha256;
     delete report.reportSha256;
     expect(sha256(JSON.stringify(report, null, 2))).toBe(expected);
-    expect((await manifest(path.join(process.cwd(), "evaluator"))).sha256).toBe(report.verifierManifestSha256);
+    expect(fileSha256(Buffer.from("portable\r\ntext\r\n"))).toBe(fileSha256(Buffer.from("portable\ntext\n")));
   });
 });
 

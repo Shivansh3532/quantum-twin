@@ -8,7 +8,7 @@ import { loadConfig, type QuantumTwinConfig } from "./config.ts";
 import { classifyWithGpt, explainWithGpt } from "./ai.ts";
 import { type CandidateResult, type Gate, type HarnessResult, MODEL, SDK_VERSION, type RunReport } from "./domain.ts";
 import { copyRepository } from "./repository.ts";
-import { command, manifest, sha256 } from "./util.ts";
+import { command, fileSha256, manifest, sha256 } from "./util.ts";
 import { scanRepository } from "./scanner.ts";
 
 const root = process.cwd();
@@ -47,7 +47,7 @@ async function verifyCandidate(strategy: typeof strategies[number], worktree: st
     commands.push({ command: result.command, exitCode: result.exitCode, durationMs: result.durationMs });
     gates.push({ name, passed: result.exitCode === 0, detail: `exit ${result.exitCode}`, durationMs: result.durationMs });
   }
-  const protectedOk = (await Promise.all(Object.entries(protectedHashes).map(async ([file, hash]) => sha256(await readFile(path.join(worktree, file))) === hash))).every(Boolean);
+  const protectedOk = (await Promise.all(Object.entries(protectedHashes).map(async ([file, hash]) => fileSha256(await readFile(path.join(worktree, file))) === hash))).every(Boolean);
   gates.push({ name: "baseline integrity", passed: protectedOk, detail: "declared protected paths unchanged" });
   const diff = (await command("git", ["diff", "HEAD"], worktree, config.timeouts.commandMs)).stdout;
   const changed = (await command("git", ["diff", "--name-only", "HEAD"], worktree, config.timeouts.commandMs)).stdout.split(/\r?\n/).filter(Boolean).map(item => item.replaceAll("\\", "/"));
@@ -61,11 +61,11 @@ async function verifyCandidate(strategy: typeof strategies[number], worktree: st
   let measurements: CandidateResult["measurements"] = null;
   for (let pass = 1; pass <= 2; pass++) {
     try {
-      const before = sha256(await readFile(harness));
+      const before = fileSha256(await readFile(harness));
       const result = config.compatibilityHarness
         ? await runHarness(harness, worktree, config)
         : { gates: [{ name: "compatibility command", passed: (await execute(config.commands.compatibility!, worktree, config.timeouts.commandMs)).exitCode === 0, detail: "declared compatibility command" }], measurements: null };
-      const after = sha256(await readFile(harness));
+      const after = fileSha256(await readFile(harness));
       gates.push({ name: `evaluator integrity (pass ${pass})`, passed: before === harnessHash && after === harnessHash, detail: "copied external harness hash unchanged" });
       gates.push(...result.gates.map(gate => ({ ...gate, name: `${gate.name} (pass ${pass})` })));
       measurements = result.measurements;
@@ -115,12 +115,12 @@ export async function runRepository(source: string, configPath: string, allowExe
   const harness = path.join(runRoot, "external-compatibility-harness.ts");
   if (config.compatibilityHarness) await copyFile(path.join(baseline, config.compatibilityHarness), harness);
   else await writeFile(harness, "export {};\n");
-  const harnessHash = sha256(await readFile(harness));
+  const harnessHash = fileSha256(await readFile(harness));
   await command("git", ["init"], baseline); await command("git", ["config", "core.autocrlf", "false"], baseline); await command("git", ["add", "."], baseline);
   await command("git", ["-c", "user.name=Quantum Twin", "-c", "user.email=quantum-twin@local", "commit", "-m", "isolated source baseline"], baseline);
   const baselineCommit = (await command("git", ["rev-parse", "HEAD"], baseline)).stdout.trim();
   const baselineManifest = await manifest(baseline);
-  const protectedHashes = Object.fromEntries(await Promise.all(config.protectedPaths.map(async file => [file, sha256(await readFile(path.join(baseline, file)))])));
+  const protectedHashes = Object.fromEntries(await Promise.all(config.protectedPaths.map(async file => [file, fileSha256(await readFile(path.join(baseline, file)))])));
   const findings = await scanRepository(baseline, config);
   const supported = findings.filter(item => item.status === "supported");
   const finding = await classifyWithGpt(root, supported);
@@ -150,7 +150,7 @@ export async function runRepository(source: string, configPath: string, allowExe
     candidates.push(result);
   }
   const selectedCandidate = select(candidates);
-  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), repository: inspected.report.repository, capabilities: inspected.report, baselineCommit, fixtureManifestSha256: baselineManifest.sha256, configSha256: sha256(await readFile(configPath)), nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: config.legacyCompatibilityRequired }, finding, candidates, selectedCandidate, verifierManifestSha256: harnessHash };
+  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), repository: inspected.report.repository, capabilities: inspected.report, baselineCommit, fixtureManifestSha256: baselineManifest.sha256, configSha256: fileSha256(await readFile(configPath)), nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: config.legacyCompatibilityRequired }, finding, candidates, selectedCandidate, verifierManifestSha256: harnessHash };
   let explanation: unknown;
   try { explanation = await explainWithGpt(root, immutable); } catch (error) { explanation = { unavailable: error instanceof Error ? error.message : String(error) }; }
   const withoutHash = JSON.stringify({ ...immutable, explanation }, null, 2);
