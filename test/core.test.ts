@@ -52,6 +52,16 @@ describe("general repository boundary", () => {
     expect(hits.find(hit => hit.technology === "Python cryptography")?.requiredAdapter).toBe("Python repository adapter");
   });
 
+  test("capability intake does not require package.json for discovery-only code", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "qt-python-"));
+    await writeFile(path.join(root, "signer.py"), "from cryptography.hazmat.primitives import hashes");
+    const { inspectRepository } = await import("../src/capabilities.ts");
+    const { report } = await inspectRepository(root);
+    expect(report.discoveryOnly[0]?.technology).toBe("Python cryptography");
+    expect(report.automaticMigrationSupported).toBe(false);
+    expect(report.configuration).toBe("needed");
+  });
+
   test("config rejects traversal and unsafe command strings", () => {
     const base = {
       version: 1, repository: { name: "fixture" }, includedSourceGlobs: ["src/*.ts"], excludedGlobs: [], writablePaths: ["src/a.ts"], protectedPaths: ["test/a.ts"], packageManager: "pnpm",

@@ -36,9 +36,10 @@ export async function assertSafeTree(root: string, limits = { maxFiles: 5_000, m
 export async function sourceIdentity(source: string) {
   if (/^https?:\/\//i.test(source)) throw new Error("Public GitHub URL ingestion is P1 and is not enabled in this verified P0");
   const root = await realpath(path.resolve(source));
-  const packageJson = JSON.parse(await readFile(path.join(root, "package.json"), "utf8"));
+  let packageName: string | undefined;
+  try { packageName = JSON.parse(await readFile(path.join(root, "package.json"), "utf8")).name; } catch { /* Discovery-only repositories need no Node manifest. */ }
   const git = await command("git", ["rev-parse", "HEAD"], root, 10_000);
-  return { root, name: packageJson.name ?? path.basename(root), resolvedCommit: git.exitCode === 0 ? git.stdout.trim() : null };
+  return { root, name: packageName ?? path.basename(root), resolvedCommit: git.exitCode === 0 ? git.stdout.trim() : null };
 }
 
 export async function copyRepository(source: string, destination: string, limits?: Parameters<typeof assertSafeTree>[1]) {

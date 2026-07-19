@@ -14,7 +14,8 @@ export async function inspectRepository(source: string, configPath?: string): Pr
   const defaultConfig = path.join(identity.root, "quantum-twin.config.json");
   const selectedConfig = configPath ? path.resolve(configPath) : await exists(defaultConfig) ? defaultConfig : undefined;
   const config = selectedConfig ? await loadConfig(selectedConfig) : undefined;
-  const packageJson = JSON.parse(await readFile(path.join(identity.root, "package.json"), "utf8"));
+  let packageJson: { type?: string } = {};
+  try { packageJson = JSON.parse(await readFile(path.join(identity.root, "package.json"), "utf8")); } catch { /* Discovery-only repository. */ }
   const findings = await scanRepository(identity.root, config);
   const supported = findings.filter(item => item.status === "supported");
   const discoveryOnly = findings.filter(item => item.status === "discovery-only");
