@@ -24,10 +24,23 @@ describe("deterministic core", () => {
   });
   test("sample report hash verifies and text hashes are cross-platform", async () => {
     const report = JSON.parse(await readFile(path.join(process.cwd(), "sample/run.json"), "utf8"));
-    const expected = report.reportSha256;
-    delete report.reportSha256;
+    const expected = report.presentationReportSha256;
+    delete report.presentationReportSha256;
     expect(sha256(JSON.stringify(report, null, 2))).toBe(expected);
+    expect(report.sourceReportSha256).toBe("b994bcee601b93c35a20939ca30ced73f43d257f09287875a1fc260aef877761");
+    expect(report.redaction).toMatchObject({ applied: true, scope: "local filesystem path only", byteIdenticalToSourceReport: false });
     expect(fileSha256(Buffer.from("portable\r\ntext\r\n"))).toBe(fileSha256(Buffer.from("portable\ntext\n")));
+  });
+  test("tracked files contain no absolute Windows user paths", async () => {
+    const tracked = await command("git", ["ls-files", "-z"], process.cwd());
+    expect(tracked.exitCode).toBe(0);
+    const prefixes = [["C:", "Users"].join("\\") + "\\", ["C:", "Users"].join("/") + "/"];
+    const hits: string[] = [];
+    for (const file of tracked.stdout.split("\0").filter(Boolean)) {
+      const content = await readFile(path.join(process.cwd(), file), "utf8");
+      if (prefixes.some(prefix => content.includes(prefix))) hits.push(file);
+    }
+    expect(hits).toEqual([]);
   });
 });
 

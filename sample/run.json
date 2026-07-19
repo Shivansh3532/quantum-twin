@@ -17,7 +17,7 @@
     "keyLocation": "keys.rsaPrivateKey (signing); keys.rsaPublicKey (verification)",
     "publicBoundary": "envelope.rsa is consumed as a base64-encoded RSA signature during verification",
     "affectedFiles": [
-      "C:\\Users\\shiva\\Documents\\Quantum Twin\\runs\\2026-07-18T22-51-45-756Z\\baseline\\src\\signatures.ts"
+      "fixture/src/signatures.ts"
     ],
     "confidence": 1,
     "evidence": [
@@ -314,5 +314,12 @@
       "The result applies to baseline commit c35e5f614c48a674ea6adac183fe842a80be04ef and the recorded fixture and verifier manifests."
     ]
   },
-  "reportSha256": "b994bcee601b93c35a20939ca30ced73f43d257f09287875a1fc260aef877761"
+  "sourceReportSha256": "b994bcee601b93c35a20939ca30ced73f43d257f09287875a1fc260aef877761",
+  "redaction": {
+    "applied": true,
+    "scope": "local filesystem path only",
+    "description": "Only a local filesystem path was redacted for public presentation; finding.affectedFiles now uses repository-relative fixture/src/signatures.ts.",
+    "byteIdenticalToSourceReport": false
+  },
+  "presentationReportSha256": "955736354f90f38523eed6ec005c66aea450faae7ac830c94d6d9d16217bc362"
 }

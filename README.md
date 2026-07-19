@@ -3,7 +3,7 @@
 ## For Judges — 60 Second Path
 
 1. Open the no-credential recorded demo: **https://quantum-twin.vercel.app**.
-2. Confirm **Recorded Verified Run**, compare Direct Cutover with Compatibility Bridge, expand candidate diffs, inspect the two-pass gate matrix, and download `run.json`.
+2. Confirm **Recorded Verified Run** and **Public presentation artifact — local path redacted**, compare Direct Cutover with Compatibility Bridge, inspect both report hashes and the two-pass gate matrix, then download `run.json`.
 3. Review the public MIT-licensed repository: **https://github.com/Shivansh3532/quantum-twin**.
 
 Local live path on Windows, macOS, or Linux:
@@ -66,7 +66,7 @@ Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 
 ## Hosted recorded demo
 
-Vercel automatically sets `VERCEL=1`, forcing recorded read-only mode. `QT_RECORDED_MODE=1` provides same boundary elsewhere. Hosted mode imports committed `sample/run.json`, never invokes Codex, Git, worktrees, repository commands, or runtime artifact writes, and returns HTTP 403 from `POST /api/runs`.
+Vercel automatically sets `VERCEL=1`, forcing recorded read-only mode. `QT_RECORDED_MODE=1` provides same boundary elsewhere. Hosted mode imports committed `sample/run.json`, never invokes Codex, Git, worktrees, repository commands, or runtime artifact writes, and returns HTTP 403 from `POST /api/runs`. The public sample replaces one local filesystem path with `fixture/src/signatures.ts`; it preserves the original source report hash as `sourceReportSha256`, records the limited redaction, states that it is not byte-identical to the source report, and has its own `presentationReportSha256`.
 
 Vercel settings: Next.js, repository root, Node 24.x, install `pnpm install --frozen-lockfile`, build `pnpm build`, default output directory, no environment variables. Never add `OPENAI_API_KEY`.
 

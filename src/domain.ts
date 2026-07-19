@@ -87,5 +87,13 @@ export type RunReport = {
   selectedCandidate: "direct" | "bridge" | null;
   verifierManifestSha256: string;
   explanation: unknown;
-  reportSha256: string;
+  reportSha256?: string;
+  sourceReportSha256?: string;
+  presentationReportSha256?: string;
+  redaction?: {
+    applied: true;
+    scope: string;
+    description: string;
+    byteIdenticalToSourceReport: false;
+  };
 };

@@ -21,7 +21,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 
 - [x] Compatibility-disabled generalized run selects Direct.
 - [x] Clean-clone install/typecheck/test/build/secret scan.
-- [!] Absolute-user-path scan: inherited immutable `sample/run.json` contains one recorded Windows source path; preserving sample/hash prevents silent rewrite.
+- [x] Public presentation artifact contains no absolute user path; it preserves the original source report hash, explicitly records the path-only redaction, and stores a separate presentation hash.
 - [x] `final-productization` merged to `main`; GitHub Actions passed on Windows and Ubuntu.
 - [x] Public Vercel alias verified against deployed `main`: page 200, recorded evidence renders, download works, POST returns 403.
 
