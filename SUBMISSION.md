@@ -6,7 +6,7 @@
 
 Crypto scanners locate legacy algorithms. One generated patch does not prove compatibility or negative security behavior. Quantum Twin accepts a constrained local Node repository contract, recursively records RSA evidence, creates identical Git baselines, and gives two isolated `gpt-5.6-sol` Codex builders different strategies: Direct Cutover and Compatibility Bridge. External code disqualifies failures, applies deterministic selection, and hashes complete evidence. No eligible candidate produces **NO SAFE WINNER**.
 
-Hosted demo: https://quantum-twin.vercel.app  
+Hosted demo: https://quantum-twin.vercel.app
 Public repository: https://github.com/Shivansh3532/quantum-twin
 
 ## Codex and GPT-5.6 use

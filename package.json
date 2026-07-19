@@ -13,6 +13,7 @@
     "test": "vitest run",
     "qt": "tsx src/cli.ts",
     "demo": "tsx src/cli.ts demo",
+    "demo-no-compat": "tsx src/cli.ts demo-no-compat",
     "preflight": "tsx src/cli.ts preflight",
     "verify": "tsx src/cli.ts verify",
     "smoke": "tsx tools/smoke.ts",
