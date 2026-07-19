@@ -89,4 +89,18 @@ describe("general repository boundary", () => {
       expect(response.status).toBe(403);
     } finally { if (previous === undefined) delete process.env.VERCEL; else process.env.VERCEL = previous; }
   });
+
+  test("local API validates repository input before execution", async () => {
+    const previousVercel = process.env.VERCEL, previousRecorded = process.env.QT_RECORDED_MODE;
+    delete process.env.VERCEL; delete process.env.QT_RECORDED_MODE;
+    try {
+      const missingConfig = await POST(new Request("http://localhost/api/runs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ repositoryPath: "fixture" }) }));
+      expect(missingConfig.status).toBe(400);
+      const noAcknowledgment = await POST(new Request("http://localhost/api/runs", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ repositoryPath: "fixture", configPath: "fixture/quantum-twin.config.json" }) }));
+      expect(noAcknowledgment.status).toBe(400);
+    } finally {
+      if (previousVercel === undefined) delete process.env.VERCEL; else process.env.VERCEL = previousVercel;
+      if (previousRecorded === undefined) delete process.env.QT_RECORDED_MODE; else process.env.QT_RECORDED_MODE = previousRecorded;
+    }
+  });
 });
