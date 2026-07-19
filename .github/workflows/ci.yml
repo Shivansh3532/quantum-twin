@@ -16,9 +16,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24.18.0
-          cache: pnpm
-      - run: npx --yes pnpm@11.9.0 install --frozen-lockfile
-      - run: npx --yes pnpm@11.9.0 typecheck
-      - run: npx --yes pnpm@11.9.0 test
-      - run: npx --yes pnpm@11.9.0 build
-      - run: npx --yes pnpm@11.9.0 secret-scan
+      - run: npm install --global pnpm@11.9.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm secret-scan
