@@ -7,14 +7,15 @@
 - Versioned repository contract and containment: `src/config.ts`, `src/repository.ts`.
 - Copied external harness, two passes, immutable boundaries, deterministic selection, NO SAFE WINNER, hashes: `src/engine.ts`.
 - Independent machine-readable verifier and negative cases: `src/report.ts`, `test/report.test.ts`, `pnpm verify-samples`.
-- Cross-platform CI: frozen install, typecheck, 20 tests, sample verification, build, secret scan on Windows and Ubuntu.
+- Cross-platform CI: frozen install, typecheck, 21 tests, sample verification, build, secret scan on Windows and Ubuntu.
 
 ## Design
 
 - Hosted two-scenario explorer: https://quantum-twin.vercel.app.
 - Compatibility switch changes genuine report instantly without writes or arbitrary fetching.
-- Default hierarchy shows decision; expandable sections expose scanner findings, contracts, threads, commits, commands, diffs, measurements, hashes, passes, and limitations.
-- Semantic headings, native selector, aria-live announcement, details/summary, accessible tables, visible focus, bounded scrolling, and responsive CSS.
+- Ten-second SCAN / COMPETE / PROVE flow, direct actions, 60-second judge path, and clear hosted-versus-local boundary.
+- Default hierarchy shows result, eligibility, gate counts, decisive failures, hash, and download; progressive disclosure preserves complete evidence.
+- Skip link, semantic landmarks/headings, native selector, shareable strict-allowlist scenarios, aria-live announcement, details/summary, accessible tables, visible focus, bounded scrolling, and responsive CSS.
 
 ## Potential impact
 
@@ -24,7 +25,7 @@ Generality evidence: TypeScript ESM update service, CommonJS npm release CLI, an
 
 ## Quality of idea
 
-Traditional scanners identify cryptography. One coding-agent prompt produces one candidate. Quantum Twin separates discovery, competing implementation, external evaluation, and deterministic selection. Same release fixture selects Bridge when compatibility is required and Direct when disabled. GPT explains but cannot overrule evidence.
+Traditional scanners identify cryptography. One coding-agent patch produces one plausible implementation. Quantum Twin separates discovery, isolated competing implementation, external evaluation, deterministic selection, provenance, and refusal. Same release fixture selects Bridge when compatibility is required and Direct when disabled. GPT explains but cannot overrule evidence or promote a failed candidate.
 
 ## Fast verification
 

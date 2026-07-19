@@ -9,7 +9,9 @@ try {
     await new Promise(resolve => setTimeout(resolve, 1_000));
     try { response = await fetch(`http://127.0.0.1:${port}/`); } catch {}
   }
-  if (!response?.ok || !(await response.text()).includes("Quantum")) throw new Error("production HTTP smoke failed");
+  const html = response?.ok ? await response.text() : "";
+  const normalized = html.toLowerCase();
+  if (!response?.ok || !["quantum twin", "explore verified demo", "run on your repository", "no safe winner"].every(text => normalized.includes(text))) throw new Error("product HTTP smoke failed");
   if (process.env.QT_RECORDED_MODE === "1" || process.env.VERCEL === "1") {
     const compatibility = await fetch(`http://127.0.0.1:${port}/api/runs/latest`);
     const direct = await fetch(`http://127.0.0.1:${port}/api/runs/latest?scenario=direct`);

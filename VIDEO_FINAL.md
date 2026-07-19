@@ -4,7 +4,7 @@ Recommended filename: `quantum-twin-build-week-judge-demo-2m35s.mp4`
 
 ## 0:00–0:15 — problem and differentiator
 
-Show hosted hero and both genuine-run badges.
+Show hosted hero, SCAN / COMPETE / PROVE flow, primary actions, and both genuine-run badges.
 
 Audio: “A crypto scanner finds legacy algorithms. One generated patch still does not prove compatibility. Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.”
 
@@ -38,9 +38,9 @@ Expand Direct diff, commands, measurements, provenance, and explanation.
 
 Audio: “Each genuine report preserves Codex threads, candidate commits, full diffs and hashes, command exits and timings, two evaluator passes, compatibility-harness hash, Node and platform metadata, measurements, limitations, and final report hash. The standalone verifier detects modified evidence.”
 
-## 2:15–2:35 — boundaries and close
+## 2:15–2:35 — local path, refusal principle, boundaries, and close
 
-Show implemented/discovery-only/verified scope and URLs.
+Show Run on your repository, NO SAFE WINNER, implemented/discovery-only/verified scope, and URLs.
 
 Audio: “Automatic migration stays narrow: trusted local Node repositories using native RSA and declared harnesses. TLS, KMS, HSM, third-party crypto, and other languages are discovery-only. No eligible candidate means NO SAFE WINNER. Hosted mode is read-only; local live mode uses authenticated Codex without an OpenAI API key. Repository and demo links are on screen.”
 

@@ -12,6 +12,7 @@ import { isRecordedMode } from "../src/mode.ts";
 import { POST } from "../app/api/runs/route.ts";
 import { GET as getRecordedRun } from "../app/api/runs/latest/route.ts";
 import { verifyReportData } from "../src/report.ts";
+import { parseScenario } from "../src/scenario.ts";
 
 describe("deterministic core", () => {
   test("scanner identifies RSA sign and verify", async () => {
@@ -28,6 +29,12 @@ describe("deterministic core", () => {
     const report = JSON.parse(await readFile(path.join(process.cwd(), "sample/run.json"), "utf8"));
     expect(verifyReportData(report, "sample/run.json").valid).toBe(true);
     expect(fileSha256(Buffer.from("portable\r\ntext\r\n"))).toBe(fileSha256(Buffer.from("portable\ntext\n")));
+  });
+  test("shareable scenario values are strictly allowlisted", () => {
+    expect(parseScenario("direct")).toBe("direct");
+    expect(parseScenario("compatibility")).toBe("compatibility");
+    expect(parseScenario("../private")).toBe("compatibility");
+    expect(parseScenario(null)).toBe("compatibility");
   });
   test("tracked files contain no absolute personal paths", async () => {
     const tracked = await command("git", ["ls-files", "-z"], process.cwd());

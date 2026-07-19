@@ -57,7 +57,7 @@ Node.js 24.18.0, TypeScript, Next.js, Zod, native `node:crypto` ML-DSA-65, Git i
 
 ## Design
 
-Responsive evidence workspace with immediate two-scenario comparison, genuine-run identity, scanner findings, candidate status, full diffs, command evidence, measurements, gate matrix, provenance, hashes, GPT limitations, scope boundaries, keyboard-visible focus, native selector, aria-live changes, and read-only downloads.
+Editorial evidence workspace with a ten-second SCAN / COMPETE / PROVE flow, 60-second judge path, shareable strict-allowlist scenarios, genuine-run identity, visible result/eligibility/gate counts/decisive failures, progressive disclosure for full diffs and gate evidence, local-runner path, provenance, hashes, GPT limitations, skip link, keyboard-visible focus, aria-live changes, and read-only downloads.
 
 ## Potential impact
 
@@ -65,7 +65,7 @@ Application security engineers and maintainers of Node services with deployed RS
 
 ## Novelty
 
-Traditional scanners locate cryptography. One coding-agent prompt yields one candidate. Quantum Twin creates isolated competing implementations from the same contract, independently disqualifies failures, changes the selected result when declared compatibility changes, preserves complete provenance, and supports NO SAFE WINNER.
+Traditional scanners locate cryptography but do not implement and independently compare migrations. One coding-agent patch yields one plausible implementation but does not prove it against an immutable external compatibility contract. Quantum Twin creates isolated competing implementations, evaluates both outside their worktrees, deterministically disqualifies failures, changes results with declared constraints, preserves provenance, and refuses when nothing qualifies.
 
 ## Supported platforms
 
