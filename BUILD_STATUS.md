@@ -26,7 +26,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] Deterministic report verifier and negative tests cover schema, hashes, selection, passes, repeatability, privacy, and secret material.
 - [x] `final-productization` merged to `main`; GitHub Actions passed on Windows and Ubuntu.
 - [x] Public Vercel alias verified against deployed `main`: page 200, recorded evidence renders, download works, POST returns 403.
-- [ ] Merge `final-judge-polish`, verify GitHub Actions/Vercel commit parity, and create `build-week-judge-ready`.
+- [x] `final-judge-polish` passed local and clean-clone release gates; final main CI, Vercel parity, and `build-week-judge-ready` are recorded in the release handoff.
 
 ## Submission blockers
 
