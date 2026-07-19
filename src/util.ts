@@ -2,16 +2,21 @@ import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readdir, readFile, stat } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 const exec = promisify(execFile);
 export const sha256 = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
+export const fileSha256 = (value: Buffer) => sha256(value.includes(0) ? value : value.toString("utf8").replaceAll("\r\n", "\n"));
 
 export async function command(program: string, args: string[], cwd: string, timeout = 120_000) {
   const started = performance.now();
   const pnpmEntrypoint = program === "pnpm" ? process.env.npm_execpath : undefined;
-  const executable = pnpmEntrypoint ? process.execPath : program;
-  const executableArgs = pnpmEntrypoint ? [pnpmEntrypoint, ...args] : args;
+  const npmCandidate = path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", program === "npx" ? "npx-cli.js" : "npm-cli.js");
+  const npmEntrypoint = ["npm", "npx"].includes(program) && existsSync(npmCandidate) ? npmCandidate : undefined;
+  const entrypoint = pnpmEntrypoint ?? npmEntrypoint;
+  const executable = entrypoint ? process.execPath : program;
+  const executableArgs = entrypoint ? [entrypoint, ...args] : args;
   try {
     const result = await exec(executable, executableArgs, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000, shell: process.platform === "win32" && !pnpmEntrypoint && program === "pnpm" });
     return { command: [program, ...args].join(" "), exitCode: 0, stdout: result.stdout, stderr: result.stderr, durationMs: Math.round(performance.now() - started) };
@@ -29,7 +34,7 @@ export async function manifest(root: string) {
       const absolute = path.join(dir, name);
       const relative = path.relative(root, absolute).replaceAll("\\", "/");
       if ((await stat(absolute)).isDirectory()) await walk(absolute);
-      else entries.push(`${sha256(await readFile(absolute))}  ${relative}`);
+      else entries.push(`${fileSha256(await readFile(absolute))}  ${relative}`);
     }
   }
   await walk(root);

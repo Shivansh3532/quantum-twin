@@ -1,20 +1,18 @@
 # OpenAI Build Week Submission Checklist
 
-- [x] Registered; submissions currently open
-- [x] Developer Tools category chosen
-- [x] Working, runnable, non-trivial project
-- [x] README setup, supported platforms, sample fixture, run/test path
-- [x] README explains Codex acceleration, decisions, GPT-5.6/Codex use
-- [x] Relevant MIT license for public repository
-- [ ] Create Devpost project and add edited-in-own-voice description
-- [ ] Add repository URL
-- [ ] If private, share with `testing@devpost.com` and `build-week-event@openai.com`
-- [ ] Upload public YouTube video under 3 minutes
-- [ ] Video visibly demos project; audio covers project, Codex, and GPT-5.6
-- [x] Enter `/feedback` Session ID from primary majority-build session: `019f774d-0364-76a3-bd72-cb806fe0109a`
-- [ ] Add every teammate and confirm invitation acceptance before deadline
-- [ ] Supply developer-tool install, platform, and test-path field
-- [ ] Confirm category is Developer Tools
-- [ ] Submit before July 21, 2026, 5:00 PM PT; verify status is not Draft
+- [x] Registered; Developer Tools category selected.
+- [x] Working non-trivial project using Codex and GPT-5.6.
+- [x] Public MIT-licensed repository: https://github.com/Shivansh3532/quantum-twin.
+- [x] Public no-credential recorded demo: https://quantum-twin.vercel.app.
+- [x] README includes setup, sample fixtures, supported platforms, local/hosted distinction, exact commands, and test path.
+- [x] Repository documents where Codex accelerated work, key deterministic decisions, and exact GPT-5.6/Codex use.
+- [x] Developer-tool installation, supported platforms, and no-rebuild judge path prepared.
+- [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
+- [ ] Merge verified productization branch and confirm deployed main SHA.
+- [ ] Record and upload public YouTube video under 3 minutes.
+- [ ] Video visibly shows product and audio covers project, Codex, and GPT-5.6.
+- [ ] Create Devpost project; add description, repository, hosted demo, video, category, and test instructions.
+- [ ] Add every teammate and confirm invitation acceptance.
+- [ ] Submit before July 21, 2026, 5:00 PM PT; verify status is not Draft.
 
-Official rules and current blockers: `OFFICIAL_SUBMISSION_REQUIREMENTS.md`.
+Official source checked July 19, 2026: https://openai.devpost.com/.

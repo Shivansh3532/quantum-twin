@@ -1,14 +1,39 @@
 # Quantum Twin
 
-Quantum Twin is a Codex-powered cryptographic migration tournament. It detects a supported Node/TypeScript RSA signing path, asks GPT-5.6 for schema-validated classification, gives one immutable contract to two isolated Codex builders, and lets an external deterministic evaluator select a contract-eligible migration.
+## For Judges — 60 Second Path
 
-## Supported scope
+1. Open the no-credential recorded demo: **https://quantum-twin.vercel.app**.
+2. Confirm **Recorded Verified Run**, compare Direct Cutover with Compatibility Bridge, expand candidate diffs, inspect the two-pass gate matrix, and download `run.json`.
+3. Review the public MIT-licensed repository: **https://github.com/Shivansh3532/quantum-twin**.
 
-Node.js 24.18.0, TypeScript, `node:crypto` RSA sign/verify, JSON-compatible payloads, public-key verification, and the bundled fixture only. No arbitrary internet repositories, HSM/KMS, certificate/TLS migration, third-party crypto, or production-security approval.
+Local live path on Windows, macOS, or Linux:
 
-## Install and run
+```bash
+npx --yes pnpm@11.9.0 install --frozen-lockfile
+npx --yes pnpm@11.9.0 preflight
+npx --yes pnpm@11.9.0 demo
+npx --yes pnpm@11.9.0 dev
+```
 
-Supported platforms: Windows, macOS, and Linux with Git, Node 24.18.0, and pnpm 11.9.0. Docker is optional.
+Requires Node.js 24.18.0, Git, and authenticated Codex for live tournaments. No `OPENAI_API_KEY` is required for the Codex SDK path. Hosted demo needs no credentials. Automatic migration is limited to declared Node.js repository contracts using native `node:crypto` RSA signing and verification; see [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md).
+
+## What it changes
+
+Crypto scanners identify algorithms. A coding agent can produce one plausible patch. Quantum Twin instead gives the same immutable repository contract to two isolated Codex SDK builders—Direct Cutover and Compatibility Bridge—then lets external deterministic gates decide which candidate satisfies declared compatibility. Failed candidates cannot be selected. Zero eligible candidates produces **NO SAFE WINNER**.
+
+Audience: application security engineers, platform/security engineering teams, maintainers of Node services with deployed RSA verifiers, and teams planning staged post-quantum migration without breaking legacy clients.
+
+## Inspect another local repository
+
+Quantum Twin never edits source repository. Scan and capabilities are read-only. `run` copies source into ignored `runs/<run-id>/`, rejects symlinks, enforces containment and size limits, then executes only after explicit acknowledgment.
+
+```bash
+pnpm qt scan --repo ./path/to/repository
+pnpm qt capabilities --repo ./path/to/repository
+pnpm qt run --repo ./path/to/repository --config ./path/to/repository/quantum-twin.config.json --allow-exec
+```
+
+Normal setup commands:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -17,41 +42,38 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm demo
+pnpm demo-no-compat
 pnpm dev
 ```
 
-Open `http://localhost:3000`. Judges can use bundled fixture and `pnpm demo`; no sample repository, infrastructure rebuild, account, or secret is needed beyond an authenticated Codex installation. Candidate builders use `gpt-5.6-sol`, high reasoning, workspace-write sandbox, no network, disabled web search, and approval policy `never`.
+`--allow-exec` means declared install, typecheck, test, optional build, and compatibility commands may run inside isolated copy. Do not use it on untrusted repositories. Public GitHub URL ingestion, private credentials, SSH URLs, arbitrary protocols, and automatic pull requests are not implemented.
 
-Runtime artifacts are written under ignored `runs/<run-id>/`; `runs/latest.json` powers dashboard. Each report contains baseline and candidate commits, Codex thread IDs, diffs and hashes, commands, exit codes, durations, gates, measurements, runtime/model versions, verifier hash, deterministic selection, GPT explanation, and final report hash.
+## Versioned repository contract
 
-## How Codex and GPT-5.6 were used
+`quantum-twin.config.json` version 1 declares repository name, included/excluded globs, writable/protected paths, npm/pnpm command arrays, external compatibility harness, legacy compatibility requirement, `ml-dsa-65`, exact context string, dependency policy, timeouts, and scan limits. Commands are program-plus-argument arrays; shell command strings are rejected.
 
-Recorded runs used `@openai/codex-sdk@0.144.6` with `gpt-5.6-sol`. Two SDK threads independently implemented Direct Cutover and Compatibility Bridge from identical fixture commit. GPT-5.6 converted AST scanner hits into validated `CryptoFinding` JSON and explained immutable verifier evidence. Deterministic TypeScript controlled every hard gate and selection decision; GPT could not change gates, measurements, or selection. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
+Three fixtures prove non-hardcoding:
+
+- `fixture/`: TypeScript ESM update-manifest service, `src/signatures.ts`.
+- `fixtures/release-cli/`: JavaScript CommonJS npm release signer, `lib/release-signer.cjs`, different exports.
+- `fixtures/next-audit/`: TypeScript namespace-import server utility, `server/audit-receipt.ts`, different exports.
+
+## Codex and GPT-5.6
+
+Recorded core run used `@openai/codex-sdk@0.144.6` with exact `gpt-5.6-sol`. Two real SDK threads independently implemented Direct Cutover and Compatibility Bridge. GPT-5.6 produces schema-validated classification and explains immutable results. Deterministic TypeScript owns eligibility, measurements, and selection. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
 
 Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 
-## What “verified” means
+## Hosted recorded demo
 
-Recorded repository tests, negative tests, compatibility checks, dependency policy, static rules, and benchmarks passed declared engineering contract in isolated environment. It does not mean formal verification, FIPS module certification, proof against every side channel, production security approval, or replacement for expert review.
+Vercel automatically sets `VERCEL=1`, forcing recorded read-only mode. `QT_RECORDED_MODE=1` provides same boundary elsewhere. Hosted mode imports committed `sample/run.json`, never invokes Codex, Git, worktrees, repository commands, or runtime artifact writes, and returns HTTP 403 from `POST /api/runs`.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), and [sample/run.json](sample/run.json).
+Vercel settings: Next.js, repository root, Node 24.x, install `pnpm install --frozen-lockfile`, build `pnpm build`, default output directory, no environment variables. Never add `OPENAI_API_KEY`.
 
-## Hosted recorded demo for judges
+## Evidence and limits
 
-The Vercel deployment is intentionally read-only. With Vercel's automatic `VERCEL=1` environment, it renders committed `sample/run.json`, shows **Recorded Verified Run**, rejects tournament POST requests, and never invokes Codex, Git, worktrees, or filesystem writes. Do not configure `OPENAI_API_KEY`.
+Runs record source identity, isolated baseline commit and manifest, scanner findings, contract/config hashes, Codex thread IDs, candidate commits and diffs, commands, exit codes, timings, two evaluator passes, measurements, model/runtime versions, evaluator hash, deterministic result, GPT explanation, and final report hash.
 
-Import this GitHub repository into Vercel with:
+“Verified” means recorded engineering-contract tests and negative checks passed in isolated evaluation. It does not mean formal verification, FIPS module certification, side-channel safety, guaranteed cryptographic security, production approval, or that an entire organization, application, website, or system is quantum-safe.
 
-- Framework preset: Next.js
-- Root directory: repository root
-- Node.js version: 24.x
-- Install command: `pnpm install --frozen-lockfile`
-- Build command: `pnpm build`
-- Output directory: leave blank (Next.js default)
-- Environment variables: none
-
-After deployment, test `/` and confirm **Recorded Verified Run** is visible. `/api/runs/latest` must return the committed sample; `POST /api/runs` must return HTTP 403.
-
-## Local live Codex tournament
-
-The hosted demo does not replace live execution. On a local machine with authenticated Codex, run `pnpm demo` to create fresh isolated worktrees, execute both `gpt-5.6-sol` builders, evaluate them twice, and write ignored evidence under `runs/`. This command and its live engine path are unchanged by hosted recorded mode.
+See [ARCHITECTURE.md](ARCHITECTURE.md), [SECURITY.md](SECURITY.md), [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md), [JUDGING.md](JUDGING.md), and [sample/run.json](sample/run.json).

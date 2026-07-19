@@ -1,6 +1,6 @@
 # Quantum Twin P0 Guardrails
 
-Authoritative spec: `Quantum-Twin-Final.md`. Do not redesign it.
+Verified core rationale: `Quantum-Twin-Final.md`. Current productized scope and truth boundaries: `README.md`, `ARCHITECTURE.md`, `SECURITY.md`, and `SUPPORTED_SYSTEMS.md`.
 
 ## Commands
 
@@ -26,7 +26,7 @@ pnpm demo
 
 - Never commit credentials, API keys, generated private keys, or nested fixture Git metadata.
 - No network in candidate worktrees. No candidate dependency changes.
-- No publishing, pushing, Devpost submission, billing, arbitrary repositories, hidden reasoning, fake live output, or hand-edited candidate patches.
+- No private repository credentials, automatic publishing/pull requests, billing, hidden reasoning, fake live output, or hand-edited candidate patches. Execute supported local repository copies only after explicit `--allow-exec`.
 - Do not weaken protected tests, scripts, lockfile, evaluator, or legacy verifier.
 
 ## Definition of Done

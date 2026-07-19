@@ -1,13 +1,15 @@
-# Demo Script — 2:50 target
+# Demo Script — 2:40 target
 
-**0:00–0:25** — “This update service signs manifests with RSA. Replacing it may break every old verifier. Quantum Twin compares migrations instead of trusting one generated patch.” Show RSA fixture and migration brief.
+**0:00–0:18** — Open https://quantum-twin.vercel.app. “Crypto scanners identify algorithms, and coding agents can make one patch. Quantum Twin creates competing migrations and independently proves which satisfies declared compatibility. Hosted page is genuine recorded evidence, not live Codex.”
 
-**0:25–0:50** — Run tournament. “Targeted AST scanning finds supported RSA calls. GPT-5.6 turns scanner evidence into schema-validated migration data: ML-DSA-65, native Node crypto, fixed domain context, legacy compatibility required.”
+**0:18–0:38** — Show `fixtures/release-cli` path/config and run `pnpm qt capabilities --repo fixtures/release-cli`. “This different CommonJS/npm release package uses different paths and export names. Recursive scanner reports native RSA evidence, file, line, import form, and confidence.”
 
-**0:50–1:30** — Show candidate cards. “Two Codex SDK builders receive identical commit, contract, file boundary, model `gpt-5.6-sol`, and time limit in isolated no-network worktrees. Only strategy differs: direct cutover versus compatibility bridge.”
+**0:38–1:04** — Show recorded candidate cards/thread IDs. “Two real `@openai/codex-sdk` builders use exact `gpt-5.6-sol`, identical source commit, immutable contract, writable paths, timeouts, no-network sandbox, and approval policy. Only Direct versus Bridge strategy differs.”
 
-**1:30–2:15** — Show gate matrix. “External code—not either agent—runs frozen install, compilation, original tests, ML-DSA verification, tamper, wrong key, legacy client, integrity, dependency, secret, native API, context, and repeatability gates. Direct Cutover fails legacy compatibility. Bridge passes twice and wins.”
+**1:04–1:40** — Expand diffs and gate matrix. “External harness is copied outside worktrees and hash-checked. Deterministic code runs original checks, writable/protected/dependency/native API gates, tamper, wrong key, wrong context, compatibility, and two full evaluator passes. Direct fails compatibility twice; Bridge passes. GPT cannot override this.”
 
-**2:15–2:40** — Show diff, measurements, IDs, hashes, and download. “GPT-5.6 explains immutable evidence. It cannot override eligibility, selection, or measurements. Every run records commits, Codex thread IDs, commands, timings, hashes, and reproduction data.”
+**1:40–2:02** — Show result, commands, measurements, hashes, download. “Every run records source/config/evaluator/report hashes, Codex threads, candidate commits, diffs, commands, timings, and immutable explanation. If neither passes, result is NO SAFE WINNER.”
 
-**2:40–2:50** — Toggle compatibility off. “Without legacy constraint, Direct Cutover is eligible and fewer RSA signatures wins. Quantum Twin makes constraint-driven migrations and proves which satisfies declared engineering contract.”
+**2:02–2:20** — Show constraint-off evidence. “With legacy compatibility disabled, Direct becomes eligible and deterministic selection prefers zero RSA signatures.”
+
+**2:20–2:40** — Show supported/unsupported section and local commands. “Automatic migration is intentionally narrow: declared Node 24 native RSA contracts. TLS, JWT, KMS, HSM, third-party crypto, and other languages are discovery-only. Local runs use authenticated Codex SDK without `OPENAI_API_KEY`; Vercel stays read-only.”

@@ -1,6 +1,6 @@
 # OpenAI Build Week: Official Submission Requirements
 
-Live Devpost connector check: 2026-07-18. Official rules: https://openai.devpost.com/rules
+Live Devpost page rechecked: 2026-07-19. Official rules: https://openai.devpost.com/rules
 
 - Deadline: July 21, 2026, 5:00 PM Pacific Time (8:00 PM Eastern).
 - Working project built with Codex using GPT-5.6; choose `Developer Tools`.

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "repository": { "name": "release-artifact-cli" },
+  "includedSourceGlobs": ["lib/*.cjs"],
+  "excludedGlobs": [],
+  "writablePaths": ["lib/release-signer.cjs"],
+  "protectedPaths": ["package.json", "package-lock.json", "test/release-signer.test.cjs", "quantum-twin.config.json", "quantum-twin.compatibility.ts"],
+  "packageManager": "npm",
+  "commands": { "install": ["npm", "ci", "--ignore-scripts"], "typecheck": ["npm", "run", "typecheck"], "test": ["npm", "test"] },
+  "compatibilityHarness": "quantum-twin.compatibility.ts",
+  "legacyCompatibilityRequired": true,
+  "target": { "primitive": "ml-dsa-65", "context": "quantum-twin:release-artifact:v1" },
+  "dependencyPolicy": "forbid",
+  "timeouts": { "scanMs": 30000, "commandMs": 120000, "candidateMs": 600000 },
+  "limits": { "maxFiles": 500, "maxFileBytes": 1000000, "maxTotalBytes": 10000000 }
+}

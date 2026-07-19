@@ -1,0 +1,10 @@
+{
+  "name": "release-artifact-cli",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "typecheck": "node --check lib/release-signer.cjs",
+    "test": "node --test test/release-signer.test.cjs"
+  }
+}

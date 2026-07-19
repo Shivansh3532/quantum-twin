@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "repository": { "name": "next-audit-receipts" },
+  "includedSourceGlobs": ["server/*.ts"],
+  "excludedGlobs": [],
+  "writablePaths": ["server/audit-receipt.ts"],
+  "protectedPaths": ["package.json", "pnpm-lock.yaml", "test/audit-receipt.test.ts", "quantum-twin.config.json", "quantum-twin.compatibility.ts"],
+  "packageManager": "pnpm",
+  "commands": { "install": ["pnpm", "install", "--ignore-workspace"], "typecheck": ["pnpm", "typecheck"], "test": ["pnpm", "test"] },
+  "compatibilityHarness": "quantum-twin.compatibility.ts",
+  "legacyCompatibilityRequired": true,
+  "target": { "primitive": "ml-dsa-65", "context": "quantum-twin:audit-receipt:v1" },
+  "dependencyPolicy": "forbid",
+  "timeouts": { "scanMs": 30000, "commandMs": 120000, "candidateMs": 600000 },
+  "limits": { "maxFiles": 500, "maxFileBytes": 1000000, "maxTotalBytes": 10000000 }
+}
