@@ -19,8 +19,9 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 
 ## Final verification pending
 
-- [ ] Compatibility-disabled generalized run selects Direct.
-- [ ] Clean-clone install/typecheck/test/build/secret/path scans.
+- [x] Compatibility-disabled generalized run selects Direct.
+- [x] Clean-clone install/typecheck/test/build/secret scan.
+- [!] Absolute-user-path scan: inherited immutable `sample/run.json` contains one recorded Windows source path; preserving sample/hash prevents silent rewrite.
 - [ ] Merge `final-productization` to `main`, push, and verify GitHub/Vercel commit parity.
 - [ ] Create annotated `build-week-final` only after deployed verification.
 

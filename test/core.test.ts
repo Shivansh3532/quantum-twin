@@ -58,6 +58,7 @@ describe("general repository boundary", () => {
     const { inspectRepository } = await import("../src/capabilities.ts");
     const { report } = await inspectRepository(root);
     expect(report.discoveryOnly[0]?.technology).toBe("Python cryptography");
+    expect(report.repository.source).toBe(`local:${path.basename(root)}`);
     expect(report.automaticMigrationSupported).toBe(false);
     expect(report.configuration).toBe("needed");
   });

@@ -26,7 +26,7 @@ export async function inspectRepository(source: string, configPath?: string): Pr
   return {
     config,
     report: {
-      repository: { name: config?.repository.name ?? identity.name, source: identity.root, resolvedCommit: identity.resolvedCommit },
+      repository: { name: config?.repository.name ?? identity.name, source: `local:${identity.name}`, resolvedCommit: identity.resolvedCommit },
       language,
       moduleType,
       packageManager: detectPackageManager(identity.root, config?.packageManager),
