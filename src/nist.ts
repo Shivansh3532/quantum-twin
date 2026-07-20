@@ -130,7 +130,14 @@ const OWNER_ACTION: Partial<Record<NistPrimitive, (entry: CbomEntry) => string>>
   UNKNOWN: entry => `Supply the concrete algorithm and repository contract for ${entry.file}:${entry.line} so the boundary can be classified and migrated.`,
 };
 
-const EXTERNAL_PLAN = (entry: CbomEntry) => `${entry.technology} at ${entry.file}:${entry.line}: outside application-owned scope — follow the NIST migration plan (inventory, prioritize, transition, crypto-agility) with the responsible key/certificate authority.`;
+const externalOwner = (technology: string) =>
+  /tls|x\.?509|certificate|secure ?context|https/i.test(technology) ? "the certificate authority and TLS/OS provider (hybrid PQC TLS and PQ certificate chains)"
+  : /ssh/i.test(technology) ? "server operators rotating SSH host/user keys to post-quantum-capable algorithms"
+  : /kms|hsm|pkcs/i.test(technology) ? "the key-management custodian (KMS/HSM post-quantum key support)"
+  : /jwt|jose/i.test(technology) ? "the token issuer and verifier owners (coordinated JWT algorithm upgrade)"
+  : "the owning team or upstream vendor";
+
+const EXTERNAL_PLAN = (entry: CbomEntry) => `${entry.technology} at ${entry.file}:${entry.line}: outside application-owned scope — detected and planned. Coordinate migration with ${externalOwner(entry.technology)}; follow the NIST inventory → prioritize → transition → crypto-agility sequence.`;
 
 export type PostureOptions = { ownerConfirmed?: boolean };
 

@@ -101,6 +101,15 @@ describe("NIST detection", () => {
     expect(hits.some(h => h.primitive === "RSA-SIG" && h.operation === "token")).toBe(true);
   });
 
+  it("detects TLS and SSH as external boundaries with a migration plan", async () => {
+    const tls = await scanSnippet("tls.js", `import { createSecureContext } from "node:tls";\nexport const ctx = createSecureContext({});\n`);
+    const ssh = await scanSnippet("ssh.js", `const { Client } = require("ssh2");\nexport const c = new Client();\n`);
+    const posture = assessNistPosture([...tls, ...ssh]);
+    expect(posture.counts.external).toBeGreaterThanOrEqual(2);
+    expect(posture.achievable).toBe(false);
+    expect(posture.remainingPlan.some(item => /certificate authority|SSH/i.test(item))).toBe(true);
+  });
+
   it("does not misclassify native RSA sign as ECDSA", async () => {
     const hits = await scanSnippet("rsa.js", `const crypto = require("node:crypto");\nfunction sign(b, rsaPrivateKey){ return crypto.sign("sha384", b, rsaPrivateKey); }\n`);
     expect(hits.some(h => h.primitive === "ECDSA")).toBe(false);

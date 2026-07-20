@@ -139,7 +139,8 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
     if (match?.index !== undefined) add(match.index, operation, technology, status, algo, status === "discovery-only" ? "Detected boundary; migration requires owner scope confirmation" : "Detected boundary; confirm application ownership to migrate", undefined, primitive);
   }
   const discovery = [
-    [/\b(?:tls|x509|X509Certificate)\b/, "TLS/X.509", "transport", "TLS/certificate adapter and certificate lifecycle input"],
+    [/\b(?:tls|x509|X509Certificate|createSecureContext|https\.createServer)\b/, "TLS/X.509", "transport", "TLS/certificate adapter and certificate lifecycle input"],
+    [/\b(?:ssh2|node-ssh|ssh-keygen|OpenSSH|IdentityFile|authorized_keys)\b/i, "SSH keys/protocol", "key-management", "SSH host/user key rotation and protocol migration outside application scope"],
     [/\b(?:jsonwebtoken|jose|jwt)\b/i, "JWT library", "token", "JWT adapter and token compatibility contract"],
     [/\b(?:KMSClient|@aws-sdk\/client-kms|cloudkms)\b/, "Cloud KMS", "key-management", "Cloud KMS adapter and authorized test environment"],
     [/\b(?:pkcs11|pkcs#11|hsm)\b/i, "HSM/PKCS#11", "key-management", "Hardware-backed adapter and operator input"],

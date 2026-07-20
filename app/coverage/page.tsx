@@ -7,7 +7,7 @@ const mapping = [
   { primitive: "ECDSA signatures", standard: "FIPS 204", target: "ML-DSA-65", state: "Auto-migratable" },
   { primitive: "ECDH key agreement", standard: "FIPS 203", target: "ML-KEM-768 KEM-DEM", state: "Owner-unlockable" },
   { primitive: "Finite-field Diffie-Hellman", standard: "FIPS 203", target: "ML-KEM-768 KEM-DEM", state: "Owner-unlockable" },
-  { primitive: "TLS/X.509, external verifiers, KMS/HSM, non-Node", standard: "—", target: "Migration plan only", state: "External" },
+  { primitive: "TLS/X.509, SSH, external verifiers, KMS/HSM, non-Node", standard: "—", target: "Migration plan only", state: "External" },
   { primitive: "AES-256 / SHA-384+ (symmetric)", standard: "—", target: "No migration required", state: "Not vulnerable" },
 ];
 
