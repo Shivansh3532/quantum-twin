@@ -46,7 +46,7 @@ async function sourceFiles(root: string, config?: QuantumTwinConfig) {
   return files;
 }
 
-function scanSource(root: string, file: string, source: string): ScannerHit[] {
+function scanSource(root: string, file: string, source: string, config?: QuantumTwinConfig): ScannerHit[] {
   const scriptKind = /x$/i.test(path.extname(file)) ? ts.ScriptKind.TSX : /\.js/i.test(path.extname(file)) ? ts.ScriptKind.JS : ts.ScriptKind.TS;
   const ast = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, scriptKind);
   const relative = path.relative(root, file).replaceAll("\\", "/");
@@ -72,9 +72,11 @@ function scanSource(root: string, file: string, source: string): ScannerHit[] {
     }
   }
   const hits: ScannerHit[] = [];
-  const add = (node: ts.Node, operation: ScannerHit["operation"], technology: string, status: ScannerHit["status"], algorithmEvidence: string, reason?: string, requiredAdapter?: string) => {
-    const line = ast.getLineAndCharacterOfPosition(node.getStart(ast)).line + 1;
-    hits.push({ file: relative, line, operation, technology, importForm, algorithmEvidence, confidence: status === "supported" ? .98 : status === "discovery-only" ? .9 : .55, status, snippet: node.getText(ast).slice(0, 240), reason, requiredAdapter });
+  const add = (node: ts.Node | number, operation: ScannerHit["operation"], technology: string, status: ScannerHit["status"], algorithmEvidence: string, reason?: string, requiredAdapter?: string) => {
+    const position = typeof node === "number" ? node : node.getStart(ast);
+    const line = ast.getLineAndCharacterOfPosition(position).line + 1;
+    const snippet = typeof node === "number" ? source.slice(position, source.indexOf("\n", position) < 0 ? source.length : source.indexOf("\n", position)).trim() : node.getText(ast).slice(0, 240);
+    hits.push({ file: relative, line, operation, technology, importForm, algorithmEvidence, confidence: status === "supported" ? .98 : status === "discovery-only" ? .9 : .55, status, snippet, reason, requiredAdapter });
   };
   const visit = (node: ts.Node) => {
     if (ts.isCallExpression(node)) {
@@ -85,7 +87,8 @@ function scanSource(root: string, file: string, source: string): ScannerHit[] {
       if (cryptoName && ["sign", "verify", "createSign", "createVerify"].includes(cryptoName)) {
         const algorithm = node.arguments[0]?.getText(ast) ?? "dynamic";
         const operation = /verify/i.test(cryptoName) ? "verification" : "signing";
-        if (/sha(?:256|384|512)|rsa/i.test(algorithm)) add(node, operation, "native node:crypto RSA", "supported", algorithm);
+        const rsaEvidence = /rsa/i.test(algorithm) || node.arguments.slice(2).some(argument => /rsa/i.test(argument.getText(ast))) || config?.sourcePrimitive === "RSA";
+        if (rsaEvidence) add(node, operation, "native node:crypto RSA", "supported", algorithm);
         else if (algorithm !== "null") add(node, operation, "node:crypto ambiguous algorithm", "unknown", algorithm, "Algorithm cannot be proven as supported RSA", "Explicit algorithm and repository contract");
       }
     }
@@ -104,13 +107,16 @@ function scanSource(root: string, file: string, source: string): ScannerHit[] {
     [/\b(?:crypto\/rsa|rsa\.Sign)\b/, "Go cryptography", "unknown", "Go repository adapter"],
     [/\b(?:rsa::|ring::signature)\b/, "Rust cryptography", "unknown", "Rust repository adapter"]
   ] as const;
-  for (const [pattern, technology, operation, adapter] of discovery) if (pattern.test(source)) add(ast, operation, technology, "discovery-only", pattern.source, "Automatic migration unsupported", adapter);
+  for (const [pattern, technology, operation, adapter] of discovery) {
+    const match = pattern.exec(source);
+    if (match?.index !== undefined) add(match.index, operation, technology, "discovery-only", pattern.source, "Automatic migration unsupported", adapter);
+  }
   return hits;
 }
 
 export async function scanRepository(root: string, config?: QuantumTwinConfig) {
   const hits: ScannerHit[] = [];
-  for (const file of await sourceFiles(root, config)) hits.push(...scanSource(root, file, await readFile(file, "utf8")));
+  for (const file of await sourceFiles(root, config)) hits.push(...scanSource(root, file, await readFile(file, "utf8"), config));
   return hits.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 }
 

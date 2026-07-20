@@ -20,11 +20,11 @@ Quantum Twin gives the same immutable repository contract to two isolated Codex 
 
 Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
 
-It recursively discovers native RSA signing and verification in a trusted local Node repository, freezes a versioned contract, and starts two real `@openai/codex-sdk@0.144.6` builders with exact `gpt-5.6-sol`. Direct Cutover targets ML-DSA-65 only. Compatibility Bridge targets ML-DSA-65 while retaining RSA output required by a declared frozen consumer.
+Its local Repository Lab safely imports a strict public GitHub HTTPS URL, trusted folder, or ZIP into isolated storage and scans before any execution. Only defensible native RSA signing and verification plus a reviewed versioned contract and external harness can unlock two real `@openai/codex-sdk@0.144.6` builders using exact `gpt-5.6-sol`.
 
 A copied external compatibility harness runs twice. Deterministic TypeScript verifies commands, original tests, protected and writable boundaries, dependencies, native crypto use, ML-DSA verification, tamper rejection, wrong-key rejection, domain context, legacy compatibility, repeatability, diffs, and hashes. Failed candidates are ineligible. If none qualify, Quantum Twin returns NO SAFE WINNER.
 
-The public read-only explorer compares two genuine CommonJS/npm release-fixture runs. Compatibility required selects Bridge after Direct fails compatibility twice. Compatibility disabled selects Direct because both pass and Direct retains fewer RSA signatures.
+The public read-only explorer includes two genuine runs against the separate project-owned repository https://github.com/Shivansh3532/quantum-twin-demo-target. Compatibility required selects Bridge after Direct fails compatibility twice. Compatibility disabled selects Direct because both pass and Direct retains fewer RSA signatures.
 
 ## Problem
 
@@ -36,12 +36,12 @@ Generate competing implementations from one frozen contract, isolate builders, e
 
 ## How it works
 
-1. Recursive scanner records supported RSA signing and verification evidence.
-2. Versioned contract freezes source, commands, writable/protected paths, ML-DSA-65 context, compatibility requirement, external harness, dependency policy, and limits.
-3. Two isolated Codex SDK threads implement Direct and Bridge strategies.
-4. External deterministic gates run twice and hash evidence.
-5. TypeScript selects an eligible candidate or returns NO SAFE WINNER.
-6. GPT-5.6 explains immutable results after selection.
+1. Bounded local intake clones/imports into private isolated storage and runs an analysis-only scan.
+2. Recursive scanner separates supported, discovery-only, ambiguous, and blocking evidence; a hash name alone is not RSA proof.
+3. A reviewed versioned contract freezes source, commands, writable/protected paths, ML-DSA-65 context, compatibility requirement, external harness, dependency policy, and limits. Three explicit permissions are required.
+4. Two isolated Codex SDK threads implement Direct and Bridge strategies.
+5. External deterministic gates run twice and hash evidence.
+6. TypeScript selects an eligible candidate or returns NO SAFE WINNER; GPT-5.6 explains immutable results afterward.
 
 ## Exact Codex use
 
@@ -57,7 +57,7 @@ Node.js 24.18.0, TypeScript, Next.js, Zod, native `node:crypto` ML-DSA-65, Git i
 
 ## Design
 
-Editorial evidence workspace with a ten-second SCAN / COMPETE / PROVE flow, 60-second judge path, shareable strict-allowlist scenarios, genuine-run identity, visible result/eligibility/gate counts/decisive failures, progressive disclosure for full diffs and gate evidence, local-runner path, provenance, hashes, GPT limitations, skip link, keyboard-visible focus, aria-live changes, and read-only downloads.
+Editorial evidence workspace with a first-run system/authentication check, five local source modes, real clone/analyze states, immutable contract review, Permission and Trust Center, streamed backend states, candidate comparison, strict hosted scenarios, skip link, keyboard-visible focus, aria-live changes, responsive layout, and exact report downloads.
 
 ## Potential impact
 
@@ -74,15 +74,15 @@ Hosted evidence: modern desktop/mobile browser, no credentials. Local live: Wind
 ## Installation instructions
 
 ```bash
+git clone https://github.com/Shivansh3532/quantum-twin.git
+cd quantum-twin
 npx --yes pnpm@11.9.0 install --frozen-lockfile
-npx --yes pnpm@11.9.0 preflight
-npx --yes pnpm@11.9.0 demo
-npx --yes pnpm@11.9.0 dev
+npx --yes pnpm@11.9.0 app
 ```
 
 ## No-rebuild judge instructions
 
-Open https://quantum-twin.vercel.app. Compare compatibility required versus disabled. Expand evidence and download either report. Verify locally without rebuilding:
+Open https://quantum-twin.vercel.app/?scenario=public-compatibility, then `?scenario=public-direct`. Expand evidence and download either report. Verify locally without rebuilding:
 
 ```bash
 npx --yes pnpm@11.9.0 install --frozen-lockfile
@@ -103,7 +103,7 @@ https://github.com/Shivansh3532/quantum-twin
 
 ## Honest limitations
 
-Automatic migration supports trusted local Node.js TypeScript/JavaScript repositories using native RSA sign/verify, npm/pnpm, and explicit external harnesses. No URL/private repository ingestion, credentials, automatic PRs, non-Node migration, HSM/KMS/TLS migration, hostile-code sandbox, formal verification, certification, side-channel proof, security guarantee, or deployment approval.
+Automatic migration supports trusted local Node.js TypeScript/JavaScript repositories using native RSA sign/verify, npm/pnpm, and reviewed explicit external harnesses. Public URL intake is GitHub HTTPS only. No private repositories, credentials, SSH, other Git hosts, hosted execution, automatic PRs, non-Node migration, HSM/KMS/TLS migration, hostile-code sandbox, formal verification, certification, side-channel proof, security guarantee, or deployment approval.
 
 ## Authoritative references
 

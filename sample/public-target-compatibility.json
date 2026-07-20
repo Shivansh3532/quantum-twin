@@ -1,0 +1,431 @@
+{
+  "runId": "2026-07-19T23-27-44-115Z",
+  "startedAt": "2026-07-19T23:27:44.115Z",
+  "completedAt": "2026-07-19T23:30:13.627Z",
+  "repository": {
+    "name": "quantum-twin-demo-target",
+    "source": "https://github.com/Shivansh3532/quantum-twin-demo-target",
+    "resolvedCommit": "9cc00b69982ea5d0782ff5bf68267ba92d33311e"
+  },
+  "capabilities": {
+    "repository": {
+      "name": "quantum-twin-demo-target",
+      "source": "https://github.com/Shivansh3532/quantum-twin-demo-target",
+      "resolvedCommit": "9cc00b69982ea5d0782ff5bf68267ba92d33311e"
+    },
+    "language": [
+      "JavaScript"
+    ],
+    "moduleType": "commonjs",
+    "packageManager": "npm",
+    "findings": [
+      {
+        "file": "src/release-seal.cjs",
+        "line": 10,
+        "operation": "signing",
+        "technology": "native node:crypto RSA",
+        "importForm": "commonjs",
+        "algorithmEvidence": "\"RSA-SHA256\"",
+        "confidence": 0.98,
+        "status": "supported",
+        "snippet": "sign(\"RSA-SHA256\", payload, keys.rsaPrivateKey)"
+      },
+      {
+        "file": "src/release-seal.cjs",
+        "line": 16,
+        "operation": "verification",
+        "technology": "native node:crypto RSA",
+        "importForm": "commonjs",
+        "algorithmEvidence": "\"RSA-SHA256\"",
+        "confidence": 0.98,
+        "status": "supported",
+        "snippet": "verify(\"RSA-SHA256\", payload, keys.rsaPublicKey, Buffer.from(envelope.signature, \"base64url\"))"
+      }
+    ],
+    "supported": [
+      {
+        "file": "src/release-seal.cjs",
+        "line": 10,
+        "operation": "signing",
+        "technology": "native node:crypto RSA",
+        "importForm": "commonjs",
+        "algorithmEvidence": "\"RSA-SHA256\"",
+        "confidence": 0.98,
+        "status": "supported",
+        "snippet": "sign(\"RSA-SHA256\", payload, keys.rsaPrivateKey)"
+      },
+      {
+        "file": "src/release-seal.cjs",
+        "line": 16,
+        "operation": "verification",
+        "technology": "native node:crypto RSA",
+        "importForm": "commonjs",
+        "algorithmEvidence": "\"RSA-SHA256\"",
+        "confidence": 0.98,
+        "status": "supported",
+        "snippet": "verify(\"RSA-SHA256\", payload, keys.rsaPublicKey, Buffer.from(envelope.signature, \"base64url\"))"
+      }
+    ],
+    "discoveryOnly": [],
+    "blockers": [],
+    "automaticMigrationSupported": true,
+    "configuration": "found"
+  },
+  "baselineCommit": "15618dc6dec8e9e000fd7bc3786aeb5a8a56bc42",
+  "fixtureManifestSha256": "cb454c7883d824e3b218ac890bbd422a29284b1e216c033bdbef64b98ff20ca6",
+  "configSha256": "4ff2bc8bdb2c08b0cf06e030ee4f8d18ca859abef88eff4b837512a0bb7553e6",
+  "nodeVersion": "v24.18.0",
+  "platform": "win32 10.0.26200 x64",
+  "codexSdkVersion": "0.144.6",
+  "model": "gpt-5.6-sol",
+  "constraintProfile": {
+    "legacyCompatibilityRequired": true
+  },
+  "repositoryContract": {
+    "version": 1,
+    "target": {
+      "primitive": "ml-dsa-65",
+      "context": "quantum-twin:release-seal:v1"
+    },
+    "writablePaths": [
+      "src/release-seal.cjs"
+    ],
+    "protectedPaths": [
+      "package.json",
+      "package-lock.json",
+      "cli.cjs",
+      "test/release-seal.test.cjs",
+      "quantum-twin.config.json",
+      "quantum-twin.compatibility.mjs"
+    ],
+    "dependencyPolicy": "forbid"
+  },
+  "finding": {
+    "primitive": "RSA",
+    "operations": [
+      "signing",
+      "verification"
+    ],
+    "keyLocation": "keys.rsaPrivateKey and keys.rsaPublicKey",
+    "publicBoundary": "release-seal signature envelope",
+    "affectedFiles": [
+      "src/release-seal.cjs"
+    ],
+    "confidence": 0.98,
+    "evidence": [
+      "sign(\"RSA-SHA256\", payload, keys.rsaPrivateKey)",
+      "verify(\"RSA-SHA256\", payload, keys.rsaPublicKey, Buffer.from(envelope.signature, \"base64url\"))"
+    ]
+  },
+  "candidates": [
+    {
+      "strategy": "direct",
+      "branch": "candidate/direct",
+      "threadId": "019f7cb5-4a29-78d1-b5e3-28314cc9ea09",
+      "generationDurationMs": 123862,
+      "repairAttempted": false,
+      "generationStatus": "gate_failed",
+      "worktreeCommit": "92a12202cb03a8fe0ea452f4919baeebfe6181d7",
+      "diffSha256": "8c3b36b78ce1416bd84f2b9c47be3d0ea495770e6cc61d5d3133220b4fb94371",
+      "diff": "diff --git a/src/release-seal.cjs b/src/release-seal.cjs\nindex 172e95d..45fa459 100644\n--- a/src/release-seal.cjs\n+++ b/src/release-seal.cjs\n@@ -2,18 +2,18 @@ const { sign, verify } = require(\"node:crypto\");\n \n const canonical = manifest => Buffer.from(JSON.stringify({ artifact: manifest.artifact, bytes: manifest.bytes, sha256: manifest.sha256 }));\n \n-function sealRelease(manifest, keys) {\n+function sealRelease(manifest, keys, context) {\n   const payload = canonical(manifest);\n   return {\n-    version: 1,\n+    version: 2,\n     payload: payload.toString(\"base64url\"),\n-    signature: sign(\"RSA-SHA256\", payload, keys.rsaPrivateKey).toString(\"base64url\")\n+    signature: sign(null, payload, { key: keys.mlDsaPrivateKey, context: Buffer.from(context) }).toString(\"base64url\")\n   };\n }\n \n-function verifyRelease(envelope, keys) {\n+function verifyRelease(envelope, keys, context) {\n   const payload = Buffer.from(envelope.payload, \"base64url\");\n-  return verify(\"RSA-SHA256\", payload, keys.rsaPublicKey, Buffer.from(envelope.signature, \"base64url\"));\n+  return verify(null, payload, { key: keys.mlDsaPublicKey, context: Buffer.from(context) }, Buffer.from(envelope.signature, \"base64url\"));\n }\n \n module.exports = { sealRelease, verifyRelease };\n",
+      "changedLines": 10,
+      "commands": [
+        {
+          "command": "npm ci --ignore-scripts --offline",
+          "exitCode": 0,
+          "durationMs": 707
+        },
+        {
+          "command": "npm run typecheck",
+          "exitCode": 0,
+          "durationMs": 321
+        },
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "durationMs": 394
+        }
+      ],
+      "gates": [
+        {
+          "name": "install",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 707
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 321
+        },
+        {
+          "name": "original tests",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 394
+        },
+        {
+          "name": "baseline integrity",
+          "passed": true,
+          "detail": "declared protected paths unchanged"
+        },
+        {
+          "name": "writable boundary",
+          "passed": true,
+          "detail": "src/release-seal.cjs"
+        },
+        {
+          "name": "secret hygiene",
+          "passed": true,
+          "detail": "candidate diff scanned"
+        },
+        {
+          "name": "dependency policy",
+          "passed": true,
+          "detail": "forbid"
+        },
+        {
+          "name": "approved native API",
+          "passed": true,
+          "detail": "native node:crypto ML-DSA with context binding"
+        },
+        {
+          "name": "evaluator integrity (pass 1)",
+          "passed": true,
+          "detail": "copied external harness hash unchanged"
+        },
+        {
+          "name": "ML-DSA release seal verifies (pass 1)",
+          "passed": true,
+          "detail": "current consumer requires the migrated ML-DSA envelope"
+        },
+        {
+          "name": "tamper rejection (pass 1)",
+          "passed": true,
+          "detail": "modified payload rejected"
+        },
+        {
+          "name": "context binding (pass 1)",
+          "passed": true,
+          "detail": "wrong ML-DSA context rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 1)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 1)",
+          "passed": false,
+          "detail": "no valid legacy RSA signature"
+        },
+        {
+          "name": "evaluator integrity (pass 2)",
+          "passed": true,
+          "detail": "copied external harness hash unchanged"
+        },
+        {
+          "name": "ML-DSA release seal verifies (pass 2)",
+          "passed": true,
+          "detail": "current consumer requires the migrated ML-DSA envelope"
+        },
+        {
+          "name": "tamper rejection (pass 2)",
+          "passed": true,
+          "detail": "modified payload rejected"
+        },
+        {
+          "name": "context binding (pass 2)",
+          "passed": true,
+          "detail": "wrong ML-DSA context rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 2)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 2)",
+          "passed": false,
+          "detail": "no valid legacy RSA signature"
+        },
+        {
+          "name": "repeatability",
+          "passed": false,
+          "detail": "complete external evaluator ran twice"
+        }
+      ],
+      "measurements": {
+        "rsaSignatures": 0,
+        "envelopeBytes": 4608,
+        "signMedianMs": 0.9431000000040513,
+        "signP95Ms": 2.0056000000040513,
+        "verifyMedianMs": 0,
+        "verifyP95Ms": 0
+      }
+    },
+    {
+      "strategy": "bridge",
+      "branch": "candidate/bridge",
+      "threadId": "019f7cb5-4a15-76c2-a339-cc89a38f3656",
+      "generationDurationMs": 125783,
+      "repairAttempted": false,
+      "generationStatus": "eligible",
+      "worktreeCommit": "911845d4f3b7711febe741b8b25d574aff7831b0",
+      "diffSha256": "a792d91571f000dec757af286888508ba56c08ab5c06937522a55dddaf193c12",
+      "diff": "diff --git a/src/release-seal.cjs b/src/release-seal.cjs\nindex 172e95d..a233445 100644\n--- a/src/release-seal.cjs\n+++ b/src/release-seal.cjs\n@@ -2,18 +2,19 @@ const { sign, verify } = require(\"node:crypto\");\n \n const canonical = manifest => Buffer.from(JSON.stringify({ artifact: manifest.artifact, bytes: manifest.bytes, sha256: manifest.sha256 }));\n \n-function sealRelease(manifest, keys) {\n+function sealRelease(manifest, keys, context) {\n   const payload = canonical(manifest);\n   return {\n-    version: 1,\n+    version: 2,\n     payload: payload.toString(\"base64url\"),\n-    signature: sign(\"RSA-SHA256\", payload, keys.rsaPrivateKey).toString(\"base64url\")\n+    signature: sign(null, payload, { key: keys.mlDsaPrivateKey, context: Buffer.from(context) }).toString(\"base64url\"),\n+    legacySignature: sign(\"RSA-SHA256\", payload, keys.rsaPrivateKey).toString(\"base64url\")\n   };\n }\n \n-function verifyRelease(envelope, keys) {\n+function verifyRelease(envelope, keys, context) {\n   const payload = Buffer.from(envelope.payload, \"base64url\");\n-  return verify(\"RSA-SHA256\", payload, keys.rsaPublicKey, Buffer.from(envelope.signature, \"base64url\"));\n+  return verify(null, payload, { key: keys.mlDsaPublicKey, context: Buffer.from(context) }, Buffer.from(envelope.signature, \"base64url\"));\n }\n \n module.exports = { sealRelease, verifyRelease };\n",
+      "changedLines": 11,
+      "commands": [
+        {
+          "command": "npm ci --ignore-scripts --offline",
+          "exitCode": 0,
+          "durationMs": 575
+        },
+        {
+          "command": "npm run typecheck",
+          "exitCode": 0,
+          "durationMs": 357
+        },
+        {
+          "command": "npm test",
+          "exitCode": 0,
+          "durationMs": 533
+        }
+      ],
+      "gates": [
+        {
+          "name": "install",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 575
+        },
+        {
+          "name": "typecheck",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 357
+        },
+        {
+          "name": "original tests",
+          "passed": true,
+          "detail": "exit 0",
+          "durationMs": 533
+        },
+        {
+          "name": "baseline integrity",
+          "passed": true,
+          "detail": "declared protected paths unchanged"
+        },
+        {
+          "name": "writable boundary",
+          "passed": true,
+          "detail": "src/release-seal.cjs"
+        },
+        {
+          "name": "secret hygiene",
+          "passed": true,
+          "detail": "candidate diff scanned"
+        },
+        {
+          "name": "dependency policy",
+          "passed": true,
+          "detail": "forbid"
+        },
+        {
+          "name": "approved native API",
+          "passed": true,
+          "detail": "native node:crypto ML-DSA with context binding"
+        },
+        {
+          "name": "evaluator integrity (pass 1)",
+          "passed": true,
+          "detail": "copied external harness hash unchanged"
+        },
+        {
+          "name": "ML-DSA release seal verifies (pass 1)",
+          "passed": true,
+          "detail": "current consumer requires the migrated ML-DSA envelope"
+        },
+        {
+          "name": "tamper rejection (pass 1)",
+          "passed": true,
+          "detail": "modified payload rejected"
+        },
+        {
+          "name": "context binding (pass 1)",
+          "passed": true,
+          "detail": "wrong ML-DSA context rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 1)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 1)",
+          "passed": true,
+          "detail": "frozen RSA consumer accepted legacy signature"
+        },
+        {
+          "name": "evaluator integrity (pass 2)",
+          "passed": true,
+          "detail": "copied external harness hash unchanged"
+        },
+        {
+          "name": "ML-DSA release seal verifies (pass 2)",
+          "passed": true,
+          "detail": "current consumer requires the migrated ML-DSA envelope"
+        },
+        {
+          "name": "tamper rejection (pass 2)",
+          "passed": true,
+          "detail": "modified payload rejected"
+        },
+        {
+          "name": "context binding (pass 2)",
+          "passed": true,
+          "detail": "wrong ML-DSA context rejected"
+        },
+        {
+          "name": "wrong-key rejection (pass 2)",
+          "passed": true,
+          "detail": "unrelated ML-DSA key rejected"
+        },
+        {
+          "name": "legacy compatibility (pass 2)",
+          "passed": true,
+          "detail": "frozen RSA consumer accepted legacy signature"
+        },
+        {
+          "name": "repeatability",
+          "passed": true,
+          "detail": "complete external evaluator ran twice"
+        }
+      ],
+      "measurements": {
+        "rsaSignatures": 1,
+        "envelopeBytes": 4971,
+        "signMedianMs": 7.820200000016484,
+        "signP95Ms": 28.75899999999092,
+        "verifyMedianMs": 0,
+        "verifyP95Ms": 0
+      }
+    }
+  ],
+  "selectedCandidate": "bridge",
+  "verifierManifestSha256": "23c6b15e44288afde815fc1bbce54113dba3f496d7e52eca438c68257facb576",
+  "permissionNormalizations": [],
+  "explanation": {
+    "summary": "The immutable result selected the Compatibility Bridge candidate. It migrated the primary release seal to context-bound ML-DSA-65 while retaining one legacy RSA-SHA256 signature. The selected candidate passed every required gate in both evaluator runs, including ML-DSA verification, tamper rejection, context binding, wrong-key rejection, frozen RSA compatibility, evaluator integrity, and repeatability.",
+    "whySelected": "Selection was determined by the fixed gates, not by GPT or performance preference. The Direct Cutover candidate failed legacy compatibility in both evaluator passes because it produced no valid legacy RSA signature; its repeatability gate therefore also failed, making it ineligible. The Compatibility Bridge passed legacy compatibility in both passes and all other gates, making it the sole eligible candidate and therefore the deterministic selection. Its recorded measurements remain unchanged: 1 RSA signature, 4,971-byte envelope, 7.820200000016484 ms median signing time, 28.75899999999092 ms signing p95, and reported verification median/p95 of 0 ms.",
+    "limitations": [
+      "The selected bridge is larger and slower to sign than Direct Cutover because it emits both ML-DSA and legacy RSA signatures.",
+      "Legacy RSA remains present because legacy compatibility was required by the immutable constraint profile.",
+      "Direct Cutover's smaller 4,608-byte envelope and faster 0.9431000000040513 ms median signing time cannot override its failed mandatory gates.",
+      "The reported 0 ms verification measurements are preserved exactly and should not be interpreted as proof of literally zero verification cost.",
+      "This explanation does not alter the selected candidate, gate outcomes, diffs, hashes, or measurements."
+    ]
+  },
+  "reportSha256": "bff182b99449a1dc10577a2c1be382fb5986963c0de6c1dc4174ff7cac07c0c9"
+}

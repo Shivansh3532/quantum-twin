@@ -5,13 +5,14 @@
 - Two real isolated `gpt-5.6-sol` builders: `src/engine.ts`; genuine thread IDs and commits in both public reports.
 - Recursive AST scanner and deterministic GPT contradiction check: `src/scanner.ts`, `src/ai.ts`.
 - Versioned repository contract and containment: `src/config.ts`, `src/repository.ts`.
+- Strict public GitHub/folder/ZIP analysis-before-execution intake: `src/intake.ts`; Permission and Trust Center: `app/repository-lab.tsx`.
 - Copied external harness, two passes, immutable boundaries, deterministic selection, NO SAFE WINNER, hashes: `src/engine.ts`.
 - Independent machine-readable verifier and negative cases: `src/report.ts`, `test/report.test.ts`, `pnpm verify-samples`.
-- Cross-platform CI: frozen install, typecheck, 21 tests, sample verification, build, secret scan on Windows and Ubuntu.
+- Cross-platform CI: frozen install, typecheck, 37 tests, five-report verification, build, secret scan on Windows and Ubuntu.
 
 ## Design
 
-- Hosted two-scenario explorer: https://quantum-twin.vercel.app.
+- Hosted four-scenario explorer plus one-command local Repository Lab: https://quantum-twin.vercel.app and `pnpm app`.
 - Compatibility switch changes genuine report instantly without writes or arbitrary fetching.
 - Ten-second SCAN / COMPETE / PROVE flow, direct actions, 60-second judge path, and clear hosted-versus-local boundary.
 - Default hierarchy shows result, eligibility, gate counts, decisive failures, hash, and download; progressive disclosure preserves complete evidence.
@@ -21,11 +22,11 @@
 
 Audience: application security engineers, platform/security teams, and maintainers of Node services with deployed RSA verifiers. NIST/NCCoE/CISA sources establish current migration and inventory need. Quantum Twin demonstrates how maintainers can compare implementations against explicit compatibility rather than accept one generated rewrite.
 
-Generality evidence: TypeScript ESM update service, CommonJS npm release CLI, and Next-style TypeScript server utility. Automatic scope remains deliberately narrow.
+Generality evidence: a separate public project-owned CommonJS npm release CLI at https://github.com/Shivansh3532/quantum-twin-demo-target plus three bundled non-identical fixtures. Automatic scope remains deliberately narrow.
 
 ## Quality of idea
 
-Traditional scanners identify cryptography. One coding-agent patch produces one plausible implementation. Quantum Twin separates discovery, isolated competing implementation, external evaluation, deterministic selection, provenance, and refusal. Same release fixture selects Bridge when compatibility is required and Direct when disabled. GPT explains but cannot overrule evidence or promote a failed candidate.
+Traditional scanners identify cryptography. One coding-agent patch produces one plausible implementation. Quantum Twin separates discovery, isolated competing implementation, external evaluation, deterministic selection, provenance, and refusal. The independent public target selects Bridge when compatibility is required and Direct when disabled. GPT explains but cannot overrule evidence or promote a failed candidate. URL intake scans and requires contract review before any execution.
 
 ## Fast verification
 
@@ -33,4 +34,6 @@ Traditional scanners identify cryptography. One coding-agent patch produces one 
 pnpm verify-samples
 pnpm qt verify --report sample/release-cli-compatibility.json
 pnpm qt verify --report sample/release-cli-direct.json
+pnpm qt verify --report sample/public-target-compatibility.json
+pnpm qt verify --report sample/public-target-direct.json
 ```
