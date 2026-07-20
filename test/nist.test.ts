@@ -62,6 +62,16 @@ describe("NIST coverage engine", () => {
     expect(assessNistPosture([hit({ primitive: "SYMMETRIC", technology: "aes-256-gcm", status: "unknown" })]).badge).toBe("NOT_APPLICABLE");
   });
 
+  it("owner confirmation makes owner-unlockable boundaries migratable", () => {
+    const hits = [hit({ primitive: "ECDH", operation: "key-management", status: "unknown", technology: "native node:crypto ECDH key agreement" })];
+    expect(assessNistPosture(hits).counts.ownerUnlockable).toBe(1);
+    const confirmed = assessNistPosture(hits, new Set(), { ownerConfirmed: true });
+    expect(confirmed.counts.ownerUnlockable).toBe(0);
+    expect(confirmed.counts.autoMigratable).toBe(1);
+    expect(confirmed.ownerConfirmed).toBe(true);
+    expect(confirmed.ownerActions.length).toBe(0);
+  });
+
   it("is deterministic (stable posture hash for identical input)", () => {
     const hits = [hit({ primitive: "RSA-SIG" }), hit({ primitive: "ECDSA", line: 2 })];
     expect(assessNistPosture(hits).sha256).toBe(assessNistPosture(hits).sha256);

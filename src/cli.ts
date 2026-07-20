@@ -30,7 +30,7 @@ else if (action === "demo" || action === "demo-no-compat") {
   if (!result.valid) process.exitCode = 1;
 } else if (action === "nist") {
   const hits = await scanRepository(path.resolve(required("--repo")));
-  const posture = assessNistPosture(hits);
+  const posture = assessNistPosture(hits, new Set(), { ownerConfirmed: args.includes("--confirm-owned") });
   console.log(JSON.stringify({ badge: posture.badge, badgeLabel: posture.badgeLabel, completePercent: posture.completePercent, achievable: posture.achievable, counts: posture.counts, ownerActions: posture.ownerActions, remainingPlan: posture.remainingPlan, boundaries: posture.boundaries, sha256: posture.sha256 }, null, 2));
   if (posture.counts.external > 0) process.exitCode = 2;
 }

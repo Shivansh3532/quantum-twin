@@ -48,6 +48,7 @@ export type NistPosture = {
   };
   completePercent: number;      // migrated / vulnerable
   achievable: boolean;          // true when no external boundary blocks 100%
+  ownerConfirmed: boolean;      // owner asserted every boundary is application-owned
   badge: Badge;
   badgeLabel: string;
   ownerActions: string[];
@@ -131,12 +132,20 @@ const OWNER_ACTION: Partial<Record<NistPrimitive, (entry: CbomEntry) => string>>
 
 const EXTERNAL_PLAN = (entry: CbomEntry) => `${entry.technology} at ${entry.file}:${entry.line}: outside application-owned scope — follow the NIST migration plan (inventory, prioritize, transition, crypto-agility) with the responsible key/certificate authority.`;
 
-export function computePosture(cbom: CbomEntry[]): NistPosture {
+export type PostureOptions = { ownerConfirmed?: boolean };
+
+export function computePosture(cbom: CbomEntry[], options: PostureOptions = {}): NistPosture {
+  const ownerConfirmed = options.ownerConfirmed ?? false;
+  // When the owner asserts every boundary is application-owned, owner-unlockable
+  // boundaries become directly migratable (their NIST target is already known).
+  // External boundaries never move — ownership cannot be asserted for them.
+  const effective = (entry: CbomEntry): CoverageState =>
+    ownerConfirmed && entry.coverageState === "owner-unlockable" ? "auto-migratable" : entry.coverageState;
   const vulnerable = cbom.filter(entry => entry.quantumVulnerable);
   const migrated = vulnerable.filter(entry => entry.migrated);
-  const autoMigratable = vulnerable.filter(entry => !entry.migrated && entry.coverageState === "auto-migratable");
-  const ownerUnlockable = vulnerable.filter(entry => !entry.migrated && entry.coverageState === "owner-unlockable");
-  const external = vulnerable.filter(entry => entry.coverageState === "external");
+  const autoMigratable = vulnerable.filter(entry => !entry.migrated && effective(entry) === "auto-migratable");
+  const ownerUnlockable = vulnerable.filter(entry => !entry.migrated && effective(entry) === "owner-unlockable");
+  const external = vulnerable.filter(entry => effective(entry) === "external");
   const notVulnerable = cbom.filter(entry => !entry.quantumVulnerable);
 
   const completePercent = vulnerable.length === 0 ? 100 : Math.round((migrated.length / vulnerable.length) * 100);
@@ -171,6 +180,7 @@ export function computePosture(cbom: CbomEntry[]): NistPosture {
     },
     completePercent,
     achievable,
+    ownerConfirmed,
     badge,
     badgeLabel,
     ownerActions,
@@ -180,6 +190,6 @@ export function computePosture(cbom: CbomEntry[]): NistPosture {
 }
 
 // Convenience: scanner hits -> full posture in one call.
-export function assessNistPosture(hits: ScannerHit[], migratedIds: Set<string> = new Set()): NistPosture {
-  return computePosture(buildCbom(hits, migratedIds));
+export function assessNistPosture(hits: ScannerHit[], migratedIds: Set<string> = new Set(), options: PostureOptions = {}): NistPosture {
+  return computePosture(buildCbom(hits, migratedIds), options);
 }
