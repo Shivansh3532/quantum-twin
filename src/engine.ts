@@ -7,11 +7,11 @@ import { inspectRepository } from "./capabilities.ts";
 import { loadConfig, type QuantumTwinConfig } from "./config.ts";
 import { classifyWithGpt, explainWithGpt } from "./ai.ts";
 import { type CandidateResult, type Gate, type HarnessResult, MODEL, SDK_VERSION, type RunReport } from "./domain.ts";
-import { copyRepository } from "./repository.ts";
+import { copyRepository, normalizeWritablePermissions } from "./repository.ts";
 import { command, fileSha256, manifest, sha256 } from "./util.ts";
 import { scanRepository } from "./scanner.ts";
 
-const root = process.cwd();
+const root = path.join(/*turbopackIgnore: true*/ process.cwd());
 const strategies = ["direct", "bridge"] as const;
 
 const execute = (parts: string[], cwd: string, timeout: number) => command(parts[0]!, parts.slice(1), cwd, timeout);
@@ -100,16 +100,17 @@ export function select(candidates: CandidateResult[]) {
   return [...eligible].sort((a, b) => (a.measurements?.rsaSignatures ?? Number.MAX_SAFE_INTEGER) - (b.measurements?.rsaSignatures ?? Number.MAX_SAFE_INTEGER) || a.changedLines - b.changedLines || (a.measurements?.envelopeBytes ?? Number.MAX_SAFE_INTEGER) - (b.measurements?.envelopeBytes ?? Number.MAX_SAFE_INTEGER))[0]!.strategy;
 }
 
-export async function runRepository(source: string, configPath: string, allowExec: boolean, compatibilityOverride?: boolean): Promise<RunReport> {
+export async function runRepository(source: string, configPath: string, allowExec: boolean, compatibilityOverride?: boolean, repositoryOverride?: RunReport["repository"], onEvent?: (state: "building" | "evaluating") => void): Promise<RunReport> {
   if (!allowExec) throw new Error("Repository execution blocked. Re-run with explicit --allow-exec acknowledgment.");
   const startedAt = new Date().toISOString(), runId = startedAt.replace(/[:.]/g, "-");
   const runRoot = path.join(root, "runs", runId), baseline = path.join(runRoot, "baseline");
-  const inspected = await inspectRepository(source, configPath);
+  const inspected = await inspectRepository(source, configPath, repositoryOverride);
   const loaded = inspected.config ?? await loadConfig(configPath);
   const config = compatibilityOverride === undefined ? loaded : { ...loaded, legacyCompatibilityRequired: compatibilityOverride };
   if (!inspected.report.automaticMigrationSupported) throw new Error(`Automatic migration blocked: ${inspected.report.configuration === "needed" ? "configuration needed" : "unsupported or ambiguous findings detected"}`);
   await mkdir(runRoot, { recursive: true });
   await copyRepository(source, baseline, config.limits);
+  const permissionNormalizations = await normalizeWritablePermissions(baseline, config.writablePaths);
   const install = await execute(config.commands.install, baseline, config.timeouts.commandMs);
   if (install.exitCode) throw new Error(`Baseline install failed: ${install.stderr}`);
   const harness = path.join(runRoot, "external-compatibility-harness.ts");
@@ -131,7 +132,9 @@ export async function runRepository(source: string, configPath: string, allowExe
     if (result.exitCode) throw new Error(result.stderr);
     return [strategy, location];
   }))) as Record<typeof strategies[number], string>;
+  onEvent?.("building");
   const built = await Promise.allSettled(strategies.map(strategy => buildCandidate(strategy, worktrees[strategy], config, contract)));
+  onEvent?.("evaluating");
   const candidates: CandidateResult[] = [];
   for (const [index, strategy] of strategies.entries()) {
     const outcome = built[index]!;
@@ -151,7 +154,7 @@ export async function runRepository(source: string, configPath: string, allowExe
   }
   const selectedCandidate = select(candidates);
   const repositoryContract = { version: config.version, target: config.target, writablePaths: config.writablePaths, protectedPaths: config.protectedPaths, dependencyPolicy: config.dependencyPolicy };
-  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), repository: inspected.report.repository, capabilities: inspected.report, baselineCommit, fixtureManifestSha256: baselineManifest.sha256, configSha256: fileSha256(await readFile(configPath)), nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: config.legacyCompatibilityRequired }, repositoryContract, finding, candidates, selectedCandidate, verifierManifestSha256: harnessHash };
+  const immutable = { runId, startedAt, completedAt: new Date().toISOString(), repository: inspected.report.repository, capabilities: inspected.report, baselineCommit, fixtureManifestSha256: baselineManifest.sha256, configSha256: fileSha256(await readFile(configPath)), nodeVersion: process.version, platform: `${os.platform()} ${os.release()} ${os.arch()}`, codexSdkVersion: SDK_VERSION, model: MODEL, constraintProfile: { legacyCompatibilityRequired: config.legacyCompatibilityRequired }, repositoryContract, finding, candidates, selectedCandidate, verifierManifestSha256: harnessHash, permissionNormalizations };
   let explanation: unknown;
   try { explanation = await explainWithGpt(root, immutable); } catch (error) { explanation = { unavailable: error instanceof Error ? error.message : String(error) }; }
   const withoutHash = JSON.stringify({ ...immutable, explanation }, null, 2);

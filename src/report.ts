@@ -34,7 +34,7 @@ export const runReportSchema = z.object({
   codexSdkVersion: z.string().min(1), model: z.string().min(1), constraintProfile: z.object({ legacyCompatibilityRequired: z.boolean() }),
   repositoryContract: z.object({ version: z.literal(1), target: z.object({ primitive: z.literal("ml-dsa-65"), context: z.string().min(8) }), writablePaths: z.array(z.string()).min(1), protectedPaths: z.array(z.string()).min(1), dependencyPolicy: z.enum(["forbid", "allow-declared"]) }),
   finding: cryptoFindingSchema, candidates: z.array(candidateSchema).min(2), selectedCandidate: z.enum(["direct", "bridge"]).nullable(),
-  verifierManifestSha256: hex, explanation: explanationSchema.or(z.object({ unavailable: z.string() })), reportSha256: hex,
+  verifierManifestSha256: hex, permissionNormalizations: z.array(z.string()).optional(), explanation: explanationSchema.or(z.object({ unavailable: z.string() })), reportSha256: hex,
 }).strict();
 
 export type VerifiedRunReport = z.infer<typeof runReportSchema>;
@@ -82,7 +82,8 @@ export function verifyReportData(value: unknown, report = "inline"): Verificatio
     const expectedRepeatability = [...pass1, ...pass2].every(gate => gate.passed);
     add(`repeatability: ${candidate.strategy}`, Boolean(repeatability && repeatability.passed === expectedRepeatability), `recorded=${repeatability?.passed ?? "missing"}; expected=${expectedRepeatability}`);
   }
-  add("provenance", data.model.length > 0 && data.codexSdkVersion.length > 0 && data.repository.source.startsWith("local:"), `${data.model}; SDK ${data.codexSdkVersion}; ${data.repository.source}`);
+  const publicGitHub = /^https:\/\/github\.com\/[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+$/.test(data.repository.source);
+  add("provenance", data.model.length > 0 && data.codexSdkVersion.length > 0 && (data.repository.source.startsWith("local:") || publicGitHub), `${data.model}; SDK ${data.codexSdkVersion}; ${data.repository.source}`);
   const text = strings(data);
   const personalPath = /(?:[A-Za-z]:[\\/](?:Users|Documents and Settings)[\\/][^\\/]+|\/Users\/[^/]+\/|\/home\/[^/]+\/)/i;
   add("personal paths", !text.some(item => personalPath.test(item)), "no absolute personal path");

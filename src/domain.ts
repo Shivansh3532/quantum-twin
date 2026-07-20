@@ -96,6 +96,7 @@ export type RunReport = {
   candidates: CandidateResult[];
   selectedCandidate: "direct" | "bridge" | null;
   verifierManifestSha256: string;
+  permissionNormalizations?: string[];
   explanation: unknown;
   reportSha256: string;
 };

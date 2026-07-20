@@ -29,6 +29,19 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] `final-judge-polish` passed local and clean-clone release gates; final main CI, Vercel parity, and `build-week-judge-ready` are recorded in the release handoff.
 - [x] Final product-experience pass adds ten-second flow, 60-second judge path, hosted/local unity, decisive-gate hierarchy, visible refusal principle, strict shareable scenarios, accessibility landmarks, and complete metadata without changing genuine evidence.
 
+## Repository Lab expansion
+
+- [x] Strict public GitHub HTTPS parser and hardened shallow clone; local path, Chromium folder, and bounded ZIP import into controlled storage.
+- [x] Analysis-only scanner and immutable contract/harness review execute no repository commands.
+- [x] Permission and Trust Center shows eight permissions and requires three acknowledgements enforced again by the backend.
+- [x] One-command `pnpm app` launcher performs authenticated preflight and binds production Next.js to `127.0.0.1`.
+- [x] Separate public MIT target: https://github.com/Shivansh3532/quantum-twin-demo-target at `9cc00b69982ea5d0782ff5bf68267ba92d33311e`.
+- [x] Genuine public-target compatibility report selects Bridge: `bff182b99449a1dc10577a2c1be382fb5986963c0de6c1dc4174ff7cac07c0c9`.
+- [x] Genuine public-target compatibility-disabled report selects Direct: `192bdf82cf91aba77c9a82d04154799efd4df1f505b939d22cfd8adba0cff252`.
+- [x] Existing report hashes `077f8dfc…` and `02546c9b…` remain valid.
+- [x] Local browser inspection: genuine clone/scan, contract, permission gating, desktop/tablet/mobile no-overflow, focus, labels, aria-live, and no console errors.
+- [ ] Final branch/main CI, Vercel exact-SHA parity, and `build-week-repository-lab` tag (release step).
+
 ## Submission blockers
 
 - [ ] Public YouTube demo under 3 minutes with required audio.

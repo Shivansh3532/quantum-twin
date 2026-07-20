@@ -32,6 +32,8 @@ describe("deterministic core", () => {
   });
   test("shareable scenario values are strictly allowlisted", () => {
     expect(parseScenario("direct")).toBe("direct");
+    expect(parseScenario("public-compatibility")).toBe("public-compatibility");
+    expect(parseScenario("public-direct")).toBe("public-direct");
     expect(parseScenario("compatibility")).toBe("compatibility");
     expect(parseScenario("../private")).toBe("compatibility");
     expect(parseScenario(null)).toBe("compatibility");
@@ -71,6 +73,22 @@ describe("general repository boundary", () => {
     const hits = await scanRepository(root);
     expect(hits.find(hit => hit.status === "unknown")?.technology).toContain("ambiguous");
     expect(hits.find(hit => hit.technology === "Python cryptography")?.requiredAdapter).toBe("Python repository adapter");
+  });
+
+  test("SHA-only calls stay ambiguous while explicit RSA evidence is supported", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "qt-rsa-evidence-"));
+    await writeFile(path.join(root, "verify.ts"), 'import { createVerify, verify } from "node:crypto";\ncreateVerify("SHA256");\nverify("sha256", data, rsaPublicKey, signature);');
+    const hits = await scanRepository(root);
+    expect(hits.find(hit => hit.snippet.includes("createVerify"))?.status).toBe("unknown");
+    expect(hits.find(hit => hit.snippet.startsWith("verify("))?.status).toBe("supported");
+  });
+
+  test("discovery findings preserve the actual matching line", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "qt-lines-"));
+    await writeFile(path.join(root, "service.ts"), "// header\n\nconst token = jsonwebtoken.sign(payload, key);\n");
+    const [hit] = await scanRepository(root);
+    expect(hit?.line).toBe(3);
+    expect(hit?.snippet).toContain("jsonwebtoken");
   });
 
   test("capability intake does not require package.json for discovery-only code", async () => {
@@ -136,11 +154,17 @@ describe("general repository boundary", () => {
     try {
       const compatibility = await getRecordedRun(new Request("http://localhost/api/runs/latest"));
       const direct = await getRecordedRun(new Request("http://localhost/api/runs/latest?scenario=direct"));
+      const publicCompatibility = await getRecordedRun(new Request("http://localhost/api/runs/latest?scenario=public-compatibility"));
+      const publicDirect = await getRecordedRun(new Request("http://localhost/api/runs/latest?scenario=public-direct"));
       const invalid = await getRecordedRun(new Request("http://localhost/api/runs/latest?scenario=../private"));
       expect(compatibility.status).toBe(200);
       expect((await compatibility.json()).selectedCandidate).toBe("bridge");
       expect(direct.status).toBe(200);
       expect((await direct.json()).selectedCandidate).toBe("direct");
+      expect(publicCompatibility.status).toBe(200);
+      expect((await publicCompatibility.json()).reportSha256).toBe("bff182b99449a1dc10577a2c1be382fb5986963c0de6c1dc4174ff7cac07c0c9");
+      expect(publicDirect.status).toBe(200);
+      expect((await publicDirect.json()).reportSha256).toBe("192bdf82cf91aba77c9a82d04154799efd4df1f505b939d22cfd8adba0cff252");
       expect(invalid.status).toBe(400);
     } finally { if (previous === undefined) delete process.env.VERCEL; else process.env.VERCEL = previous; }
   });

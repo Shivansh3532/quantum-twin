@@ -13,6 +13,7 @@ const commandSchema = z.array(z.string().min(1)).min(1);
 export const quantumTwinConfigSchema = z.object({
   version: z.literal(1),
   repository: z.object({ name: z.string().min(1) }),
+  sourcePrimitive: z.literal("RSA").optional(),
   includedSourceGlobs: z.array(z.string().min(1)).min(1),
   excludedGlobs: z.array(z.string().min(1)).default([]),
   writablePaths: z.array(relativePath).min(1),

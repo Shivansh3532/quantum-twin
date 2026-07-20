@@ -10,8 +10,12 @@
 - [x] Two genuine current-format hosted scenarios and deterministic report-verification command prepared.
 - [x] Copy-ready Devpost, video, judge-test, authoritative impact, novelty, and third-party notices prepared.
 - [x] Ten-second product flow, 60-second hosted judge path, local-runner path, NO SAFE WINNER principle, strict scenario URLs, accessibility, and application metadata prepared.
+- [x] One-command Local Repository Lab with strict public GitHub, trusted folder, Chromium folder, and ZIP import; analysis precedes execution.
+- [x] Independent public target and two genuine external reports prepared; hosted strict-allowlist scenarios preserve exact bytes.
+- [x] Reviewed contract, eight displayed permissions, and three backend-enforced acknowledgements gate isolated execution.
+- [x] Authentication uses official Codex login only; Quantum Twin has no API-key field or credential storage.
 - [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
-- [x] Merge verified productization branch and confirm deployed main SHA.
+- [ ] Merge `repository-lab`, confirm Windows/Ubuntu CI and exact deployed main SHA, then create `build-week-repository-lab`.
 - [ ] Record and upload public YouTube video under 3 minutes.
 - [ ] Video visibly shows product and audio covers project, Codex, and GPT-5.6.
 - [ ] Create Devpost project; add description, repository, hosted demo, video, category, and test instructions.

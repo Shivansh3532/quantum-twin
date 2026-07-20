@@ -2,21 +2,24 @@
 
 > Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
 
-## For judges — 60 seconds
+## For judges
 
-1. Open the no-credential hosted evidence explorer: **https://quantum-twin.vercel.app** and read **SCAN → COMPETE → PROVE**.
-2. Confirm **Recorded Verified Run** and **Genuine Recorded Codex Run**.
-3. Switch between:
-   - **Legacy compatibility required — Bridge selected**
-   - **Legacy compatibility disabled — Direct selected**
-4. Follow the visible **For judges: 60-second path**: result change, candidate diff, decisive gates, complete matrix, report download.
+- **Hosted evidence explorer:** https://quantum-twin.vercel.app — no credentials, no execution, immutable reports.
+- **One-command Local Repository Lab:** clone, install, then run `npx --yes pnpm@11.9.0 app`.
+- **Real public-URL workflow:** paste https://github.com/Shivansh3532/quantum-twin-demo-target, scan before execution, review the immutable contract and permissions, then explicitly authorize the isolated tournament.
+- **Exact automatic scope:** Node.js 24 TypeScript/JavaScript using native `node:crypto` RSA signing and verification, npm/pnpm, and a reviewed version-1 contract with external compatibility harness.
+- **Codex/GPT use:** two authenticated `@openai/codex-sdk@0.144.6` builders use exact `gpt-5.6-sol`; GPT classifies and explains evidence, while deterministic TypeScript alone controls gates, eligibility, and selection.
+- **Test without rebuilding:** `npx --yes pnpm@11.9.0 verify-samples`.
+- **Majority-core `/feedback` Session ID:** `019f774d-0364-76a3-bd72-cb806fe0109a`.
 
-Same CommonJS/npm repository. Same two strategies. One declared compatibility constraint changes which candidate is eligible. Hosted mode is read-only and never runs Codex, Git, worktrees, repository commands, or file writes.
+Hosted mode is read-only and never runs Codex, Git, worktrees, repository commands, intake, or file writes. Local Repository Lab supports the project-owned demo target, strict public GitHub HTTPS URLs, trusted local paths, Chromium folder import, and local ZIP import. Import and analysis never execute repository code.
 
 Shareable evidence states:
 
 - [Compatibility required — Bridge](https://quantum-twin.vercel.app/?scenario=compatibility)
 - [Compatibility disabled — Direct](https://quantum-twin.vercel.app/?scenario=direct)
+- [Independent public repository — Bridge](https://quantum-twin.vercel.app/?scenario=public-compatibility)
+- [Independent public repository — Direct](https://quantum-twin.vercel.app/?scenario=public-direct)
 
 ## Genuine hosted evidence
 
@@ -24,6 +27,8 @@ Shareable evidence states:
 |---|---|---|---|
 | Compatibility required | `2026-07-19T18-04-56-297Z` | Bridge | `077f8dfc267bb6f64fcec12b1919eefd6e0fb338e1f0cb6218e405301e93f9e9` |
 | Compatibility disabled | `2026-07-19T18-08-18-178Z` | Direct | `02546c9b3ef20586dd1e502f38643256b806ff64f08a6b6b1e4ef4fc24ac1311` |
+| Public target, compatibility required | `2026-07-19T23-27-44-115Z` | Bridge | `bff182b99449a1dc10577a2c1be382fb5986963c0de6c1dc4174ff7cac07c0c9` |
+| Public target, compatibility disabled | `2026-07-19T23-47-42-292Z` | Direct | `192bdf82cf91aba77c9a82d04154799efd4df1f505b939d22cfd8adba0cff252` |
 
 Both reports came from real `@openai/codex-sdk@0.144.6` runs using exact `gpt-5.6-sol`. They use the generalized repository engine, plural signing/verification classification, relative source identity, versioned contract, genuine Codex thread IDs and candidate commits, complete gates, and current report hashing. [`sample/run.json`](sample/run.json) is a byte-identical alias of the compatibility-required report.
 
@@ -37,18 +42,22 @@ pnpm verify-samples
 
 Invalid JSON, altered hashes or diffs, invalid selection, missing evaluator passes, contradictory repeatability, absolute personal paths, and obvious secret material return a nonzero exit code.
 
-## Local live tournament
+## Local Repository Lab
 
 Requirements: Node.js 24.18.0, Git, pnpm 11.9.0, and authenticated Codex. `OPENAI_API_KEY` is not required for the Codex SDK path.
 
 ```bash
+git clone https://github.com/Shivansh3532/quantum-twin.git
+cd quantum-twin
 npx --yes pnpm@11.9.0 install --frozen-lockfile
-npx --yes pnpm@11.9.0 preflight
-npx --yes pnpm@11.9.0 demo
-npx --yes pnpm@11.9.0 dev
+npx --yes pnpm@11.9.0 app
 ```
 
-`preflight` verifies exact model/SDK/runtime, Codex authentication, ML-DSA-65 support, context separation, and cancellation. Direct Responses API was not used because `OPENAI_API_KEY` was unavailable.
+`app` runs preflight, builds when needed, starts production Next.js on an available `127.0.0.1` port, prints and opens the URL, and closes with Ctrl+C. Authenticate first with `codex login` (ChatGPT) or `codex login --with-api-key` (API billing). Quantum Twin has no API-key field and never receives or stores credentials. `OPENAI_API_KEY` is not required for the authenticated Codex SDK path.
+
+The UI always imports into private ignored local storage, analyzes without execution, and shows findings, exact source commit, commands, boundaries, harness hash, limits, and eight permissions. Tournament execution remains disabled until the reviewed contract is valid, blockers are absent, and all three trust/command/Codex acknowledgements are accepted. The backend rechecks these conditions.
+
+The original CLI demo remains available as `pnpm demo`.
 
 Inspect another trusted local repository:
 
@@ -99,7 +108,7 @@ Automatic migration is intentionally limited to Node.js 24 TypeScript/JavaScript
 
 Discovery only: TLS/X.509, JWT, Cloud KMS, HSM/PKCS#11, third-party cryptography, Java, Python, .NET, Go, and Rust. These produce evidence and adapter requirements, never patches.
 
-Unsupported: public/private repository URL ingestion, credentials, SSH, automatic PRs, browser/Vercel repository execution, non-Node automatic migration, hostile-code sandboxing, HSM/KMS/certificate/TLS migration, formal verification, certification, side-channel proof, or deployment approval. See [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md).
+Unsupported: private repositories, credentials, SSH, non-GitHub hosts, redirects, automatic PRs, hosted repository intake/execution, non-Node automatic migration, hostile-code sandboxing, HSM/KMS/certificate/TLS migration, formal verification, certification, side-channel proof, or deployment approval. See [SUPPORTED_SYSTEMS.md](SUPPORTED_SYSTEMS.md).
 
 ## Fixtures and tests
 
@@ -129,7 +138,9 @@ Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
 
 ## Hosted mode and licensing
 
-Vercel sets `VERCEL=1`, forcing committed-sample mode. `POST /api/runs` returns 403. Recorded scenario downloads accept only `compatibility` or `direct`; no path or arbitrary JSON parameter exists. Vercel needs no environment variables and must never receive `OPENAI_API_KEY`.
+Vercel sets `VERCEL=1`, forcing committed-sample mode. Recorded scenario downloads accept only `compatibility`, `direct`, `public-compatibility`, or `public-direct`; no path or arbitrary JSON parameter exists. Vercel needs no environment variables and must never receive `OPENAI_API_KEY`. Hosted intake, system, streaming, and execution POST routes return 403.
+
+For recording localhost, use `pnpm app` production mode in an extension-free browser. Grammarly and similar extensions can inject attributes into development HTML; that is external to the application and should not be hidden with hydration-warning suppression.
 
 Repository is MIT licensed. UI uses project-owned text/CSS and system fonts; no external images, icons, logos, screenshots, music, or stock media. Dependency notices: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 

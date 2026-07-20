@@ -1,16 +1,13 @@
 # Security Boundary and Limitations
 
-- Source repository remains untouched; local input is copied into ignored run directory before Git initialization or commands.
-- URLs are rejected in current P0. No private credentials, SSH, arbitrary protocols, uploads, or pull requests.
-- Symlinks are rejected. Resolved paths must remain contained. File count, per-file size, total bytes, and scan time are bounded.
-- Commands are validated program-plus-argument arrays and executed without interpolated shell strings.
-- Unknown scripts run only after explicit local `--allow-exec`; this is acknowledgment, not hostile-code sandboxing.
-- Candidate Codex threads use isolated worktrees, workspace-write sandbox, disabled network/web search, and approval `never`.
-- Writable boundary is enforced from Git diff. Protected paths, tests, configuration, compatibility harness, manifests, lockfiles, and dependency policy are deterministic gates.
-- Compatibility harness is copied outside candidate roots and hash-checked before and after both evaluator passes.
-- Candidate diff secret scan, native `node:crypto`/ML-DSA/context checks, tamper rejection, wrong-key rejection, wrong-context rejection, compatibility, and repeatability fail closed.
-- GPT-5.6 may classify or explain. It cannot change gates, measurements, eligibility, selection, or suppress failures.
-- Vercel and `QT_RECORDED_MODE=1` are read-only. Hosted POST is HTTP 403; no Codex, Git, worktrees, repository commands, or runtime writes.
-- Test keys are ephemeral and never retained.
+- Public URL intake accepts only credential-free GitHub HTTPS repository URLs. HTTP, SSH, `git://`, `file://`, ports, queries, fragments, IP/localhost, other hosts, extra path segments, and redirects are rejected.
+- Git uses argument arrays with `shell:false`, shallow/no-tags/no-submodules, credential prompts and LFS smudge disabled, isolated empty config/hooks, all redirects disabled, bounded output, and timeout. Private repositories fail closed because no credentials are available.
+- Local path, Chromium folder, and ZIP imports copy only into controlled private ignored storage. Absolute/traversal/device/null/collision paths, symlinks/special files, nested archives, encryption, suspicious compression ratios, and size/file limits fail closed. Partial failures are removed.
+- Import and analysis execute no repository code. Analysis reads files, scans evidence, and validates the reviewed JSON contract and contained harness hash.
+- The source repository is never modified. Commands and Codex run only after three explicit acknowledgements and independent backend revalidation, inside an isolated copy/worktrees.
+- Commands are validated program-plus-argument arrays. No `chmod -R 777`; only minimum writable permissions inside isolated paths may be normalized, and every normalization is reported.
+- Candidate network/web search are disabled; approval is `never`. Writable boundaries, protected hashes, dependencies, secrets, native ML-DSA/context, tamper/wrong-key/wrong-context, compatibility, and repeatability are deterministic gates.
+- Quantum Twin has no API-key field and never receives, stores, logs, or writes API keys. Authentication is performed by official `codex login` flows and only safe status labels are displayed.
+- Vercel and `QT_RECORDED_MODE=1` are read-only. Intake, system, streaming, and execution POST endpoints return 403; hosted mode performs no Git, Codex, worktree, command, or runtime write.
 
-This tool does not sandbox hostile repositories, prove every side channel, certify FIPS modules, formally verify cryptography, approve production deployment, or make an entire system quantum-safe. Review candidate code and evidence with qualified security engineers before deployment.
+This is strong containment for trusted repositories, not a hostile-code sandbox. It does not formally verify cryptography, prove side-channel resistance, certify FIPS modules, approve production deployment, or make an entire system quantum-safe. Qualified security review remains required.
