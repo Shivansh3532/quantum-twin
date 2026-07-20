@@ -3,6 +3,8 @@ import { inspectRepository } from "./capabilities.ts";
 import { runDemo, runRepository } from "./engine.ts";
 import { preflight } from "./preflight.ts";
 import { verifyReportFile } from "./report.ts";
+import { scanRepository } from "./scanner.ts";
+import { assessNistPosture } from "./nist.ts";
 
 const args = process.argv.slice(2);
 const action = args[0];
@@ -26,5 +28,10 @@ else if (action === "demo" || action === "demo-no-compat") {
   const result = await verifyReportFile(required("--report"));
   console.log(JSON.stringify(result, null, 2));
   if (!result.valid) process.exitCode = 1;
+} else if (action === "nist") {
+  const hits = await scanRepository(path.resolve(required("--repo")));
+  const posture = assessNistPosture(hits);
+  console.log(JSON.stringify({ badge: posture.badge, badgeLabel: posture.badgeLabel, completePercent: posture.completePercent, achievable: posture.achievable, counts: posture.counts, ownerActions: posture.ownerActions, remainingPlan: posture.remainingPlan, boundaries: posture.boundaries, sha256: posture.sha256 }, null, 2));
+  if (posture.counts.external > 0) process.exitCode = 2;
 }
 else throw new Error(`Unknown command: ${action ?? "(missing)"}`);

@@ -8,6 +8,7 @@
 - **One-command Local Repository Lab:** clone, install, then run `npx --yes pnpm@11.9.0 app`.
 - **Real public-URL workflow:** paste https://github.com/Shivansh3532/quantum-twin-demo-target, scan before execution, review the immutable contract and permissions, then explicitly authorize the isolated tournament.
 - **Current automatic scope:** see the generated [/support](https://quantum-twin.vercel.app/support) matrix. FULLY SUPPORTED claims require detector, adapter, verifier, positive/negative tests, a complete system fixture, Windows and Ubuntu proof, and documentation; missing proof is downgraded.
+- **NIST PQC coverage:** `npx --yes pnpm@11.9.0 nist --repo <path>` inventories every quantum-vulnerable boundary (RSA, ECDSA, ECDH/DH, Web Crypto, JWT), maps each to FIPS 203/204, and awards `APPLICATION CRYPTOGRAPHY: NIST PQC COMPLETE` only when every boundary is covered. See [NIST_PQC_COVERAGE.md](NIST_PQC_COVERAGE.md) and [/coverage](https://quantum-twin.vercel.app/coverage).
 - **Codex/GPT use:** two authenticated `@openai/codex-sdk@0.144.6` builders use exact `gpt-5.6-sol`; GPT classifies and explains evidence, while deterministic TypeScript alone controls gates, eligibility, and selection.
 - **Test without rebuilding:** `npx --yes pnpm@11.9.0 verify-samples`.
 - **Majority-core `/feedback` Session ID:** `019f774d-0364-76a3-bd72-cb806fe0109a`.

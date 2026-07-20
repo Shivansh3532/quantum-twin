@@ -1,5 +1,22 @@
 # Judge test paths
 
+## NIST PQC coverage (no execution)
+
+Inventory the quantum-vulnerable cryptography of any local repository and see the
+coverage posture, FIPS mapping, and earned completeness badge — no Codex, no repo
+execution:
+
+```bash
+npx --yes pnpm@11.9.0 nist --repo proof-systems/ecdsa-sign-npm
+```
+
+Expected: two `ECDSA` boundaries, each `auto-migratable` to `ml-dsa-65` (FIPS 204),
+`badge: NONE` until migrated, and a deterministic posture hash. The migration proofs
+(ECDSA → ML-DSA-65 and ECDH → ML-KEM-768 with full negative crypto tests) run in
+`npx --yes pnpm@11.9.0 exec vitest run test/nist.test.ts`. The model is documented in
+[NIST_PQC_COVERAGE.md](NIST_PQC_COVERAGE.md) and rendered at
+[/coverage](https://quantum-twin.vercel.app/coverage).
+
 ## No-rebuild hosted path
 
 1. Open https://quantum-twin.vercel.app/?scenario=public-compatibility.

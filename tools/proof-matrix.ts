@@ -12,7 +12,8 @@ const proofs = [
   { name: "Mixed ESM/CommonJS worker npm", directory: "worker-mixed-npm", commands: [["npm", "ci", "--ignore-scripts"], ["npm", "run", "build"], ["npm", "test"]] },
   { name: "pnpm monorepo", directory: "pnpm-monorepo", commands: [["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"], ["pnpm", "test"]] },
   { name: "Yarn workspace", directory: "yarn-workspace", commands: [["corepack", "yarn", "install", "--immutable"], ["corepack", "yarn", "test"]] },
-  { name: "RSA encryption envelope", directory: "ml-kem-envelope-npm", commands: [["npm", "ci", "--ignore-scripts"], ["npm", "test"]] }
+  { name: "RSA encryption envelope", directory: "ml-kem-envelope-npm", commands: [["npm", "ci", "--ignore-scripts"], ["npm", "test"]] },
+  { name: "ECDSA sign/verify npm", directory: "ecdsa-sign-npm", commands: [["npm", "ci", "--ignore-scripts"], ["npm", "test"]] }
 ];
 
 const report: Array<{ name: string; manager: string; components: number; findings: number; commands: Array<{ command: string; durationMs: number }> }> = [];

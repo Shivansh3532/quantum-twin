@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "qt": "tsx src/cli.ts",
+    "nist": "tsx src/cli.ts nist",
     "demo": "tsx src/cli.ts demo",
     "demo-no-compat": "tsx src/cli.ts demo-no-compat",
     "preflight": "tsx src/cli.ts preflight",
