@@ -65,3 +65,12 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] Windows and Ubuntu `Non-Codex verification` CI both passed on pushed `main` (run `29721617224`): typecheck, test (57/57), proof-matrix, corepack-regression, verify-samples, build, secret-scan.
 - [x] Hosted Vercel deploy of the exact SHA verified live: `/`, `/lab`, `/support` return 200; new `POST /api/bundles/run` and `/api/bundles/analyze` execution routes return 403 (hosted execution boundary intact).
 - [x] Local browser QA of the running production build: `/`, `/lab` (empty live mode), `/demo` (labeled recorded Codex run), `/support` (matrix from `support-matrix.json`) render with no console errors.
+
+## NIST PQC coverage
+
+- [x] Deterministic NIST coverage engine (`src/nist.ts`): crypto bill of materials, three coverage states (auto-migratable / owner-unlockable / external), FIPS 203/204 mapping, owner-action model, and earned `APPLICATION CRYPTOGRAPHY: NIST PQC COMPLETE` badge awarded only at 100% coverage.
+- [x] Expanded detector (`src/scanner.ts`): native ECDSA, ECDH, Diffie-Hellman, Web Crypto (RSA-OAEP/RSA-PSS/ECDSA/ECDH), and RSA/ECDSA libraries (node-rsa, JSEncrypt, JWT RS256/ES256). Additive: existing RSA hits stay byte-identical.
+- [x] ECDSA→ML-DSA-65 (FIPS 204) migration proven end-to-end with `proof-systems/ecdsa-sign-npm` fixture and full negative crypto tests; support row FULLY_SUPPORTED (Windows+Ubuntu CI).
+- [x] ECDH envelope→ML-KEM-768 KEM-DEM (FIPS 203) proven with full negatives in `test/nist.test.ts`; support row EXPERIMENTAL pending a complete system fixture.
+- [x] `pnpm nist --repo <path>` CLI, `/coverage` page (FIPS mapping + coverage states from `support-matrix.json`), and [NIST_PQC_COVERAGE.md](NIST_PQC_COVERAGE.md); 26 new tests (83 total).
+- [x] Merged to `main` (`a588959`); Windows and Ubuntu CI green (run `29757084825`); `/coverage` deploys 200 and `/support` renders the new rows.
