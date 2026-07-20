@@ -32,5 +32,5 @@ export async function preflight() {
     let abortSignalCancelled = false;
     try { await thread.run("Wait and then reply.", { signal: controller.signal }); } catch { abortSignalCancelled = true; }
     return { nodeVersion: process.version, model: MODEL, codexSdkVersion: SDK_VERSION, authentication: { codexSdk: "authenticated", responsesApi: process.env.OPENAI_API_KEY ? "optional_key_present_not_logged" : "optional_not_configured" }, crypto, sdk: { threadId: thread.id, response: turn.finalResponse.trim(), abortSignalCancelled } };
-  } finally { await rm(temp, { recursive: true, force: true }); }
+  } finally { await rm(temp, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }).catch(() => {}); }
 }
