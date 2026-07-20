@@ -14,7 +14,7 @@ function glob(pattern: string) {
   return new RegExp(`^${escaped}$`);
 }
 
-async function sourceFiles(root: string, config?: QuantumTwinConfig) {
+async function sourceFiles(root: string, config?: QuantumTwinConfig, nodeOnly = false) {
   const started = performance.now();
   const limits = config?.limits ?? { maxFiles: 5_000, maxFileBytes: 2_000_000, maxTotalBytes: 50_000_000 };
   const scanMs = config?.timeouts.scanMs ?? 30_000;
@@ -33,7 +33,7 @@ async function sourceFiles(root: string, config?: QuantumTwinConfig) {
       if (info.isSymbolicLink()) throw new Error(`Symlinks are not accepted: ${relative}`);
       if (!contained(root, absolute)) throw new Error(`Path escapes repository: ${relative}`);
       if (info.isDirectory()) await walk(absolute);
-      else if (SOURCE.test(entry.name) && include.some(rule => rule.test(relative))) {
+      else if ((!nodeOnly || /\.(?:[cm]?[jt]sx?)$/i.test(entry.name)) && SOURCE.test(entry.name) && include.some(rule => rule.test(relative))) {
         if (++count > limits.maxFiles) throw new Error(`Scan exceeds ${limits.maxFiles} files`);
         if (info.size > limits.maxFileBytes) throw new Error(`File exceeds size limit: ${relative}`);
         bytes += info.size;
@@ -114,9 +114,9 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
   return hits;
 }
 
-export async function scanRepository(root: string, config?: QuantumTwinConfig) {
+export async function scanRepository(root: string, config?: QuantumTwinConfig, options: { nodeOnly?: boolean } = {}) {
   const hits: ScannerHit[] = [];
-  for (const file of await sourceFiles(root, config)) hits.push(...scanSource(root, file, await readFile(file, "utf8"), config));
+  for (const file of await sourceFiles(root, config, options.nodeOnly)) hits.push(...scanSource(root, file, await readFile(file, "utf8"), config));
   return hits.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line);
 }
 

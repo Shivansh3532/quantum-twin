@@ -2,8 +2,9 @@ import { describe, expect, test } from "vitest";
 import { mkdtemp, mkdir, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { analyzeIntake, clonePublicRepository, createFolderIntake, createZipIntake, discardIntake, IntakeError, parseGitHubRepositoryUrl, type GitRunner } from "../src/intake.ts";
-import { safeRelativePath } from "../src/repository.ts";
+import { analyzeIntake, clonePublicRepository, createFolderIntake, createGitHubIntake, createZipIntake, discardIntake, IntakeError, parseGitHubRepositoryUrl, readyIntake, validateAnalysisTree, type GitRunner } from "../src/intake.ts";
+import { assertSafeTree, safeRelativePath } from "../src/repository.ts";
+import type { QuantumTwinConfig } from "../src/config.ts";
 import { POST as intakePost } from "../app/api/intake/route.ts";
 import { POST as analyzePost } from "../app/api/intake/analyze/route.ts";
 import { POST as validatePost } from "../app/api/intake/validate/route.ts";
@@ -52,9 +53,55 @@ describe("public repository intake", () => {
     await expect(clonePublicRepository("https://github.com/a/b", path.join(root, "timeout"), { runner: async () => ({ exitCode: 1, stdout: "", stderr: "", timedOut: true }) })).rejects.toMatchObject({ code: "clone_timeout", status: 504 });
     await expect(clonePublicRepository("https://github.com/a/b", path.join(root, "missing"), { runner: async () => ({ exitCode: 1, stdout: "", stderr: "", missing: true }) })).rejects.toMatchObject({ code: "git_missing", status: 503 });
     const oversized = path.join(root, "oversized");
-    await expect(clonePublicRepository("https://github.com/a/b", oversized, { limits: { maxFiles: 1, maxFileBytes: 3, maxTotalBytes: 3 }, runner: async (_p, args) => { if (args[0] === "rev-parse") return { exitCode: 0, stdout: "a".repeat(40), stderr: "" }; await mkdir(oversized); await writeFile(path.join(oversized, "x"), "large"); return { exitCode: 0, stdout: "", stderr: "" }; } })).rejects.toThrow(/size limit/);
+    await expect(clonePublicRepository("https://github.com/a/b", oversized, { diskLimitBytes: 3, limits: { maxFiles: 1, maxFileBytes: 3, maxTotalBytes: 3 }, runner: async (_p, args) => { if (args[0] === "rev-parse") return { exitCode: 0, stdout: "a".repeat(40), stderr: "" }; await mkdir(oversized); await writeFile(path.join(oversized, "x"), "large"); return { exitCode: 0, stdout: "", stderr: "" }; } })).rejects.toThrow(/on disk/);
     const linked = path.join(root, "linked"), outside = await mkdtemp(path.join(os.tmpdir(), "qt-clone-outside-"));
     await expect(clonePublicRepository("https://github.com/a/b", linked, { runner: async (_p, args) => { if (args[0] === "rev-parse") return { exitCode: 0, stdout: "a".repeat(40), stderr: "" }; await mkdir(linked); await symlink(outside, path.join(linked, "escape"), "junction"); return { exitCode: 0, stdout: "", stderr: "" }; } })).rejects.toThrow(/Symlinks/);
+  });
+
+  test("analysis skips an oversized non-source fixture, reports it, and still scans source without executing", async () => {
+    const runner: GitRunner = async (_program, args, _cwd) => {
+      if (args[0] === "rev-parse") return { exitCode: 0, stdout: "b".repeat(40), stderr: "" };
+      const destination = args.at(-1)!;
+      await mkdir(path.join(destination, "src"), { recursive: true });
+      await mkdir(path.join(destination, "tests"), { recursive: true });
+      await writeFile(path.join(destination, "package.json"), JSON.stringify({ name: "oversized-analysis-fixture", type: "module" }));
+      await writeFile(path.join(destination, "src", "crypto.ts"), 'import { sign, verify } from "node:crypto";\nsign("RSA-SHA256", data, key);\nverify("RSA-SHA256", data, key, signature);\n');
+      await writeFile(path.join(destination, "tests", "nocks.db"), Buffer.alloc(2_000_001));
+      return { exitCode: 0, stdout: "", stderr: "" };
+    };
+    const intake = await createGitHubIntake("https://github.com/example/oversized-analysis-fixture", "github", { runner });
+    try {
+      const analysis = await analyzeIntake(intake.id);
+      expect(analysis.status).toBe("contract-missing");
+      expect(analysis.skippedFiles).toEqual([{ path: "tests/nocks.db", size: 2_000_001, reason: "Skipped from analysis: non-source artifact exceeds source-file limit" }]);
+      expect(analysis.report.supported.map(hit => hit.operation)).toEqual(expect.arrayContaining(["signing", "verification"]));
+      await expect(readyIntake(intake.id)).rejects.toMatchObject({ code: "intake_not_ready", status: 409 });
+    } finally { await discardIntake(intake.id); }
+  });
+
+  test("analysis rejects oversized source, config, and declared harness files precisely", async () => {
+    const limits = { maxFiles: 20, maxFileBytes: 64, maxTotalBytes: 4_096 };
+    const sourceRoot = await mkdtemp(path.join(os.tmpdir(), "qt-large-source-"));
+    await writeFile(path.join(sourceRoot, "source.ts"), "x".repeat(65));
+    await expect(validateAnalysisTree(sourceRoot, limits)).rejects.toThrow(/Oversized source code.*source\.ts/);
+
+    const configRoot = await mkdtemp(path.join(os.tmpdir(), "qt-large-config-"));
+    await writeFile(path.join(configRoot, "quantum-twin.config.json"), "x".repeat(65));
+    await expect(validateAnalysisTree(configRoot, limits)).rejects.toThrow(/Oversized Quantum Twin configuration/);
+
+    const harnessRoot = await mkdtemp(path.join(os.tmpdir(), "qt-large-harness-"));
+    await writeFile(path.join(harnessRoot, "compatibility.bin"), "x".repeat(65));
+    const config: QuantumTwinConfig = {
+      version: 1, repository: { name: "fixture" }, sourcePrimitive: "RSA", includedSourceGlobs: ["src/**/*.ts"], excludedGlobs: [], writablePaths: ["src"], protectedPaths: ["test"], packageManager: "pnpm",
+      commands: { install: ["pnpm", "install"], typecheck: ["pnpm", "typecheck"], test: ["pnpm", "test"] }, compatibilityHarness: "compatibility.bin", legacyCompatibilityRequired: true,
+      target: { primitive: "ml-dsa-65", context: "quantum-twin:test:v1" }, dependencyPolicy: "forbid", timeouts: { scanMs: 1_000, commandMs: 1_000, candidateMs: 10_000 }, limits
+    };
+    await expect(validateAnalysisTree(harnessRoot, limits, config)).rejects.toThrow(/Oversized declared compatibility harness.*compatibility\.bin/);
+
+    const skippedRoot = await mkdtemp(path.join(os.tmpdir(), "qt-large-irrelevant-"));
+    await writeFile(path.join(skippedRoot, "fixture.db"), "x".repeat(65));
+    await expect(validateAnalysisTree(skippedRoot, limits)).resolves.toEqual([{ path: "fixture.db", size: 65, reason: "Skipped from analysis: non-source artifact exceeds source-file limit" }]);
+    await expect(assertSafeTree(skippedRoot, limits)).rejects.toThrow(/File exceeds size limit: fixture\.db/);
   });
 });
 

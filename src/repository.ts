@@ -19,8 +19,9 @@ export function safeRelativePath(value: string) {
   return segments.join("/");
 }
 
-export async function assertSafeTree(root: string, limits = { maxFiles: 5_000, maxFileBytes: 2_000_000, maxTotalBytes: 50_000_000 }) {
+export async function assertSafeTree(root: string, limits = { maxFiles: 5_000, maxFileBytes: 2_000_000, maxTotalBytes: 50_000_000 }, options: { allowOversizedFiles?: boolean } = {}) {
   const base = await realpath(root);
+  const oversizedFiles: Array<{ path: string; size: number }> = [];
   let files = 0, bytes = 0;
   async function walk(directory: string) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -32,15 +33,39 @@ export async function assertSafeTree(root: string, limits = { maxFiles: 5_000, m
       if (info.isDirectory()) await walk(absolute);
       else {
         files++;
-        bytes += info.size;
         if (files > limits.maxFiles) throw new Error(`Repository exceeds ${limits.maxFiles} files`);
-        if (info.size > limits.maxFileBytes) throw new Error(`File exceeds size limit: ${path.relative(base, absolute)}`);
-        if (bytes > limits.maxTotalBytes) throw new Error(`Repository exceeds ${limits.maxTotalBytes} scanned bytes`);
+        if (info.size > limits.maxFileBytes) {
+          const relative = path.relative(base, absolute).replaceAll("\\", "/");
+          if (!options.allowOversizedFiles) throw new Error(`File exceeds size limit: ${relative}`);
+          oversizedFiles.push({ path: relative, size: info.size });
+        } else {
+          bytes += info.size;
+          if (bytes > limits.maxTotalBytes) throw new Error(`Repository exceeds ${limits.maxTotalBytes} scanned bytes`);
+        }
       }
     }
   }
   await walk(base);
-  return { files, bytes };
+  return { files, bytes, oversizedFiles };
+}
+
+export async function assertDiskBudget(root: string, maxBytes: number) {
+  const base = await realpath(root);
+  let bytes = 0;
+  async function walk(directory: string) {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const absolute = path.join(directory, entry.name);
+      const info = await lstat(absolute);
+      if (!contained(base, absolute)) throw new Error(`Path escapes repository: ${absolute}`);
+      if (info.isDirectory()) await walk(absolute);
+      else {
+        bytes += info.size;
+        if (bytes > maxBytes) throw new Error(`Clone exceeds ${maxBytes} bytes on disk`);
+      }
+    }
+  }
+  await walk(base);
+  return bytes;
 }
 
 export async function sourceIdentity(source: string) {

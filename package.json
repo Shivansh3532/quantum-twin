@@ -20,6 +20,7 @@
     "preflight": "tsx src/cli.ts preflight",
     "verify": "tsx src/cli.ts verify",
     "verify-samples": "tsx tools/verify-samples.ts",
+    "corepack-regression": "tsx tools/corepack-scan-regression.ts",
     "smoke": "tsx tools/smoke.ts",
     "secret-scan": "tsx tools/secret-scan.ts"
   },

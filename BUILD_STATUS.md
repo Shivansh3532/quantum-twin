@@ -33,6 +33,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 
 - [x] Strict public GitHub HTTPS parser and hardened shallow clone; local path, Chromium folder, and bounded ZIP import into controlled storage.
 - [x] Analysis-only scanner and immutable contract/harness review execute no repository commands.
+- [x] Two-stage public analysis skips and reports oversized irrelevant non-source artifacts while required files and execution stay strict; pinned Corepack `436b358a19f6d2592cff740078db1b06953c3578` completes scan-only with no migration.
 - [x] Permission and Trust Center shows eight permissions and requires three acknowledgements enforced again by the backend.
 - [x] One-command `pnpm app` launcher performs authenticated preflight and binds production Next.js to `127.0.0.1`.
 - [x] Separate public MIT target: https://github.com/Shivansh3532/quantum-twin-demo-target at `9cc00b69982ea5d0782ff5bf68267ba92d33311e`.

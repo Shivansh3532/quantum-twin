@@ -9,13 +9,14 @@ import yauzl, { type Entry, type ZipFile } from "yauzl";
 import { inspectRepository } from "./capabilities.ts";
 import type { CapabilityReport } from "./domain.ts";
 import type { QuantumTwinConfig } from "./config.ts";
-import { assertSafeTree, contained, copyRepository, safeRelativePath } from "./repository.ts";
+import { assertDiskBudget, assertSafeTree, contained, copyRepository, safeRelativePath } from "./repository.ts";
 import { fileSha256 } from "./util.ts";
 
 export type RepositoryLimits = { maxFiles: number; maxFileBytes: number; maxTotalBytes: number };
 export const INTAKE_LIMITS: RepositoryLimits = { maxFiles: 5_000, maxFileBytes: 2_000_000, maxTotalBytes: 50_000_000 };
 export const ZIP_COMPRESSED_LIMIT = 25_000_000;
 export const CLONE_TIMEOUT_MS = 60_000;
+export const CLONE_DISK_LIMIT = 125_000_000;
 export const DEMO_REPOSITORY_URL = "https://github.com/Shivansh3532/quantum-twin-demo-target";
 const INTAKE_ROOT = path.join(/*turbopackIgnore: true*/ process.cwd(), "runs", "intakes");
 const INTAKE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -60,7 +61,7 @@ function safeGitEnvironment() {
   return environment;
 }
 
-export async function clonePublicRepository(value: string, destination: string, options: { runner?: GitRunner; gitProgram?: string; timeoutMs?: number; limits?: RepositoryLimits } = {}) {
+export async function clonePublicRepository(value: string, destination: string, options: { runner?: GitRunner; gitProgram?: string; timeoutMs?: number; limits?: RepositoryLimits; diskLimitBytes?: number } = {}) {
   const parsed = parseGitHubRepositoryUrl(value), runner = options.runner ?? defaultGitRunner, environment = safeGitEnvironment();
   const hooks = await mkdtemp(path.join(os.tmpdir(), "quantum-twin-empty-hooks-"));
   const args = ["-c", "credential.helper=", "-c", `core.hooksPath=${hooks}`, "-c", "filter.lfs.smudge=", "-c", "filter.lfs.required=false", "-c", "protocol.file.allow=never", "-c", "http.followRedirects=false", "clone", "--depth=1", "--single-branch", "--no-tags", "--no-recurse-submodules", "--config", "remote.origin.tagOpt=--no-tags", `${parsed.canonicalUrl}.git`, destination];
@@ -69,7 +70,8 @@ export async function clonePublicRepository(value: string, destination: string, 
     if (cloned.missing) throw new IntakeError("git_missing", 503, "Git is required for public repository intake");
     if (cloned.timedOut) throw new IntakeError("clone_timeout", 504, "GitHub clone exceeded the strict intake timeout");
     if (cloned.exitCode) throw new IntakeError("clone_failed", 422, "Repository could not be cloned without credentials; confirm it exists and is public");
-    await assertSafeTree(destination, options.limits ?? INTAKE_LIMITS);
+    await assertDiskBudget(destination, options.diskLimitBytes ?? CLONE_DISK_LIMIT);
+    await assertSafeTree(destination, options.limits ?? INTAKE_LIMITS, { allowOversizedFiles: true });
     const commit = await runner(options.gitProgram ?? "git", ["rev-parse", "HEAD"], destination, 10_000, environment);
     if (commit.exitCode || !/^[a-f0-9]{40}$/i.test(commit.stdout.trim())) throw new IntakeError("invalid_clone", 422, "Cloned repository has no resolvable commit");
     return { ...parsed, resolvedCommit: commit.stdout.trim() };
@@ -93,9 +95,9 @@ async function createRecord(mode: IntakeMode, operation: (repository: string) =>
   } catch (error) { await rm(directory, { recursive: true, force: true }); throw error; }
 }
 
-export function createGitHubIntake(url: string, mode: "github" | "demo" = "github") {
+export function createGitHubIntake(url: string, mode: "github" | "demo" = "github", cloneOptions: Parameters<typeof clonePublicRepository>[2] = {}) {
   return createRecord(mode, async repository => {
-    const clone = await clonePublicRepository(url, repository);
+    const clone = await clonePublicRepository(url, repository, cloneOptions);
     return { name: clone.repository, source: clone.canonicalUrl, resolvedCommit: clone.resolvedCommit };
   });
 }
@@ -194,12 +196,58 @@ async function loadRecord(id: string) {
 export type IntakeAnalysis = {
   intakeId: string; mode: IntakeMode; status: "ready" | "contract-missing" | "blocked"; report: CapabilityReport;
   message: string; contract: { detected: boolean; valid: boolean; error?: string; path?: string; sha256?: string; harnessPath?: string; harnessSha256?: string; review?: QuantumTwinConfig };
+  skippedFiles: Array<{ path: string; size: number; reason: "Skipped from analysis: non-source artifact exceeds source-file limit" }>;
   blockers: string[]; permissions: string[];
 };
 
+const SKIPPED_REASON = "Skipped from analysis: non-source artifact exceeds source-file limit" as const;
+const NODE_SOURCE = /\.(?:[cm]?[jt]sx?)$/i;
+const PACKAGE_METADATA = new Set(["package.json", "package-lock.json", "npm-shrinkwrap.json", "pnpm-lock.yaml", "yarn.lock"]);
+
+function glob(pattern: string) {
+  const marker = "\u0000";
+  const escaped = pattern.replaceAll("\\", "/").replaceAll("**", marker).replace(/[.+^${}()|[\]\\]/g, "\\$&").replaceAll("*", "[^/]*").replaceAll(marker, ".*");
+  return new RegExp(`^${escaped}$`);
+}
+
+function within(relative: string, declared: string) {
+  const boundary = declared.replaceAll("\\", "/").replace(/^\.\//, "").replace(/\/$/, "");
+  return relative === boundary || relative.startsWith(`${boundary}/`);
+}
+
+function commandInputs(config: QuantumTwinConfig) {
+  return Object.values(config.commands).flatMap(parts => (parts ?? []).slice(1)).flatMap(part => [part, part.includes("=") ? part.slice(part.indexOf("=") + 1) : ""])
+    .map(part => part.replace(/^\.\//, "").replaceAll("\\", "/"))
+    .filter(part => part && !part.startsWith("-") && !path.isAbsolute(part) && !/^[A-Za-z]:/.test(part));
+}
+
+function requiredOversizedReason(relative: string, config?: QuantumTwinConfig) {
+  const basename = path.posix.basename(relative).toLowerCase();
+  if (NODE_SOURCE.test(relative)) return "source code";
+  if (PACKAGE_METADATA.has(basename)) return "package metadata or lockfile";
+  if (relative.toLowerCase() === "quantum-twin.config.json") return "Quantum Twin configuration";
+  if (!config) return undefined;
+  if (config.compatibilityHarness && within(relative, config.compatibilityHarness)) return "declared compatibility harness";
+  if ([...config.writablePaths, ...config.protectedPaths].some(declared => within(relative, declared))) return "declared writable or protected path";
+  if (config.includedSourceGlobs.map(glob).some(rule => rule.test(relative))) return "declared source input";
+  if (commandInputs(config).some(input => within(relative, input) || within(input, relative))) return "declared command input";
+  return undefined;
+}
+
+export async function validateAnalysisTree(root: string, limits: RepositoryLimits = INTAKE_LIMITS, config?: QuantumTwinConfig) {
+  const tree = await assertSafeTree(root, limits, { allowOversizedFiles: true });
+  for (const file of tree.oversizedFiles) {
+    const required = requiredOversizedReason(file.path, config);
+    if (required) throw new IntakeError("oversized_required_file", 413, `Oversized ${required} exceeds ${limits.maxFileBytes} bytes: ${file.path}`);
+  }
+  return tree.oversizedFiles.map(file => ({ ...file, reason: SKIPPED_REASON }));
+}
+
 export async function analyzeIntake(id: string): Promise<IntakeAnalysis> {
   const { record, repository } = await loadRecord(id);
-  const inspected = await inspectRepository(repository, undefined, { name: record.name, source: record.source, resolvedCommit: record.resolvedCommit }, true);
+  let skippedFiles = await validateAnalysisTree(repository);
+  const inspected = await inspectRepository(repository, undefined, { name: record.name, source: record.source, resolvedCommit: record.resolvedCommit }, true, { nodeOnly: true });
+  if (inspected.config) skippedFiles = await validateAnalysisTree(repository, INTAKE_LIMITS, inspected.config);
   const configPath = path.join(repository, "quantum-twin.config.json"), contract: IntakeAnalysis["contract"] = { detected: inspected.report.configuration === "found", valid: Boolean(inspected.config) };
   if (inspected.config) {
     contract.path = "quantum-twin.config.json"; contract.sha256 = fileSha256(await readFile(configPath)); contract.review = inspected.config;
@@ -216,10 +264,11 @@ export async function analyzeIntake(id: string): Promise<IntakeAnalysis> {
     ...inspected.report.discoveryOnly.map(hit => `${hit.technology} requires ${hit.requiredAdapter ?? "an adapter"}`),
     ...inspected.report.blockers.map(hit => `${hit.technology}: ${hit.reason ?? "ambiguous evidence"}`),
     ...(!contract.detected ? ["Reviewed quantum-twin.config.json is missing"] : !contract.valid ? [contract.error ?? "Migration contract is invalid"] : []),
+    ...(contract.valid && skippedFiles.length ? ["Execution is blocked because analysis skipped oversized artifacts that have not passed strict execution intake"] : []),
   ];
-  const ready = inspected.report.automaticMigrationSupported && contract.valid && Boolean(contract.harnessSha256);
+  const ready = inspected.report.automaticMigrationSupported && contract.valid && Boolean(contract.harnessSha256) && skippedFiles.length === 0;
   return {
-    intakeId: id, mode: record.mode, status: ready ? "ready" : contract.detected ? "blocked" : "contract-missing", report: inspected.report, contract, blockers,
+    intakeId: id, mode: record.mode, status: ready ? "ready" : contract.detected ? "blocked" : "contract-missing", report: inspected.report, contract, skippedFiles, blockers,
     message: ready ? "Repository analysis completed. Reviewed contract and external harness are ready for explicit authorization." : "Repository analysis completed. Automatic migration is unavailable until a reviewed Quantum Twin contract and external compatibility harness are provided.",
     permissions: ["Read and copy repository files into isolated Quantum Twin storage", "Use network access only to clone the selected public GitHub repository", "Create Git worktrees inside the isolated copy", "Run the exact declared install, typecheck, test, build, and compatibility commands", "Allow two authenticated Codex builders to edit only declared writable paths in isolated worktrees", "Run the external evaluator twice", "Save hashed reports locally", "Never modify or push to the original repository"]
   };
@@ -228,6 +277,7 @@ export async function analyzeIntake(id: string): Promise<IntakeAnalysis> {
 export async function readyIntake(id: string) {
   const loaded = await loadRecord(id), analysis = await analyzeIntake(id);
   if (analysis.status !== "ready" || !analysis.contract.path) throw new IntakeError("intake_not_ready", 409, analysis.message);
+  await assertSafeTree(loaded.repository, INTAKE_LIMITS);
   return { ...loaded, analysis, configPath: path.join(loaded.repository, analysis.contract.path) };
 }
 

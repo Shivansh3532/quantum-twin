@@ -9,7 +9,7 @@ async function exists(file: string) {
   try { await access(file); return true; } catch { return false; }
 }
 
-export async function inspectRepository(source: string, configPath?: string, repositoryOverride?: CapabilityReport["repository"], tolerateInvalidConfig = false): Promise<{ report: CapabilityReport; config?: QuantumTwinConfig; configError?: string }> {
+export async function inspectRepository(source: string, configPath?: string, repositoryOverride?: CapabilityReport["repository"], tolerateInvalidConfig = false, options: { nodeOnly?: boolean } = {}): Promise<{ report: CapabilityReport; config?: QuantumTwinConfig; configError?: string }> {
   const identity = await sourceIdentity(source);
   const defaultConfig = path.join(identity.root, "quantum-twin.config.json");
   const selectedConfig = configPath ? path.resolve(configPath) : await exists(defaultConfig) ? defaultConfig : undefined;
@@ -21,7 +21,7 @@ export async function inspectRepository(source: string, configPath?: string, rep
   }
   let packageJson: { type?: string } = {};
   try { packageJson = JSON.parse(await readFile(path.join(identity.root, "package.json"), "utf8")); } catch { /* Discovery-only repository. */ }
-  const findings = await scanRepository(identity.root, config);
+  const findings = await scanRepository(identity.root, config, options);
   const supported = findings.filter(item => item.status === "supported");
   const discoveryOnly = findings.filter(item => item.status === "discovery-only");
   const blockers = findings.filter(item => item.status === "unknown");
