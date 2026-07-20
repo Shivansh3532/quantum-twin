@@ -7,19 +7,35 @@
 - **Hosted evidence explorer:** https://quantum-twin.vercel.app — no credentials, no execution, immutable reports.
 - **One-command Local Repository Lab:** clone, install, then run `npx --yes pnpm@11.9.0 app`.
 - **Real public-URL workflow:** paste https://github.com/Shivansh3532/quantum-twin-demo-target, scan before execution, review the immutable contract and permissions, then explicitly authorize the isolated tournament.
-- **Exact automatic scope:** Node.js 24 TypeScript/JavaScript using native `node:crypto` RSA signing and verification, npm/pnpm, and a reviewed version-1 contract with external compatibility harness.
+- **Current automatic scope:** see the generated [/support](https://quantum-twin.vercel.app/support) matrix. FULLY SUPPORTED claims require detector, adapter, verifier, positive/negative tests, a complete system fixture, Windows and Ubuntu proof, and documentation; missing proof is downgraded.
 - **Codex/GPT use:** two authenticated `@openai/codex-sdk@0.144.6` builders use exact `gpt-5.6-sol`; GPT classifies and explains evidence, while deterministic TypeScript alone controls gates, eligibility, and selection.
 - **Test without rebuilding:** `npx --yes pnpm@11.9.0 verify-samples`.
 - **Majority-core `/feedback` Session ID:** `019f774d-0364-76a3-bd72-cb806fe0109a`.
 
-Hosted mode is read-only and never runs Codex, Git, worktrees, repository commands, intake, or file writes. Local Repository Lab supports the project-owned demo target, strict public GitHub HTTPS URLs, trusted local paths, Chromium folder import, and local ZIP import. Import and analysis never execute repository code.
+Hosted mode is read-only and never runs Codex, Git, worktrees, repository commands, intake, or file writes. The local System Lab accepts the project-owned demo target, strict public GitHub HTTPS URLs, and explicitly trusted local folders. Import and analysis never execute repository code.
 
 Shareable evidence states:
 
-- [Compatibility required — Bridge](https://quantum-twin.vercel.app/?scenario=compatibility)
-- [Compatibility disabled — Direct](https://quantum-twin.vercel.app/?scenario=direct)
-- [Independent public repository — Bridge](https://quantum-twin.vercel.app/?scenario=public-compatibility)
-- [Independent public repository — Direct](https://quantum-twin.vercel.app/?scenario=public-direct)
+- [Compatibility required — Bridge](https://quantum-twin.vercel.app/demo?scenario=compatibility)
+- [Compatibility disabled — Direct](https://quantum-twin.vercel.app/demo?scenario=direct)
+- [Independent public repository — Bridge](https://quantum-twin.vercel.app/demo?scenario=public-compatibility)
+- [Independent public repository — Direct](https://quantum-twin.vercel.app/demo?scenario=public-direct)
+
+## System Bundle workbench
+
+The local `/lab` starts empty: it imports no sample, requests no report, and shows no winner, candidate, run ID, hash, or gates. A user names a system, adds 1–12 public GitHub or trusted local repositories, declares frozen consumers, and reviews exact commits/tree hashes, discovered components, the System Crypto Graph, inferred commands, writable/protected paths, crypto boundaries, and field provenance. No `quantum-twin.config.json` is required.
+
+Contract approval is hash-bound and separate from execution. A second exact typed approval authorizes frozen commands and two authenticated Codex builders. The baseline and each eligible candidate run in isolated copies; services use managed process trees and loopback-only health checks; workflows are traced without payloads or key material; candidates are evaluated twice from independent worktrees; cleanup is mandatory. Direct and Bridge may change multiple repositories, but cannot edit the contract, evaluator, tests, package metadata, lockfiles, or unapproved roots.
+
+Fresh coordinated live evidence: [`evidence/system-demo-run.json`](evidence/system-demo-run.json) is a public presentation artifact from real `@openai/codex-sdk@0.144.6` / `gpt-5.6-sol` threads. Direct changed both producer and consumer but failed the frozen-client gate. Bridge changed both, passed two clean system evaluations plus rollback, and was selected. Source report SHA-256: `4b488bcc8eb69d8d149390e0a9cc82b3673edf2ba54146dacd6525efb0a9af16`; source report file SHA-256: `0dc74cc47cf87f871ebd135497ed0251b9b4550d6581e66302bab8ab33d0f9f4`; presentation SHA-256: `aa2860bf82ddc95aa59220a368f8d44738cef8521504975ee57eb87251fd1c73`. Only temporary local filesystem prefixes were redacted; it is not byte-identical to the ignored local source report.
+
+```bash
+pnpm system-demo      # authenticated two-Codex coordinated run
+pnpm proof-matrix     # contract-free framework and topology proofs
+pnpm apply-system -- EVIDENCE.json REPOSITORIES.json --confirm "CREATE COORDINATED LOCAL BRANCHES"
+```
+
+The proof set uses real Express, Fastify, NestJS, and Next.js applications plus a Node CLI, mixed ESM/CommonJS worker, pnpm monorepo, Yarn workspace, multi-repository producer/consumer, ML-KEM envelope, and deliberate NO SAFE WINNER. Docker Compose has static graph proof only because Docker execution evidence is incomplete; it remains EXPERIMENTAL.
 
 ## Genuine hosted evidence
 
@@ -72,7 +88,7 @@ Quantum Twin never edits the source repository. `run` copies it into ignored `ru
 ## How it works
 
 1. Recursive deterministic scanner finds supported RSA signing and verification evidence.
-2. Versioned `quantum-twin.config.json` freezes source scope, writable/protected paths, commands, ML-DSA-65 target, exact domain context, compatibility harness, dependency policy, and limits.
+2. System Bundles synthesize a versioned contract from repository evidence; the user reviews and approves its exact hash. The original single-repository CLI still accepts an explicit `quantum-twin.config.json` for backward compatibility.
 3. Two isolated Codex SDK builders receive the same contract:
    - **Direct Cutover:** ML-DSA-65 only.
    - **Compatibility Bridge:** ML-DSA-65 plus declared RSA continuity.
@@ -104,7 +120,9 @@ If every candidate fails a hard gate, deterministic TypeScript refuses to select
 
 ## Supported scope
 
-Automatic migration is intentionally limited to Node.js 24 TypeScript/JavaScript repositories using native `node:crypto` RSA sign/verify paths, ESM or CommonJS, npm or pnpm, a validated version-1 contract, and an external compatibility harness.
+The intersection currently marked **FULLY_SUPPORTED** is intentionally narrow: Node.js 24.18 single-repository JavaScript/TypeScript CLI/library fixtures using application-owned native `node:crypto` RSA signing/verification, with tested Direct ML-DSA-65 and frozen-consumer Bridge outcomes on Windows and Ubuntu. Exact flags are generated from [`support-matrix.json`](support-matrix.json).
+
+ML-KEM envelopes, multi-repository coordination, Express/Fastify/NestJS/Next.js applications, pnpm/Yarn workspaces, mixed workers, and Compose discovery have genuine local proof but remain **EXPERIMENTAL** until every row has its missing cross-platform adapter, negative, or execution evidence. They are not represented as fully supported.
 
 Discovery only: TLS/X.509, JWT, Cloud KMS, HSM/PKCS#11, third-party cryptography, Java, Python, .NET, Go, and Rust. These produce evidence and adapter requirements, never patches.
 

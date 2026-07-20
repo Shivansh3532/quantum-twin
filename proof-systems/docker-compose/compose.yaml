@@ -1,0 +1,7 @@
+services:
+  producer:
+    build: ../express-cjs-npm
+    ports: ["3101:3101"]
+  consumer:
+    build: ../fastify-esm-pnpm
+    depends_on: [producer]

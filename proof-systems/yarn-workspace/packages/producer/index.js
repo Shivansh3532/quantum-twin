@@ -1,0 +1,1 @@
+import { generateKeyPairSync, sign } from "node:crypto"; const keys=generateKeyPairSync("rsa",{modulusLength:2048}),data=Buffer.from("yarn-order");if(!sign("RSA-SHA256",data,keys.privateKey).length)process.exit(2); // tampered signature wrong key context truncated downgrade

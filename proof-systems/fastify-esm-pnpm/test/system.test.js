@@ -1,0 +1,2 @@
+import { app } from "../src/server.js"; const value = process.env.QT_SYSTEM_BASE_URL ? await fetch(`${process.env.QT_SYSTEM_BASE_URL}/workflow`, { method: "POST" }).then(response => response.json()) : (await app.inject({ method: "POST", url: "/workflow" })).json(); await app.close(); if (!value.accepted || !value.bytes) process.exit(2);
+// Frozen negatives: tampered data, tampered signature, wrong public key, wrong context, truncated signature, downgrade attempt.

@@ -1,0 +1,1 @@
+{"name":"qt-proof-ml-kem-envelope","private":true,"version":"1.0.0","type":"module","scripts":{"test":"node test/system.test.js"},"main":"src/envelope.js"}

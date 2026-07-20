@@ -18,7 +18,7 @@ async function sourceFiles(root: string, config?: QuantumTwinConfig, nodeOnly = 
   const started = performance.now();
   const limits = config?.limits ?? { maxFiles: 5_000, maxFileBytes: 2_000_000, maxTotalBytes: 50_000_000 };
   const scanMs = config?.timeouts.scanMs ?? 30_000;
-  const include = (config?.includedSourceGlobs ?? ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs", "**/*.py", "**/*.java", "**/*.cs", "**/*.go", "**/*.rs", "*.ts", "*.js", "*.py", "*.java", "*.cs", "*.go", "*.rs"]).map(glob);
+  const include = (config?.includedSourceGlobs ?? ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs", "**/*.cts", "**/*.mts", "**/*.py", "**/*.java", "**/*.cs", "**/*.go", "**/*.rs", "*.ts", "*.tsx", "*.js", "*.jsx", "*.cjs", "*.mjs", "*.cts", "*.mts", "*.py", "*.java", "*.cs", "*.go", "*.rs"]).map(glob);
   const exclude = (config?.excludedGlobs ?? []).map(glob);
   const files: string[] = [];
   let bytes = 0, count = 0;
@@ -54,6 +54,10 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
   let importForm: ScannerHit["importForm"] = "syntax";
   for (const statement of ast.statements) {
     if (ts.isImportDeclaration(statement) && ["node:crypto", "crypto"].includes((statement.moduleSpecifier as ts.StringLiteral).text)) {
+      if (statement.importClause?.name) {
+        importForm = "namespace";
+        namespaces.add(statement.importClause.name.text);
+      }
       if (statement.importClause?.namedBindings && ts.isNamedImports(statement.importClause.namedBindings)) {
         importForm = "named";
         for (const item of statement.importClause.namedBindings.elements) named.set(item.name.text, item.propertyName?.text ?? item.name.text);
@@ -71,6 +75,13 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
       else if (ts.isObjectBindingPattern(declaration.name)) for (const item of declaration.name.elements) named.set(item.name.getText(ast), item.propertyName?.getText(ast) ?? item.name.getText(ast));
     }
   }
+  for (const statement of ast.statements) if (ts.isVariableStatement(statement)) for (const declaration of statement.declarationList.declarations) {
+    if (!ts.isIdentifier(declaration.name) || !declaration.initializer) continue;
+    const initializer = declaration.initializer.getText(ast);
+    for (const namespace of namespaces) for (const operation of ["sign", "verify", "createSign", "createVerify", "publicEncrypt", "privateDecrypt"]) {
+      if (new RegExp(`\\b${namespace}\\.${operation}\\b`).test(initializer)) named.set(declaration.name.text, operation);
+    }
+  }
   const hits: ScannerHit[] = [];
   const add = (node: ts.Node | number, operation: ScannerHit["operation"], technology: string, status: ScannerHit["status"], algorithmEvidence: string, reason?: string, requiredAdapter?: string) => {
     const position = typeof node === "number" ? node : node.getStart(ast);
@@ -84,11 +95,14 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
       let cryptoName: string | undefined;
       if (ts.isIdentifier(expression)) cryptoName = named.get(expression.text);
       else if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.expression) && namespaces.has(expression.expression.text)) cryptoName = expression.name.text;
-      if (cryptoName && ["sign", "verify", "createSign", "createVerify"].includes(cryptoName)) {
+      if (cryptoName && ["sign", "verify", "createSign", "createVerify", "publicEncrypt", "privateDecrypt"].includes(cryptoName)) {
         const algorithm = node.arguments[0]?.getText(ast) ?? "dynamic";
-        const operation = /verify/i.test(cryptoName) ? "verification" : "signing";
-        const rsaEvidence = /rsa/i.test(algorithm) || node.arguments.slice(2).some(argument => /rsa/i.test(argument.getText(ast))) || config?.sourcePrimitive === "RSA";
-        if (rsaEvidence) add(node, operation, "native node:crypto RSA", "supported", algorithm);
+        const encryption = cryptoName === "publicEncrypt" || cryptoName === "privateDecrypt";
+        const operation = encryption ? "transport" : /verify/i.test(cryptoName) ? "verification" : "signing";
+        const scopes: string[] = []; let scope: ts.Node | undefined = node.parent; while (scope) { if (ts.isFunctionLike(scope)) scopes.push(scope.getText(ast)); scope = scope.parent; } const scopeText = scopes.slice(0, 4).join("\n");
+        const derivedRsa = ts.isIdentifier(node.arguments[0]) ? new RegExp(`${node.arguments[0].text}\\s*=|(?:let|const)\\s+${node.arguments[0].text}`).test(scopeText) && /startsWith\(["'](?:RS|PS)["']\)|RSA_PKCS1(?:_PSS)?_PADDING|["']rsa-/i.test(scopeText) : false;
+        const rsaEvidence = encryption || /rsa/i.test(algorithm) || derivedRsa || node.arguments.slice(2).some(argument => /rsa/i.test(argument.getText(ast))) || config?.sourcePrimitive === "RSA";
+        if (rsaEvidence) add(node, operation, encryption ? `native node:crypto RSA ${cryptoName}` : "native node:crypto RSA", "supported", encryption ? "RSA encryption envelope" : algorithm);
         else if (algorithm !== "null") add(node, operation, "node:crypto ambiguous algorithm", "unknown", algorithm, "Algorithm cannot be proven as supported RSA", "Explicit algorithm and repository contract");
       }
     }

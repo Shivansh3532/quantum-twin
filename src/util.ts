@@ -9,16 +9,25 @@ const exec = promisify(execFile);
 export const sha256 = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
 export const fileSha256 = (value: Buffer) => sha256(value.includes(0) ? value : value.toString("utf8").replaceAll("\r\n", "\n"));
 
-export async function command(program: string, args: string[], cwd: string, timeout = 120_000) {
+export function safeCommandEnvironment(additions: Partial<NodeJS.ProcessEnv> = {}) {
+  const environment = {} as NodeJS.ProcessEnv;
+  for (const name of ["PATH", "Path", "PATHEXT", "SYSTEMROOT", "SystemRoot", "WINDIR", "TEMP", "TMP", "TMPDIR", "COMSPEC", "LANG", "LC_ALL", "CI", "NO_COLOR", "NODE_EXTRA_CA_CERTS"]) if (process.env[name] !== undefined) environment[name] = process.env[name];
+  return { ...environment, ...additions } as NodeJS.ProcessEnv;
+}
+
+export function resolvedCommand(program: string, args: string[]) {
+  const nodeModules = path.join(path.dirname(process.execPath), "node_modules");
+  const corepack = path.join(nodeModules, "corepack", "dist", `${program}.js`);
+  const npm = path.join(nodeModules, "npm", "bin", program === "npx" ? "npx-cli.js" : "npm-cli.js");
+  const entrypoint = program === "pnpm" ? process.env.npm_execpath ?? (existsSync(corepack) ? corepack : undefined) : program === "corepack" ? (existsSync(path.join(nodeModules, "corepack", "dist", "corepack.js")) ? path.join(nodeModules, "corepack", "dist", "corepack.js") : undefined) : ["npm", "npx"].includes(program) && existsSync(npm) ? npm : undefined;
+  return entrypoint ? { executable: process.execPath, args: [entrypoint, ...args] } : { executable: program, args };
+}
+
+export async function command(program: string, args: string[], cwd: string, timeout = 120_000, environment?: NodeJS.ProcessEnv) {
   const started = performance.now();
-  const pnpmEntrypoint = program === "pnpm" ? process.env.npm_execpath : undefined;
-  const npmCandidate = path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", program === "npx" ? "npx-cli.js" : "npm-cli.js");
-  const npmEntrypoint = ["npm", "npx"].includes(program) && existsSync(npmCandidate) ? npmCandidate : undefined;
-  const entrypoint = pnpmEntrypoint ?? npmEntrypoint;
-  const executable = entrypoint ? process.execPath : program;
-  const executableArgs = entrypoint ? [entrypoint, ...args] : args;
+  const resolved = resolvedCommand(program, args);
   try {
-    const result = await exec(executable, executableArgs, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000, shell: process.platform === "win32" && !pnpmEntrypoint && program === "pnpm" });
+    const result = await exec(resolved.executable, resolved.args, { cwd, timeout, windowsHide: true, maxBuffer: 10_000_000, shell: false, env: environment });
     return { command: [program, ...args].join(" "), exitCode: 0, stdout: result.stdout, stderr: result.stderr, durationMs: Math.round(performance.now() - started) };
   } catch (error) {
     const e = error as NodeJS.ErrnoException & { stdout?: string; stderr?: string; code?: number };

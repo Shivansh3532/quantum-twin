@@ -1,0 +1,1 @@
+import { NestFactory } from "@nestjs/core"; import { AppModule } from "./app.ts"; const app = await NestFactory.create(AppModule, { logger: false }); await app.listen(Number(process.env.PORT || 3103), "127.0.0.1");

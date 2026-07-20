@@ -1,0 +1,1 @@
+{"name":"qt-proof-next","private":true,"version":"1.0.0","type":"module","packageManager":"pnpm@11.9.0","scripts":{"build":"next build","start":"next start -H 127.0.0.1 -p 3000","test":"node test/e2e.mjs"},"dependencies":{"next":"16.2.10","react":"19.2.4","react-dom":"19.2.4"}}

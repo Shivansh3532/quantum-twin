@@ -1,0 +1,1 @@
+import { generateKeyPairSync, sign } from "node:crypto"; export function produce(data) { const keys = generateKeyPairSync("rsa", { modulusLength: 2048 }); return { data, signature: sign("RSA-SHA256", data, keys.privateKey), publicKey: keys.publicKey }; }

@@ -1,0 +1,2 @@
+#!/usr/bin/env node
+import { generateKeyPairSync, sign, verify } from "node:crypto"; export function run() { const keys = generateKeyPairSync("rsa", { modulusLength: 2048 }); const payload = Buffer.from("cli-release"); const signature = sign("RSA-SHA256", payload, keys.privateKey); return verify("RSA-SHA256", payload, keys.publicKey, signature); } if (process.argv[1] === new URL(import.meta.url).pathname.replace(/^\/(.:\/)/, "$1")) console.log(JSON.stringify({ accepted: run() }));

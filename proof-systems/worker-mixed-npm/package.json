@@ -1,0 +1,10 @@
+{
+  "name": "qt-proof-worker-mixed",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --check src/worker.mjs && node --check src/legacy.cjs",
+    "test": "node test/workflow.mjs"
+  }
+}

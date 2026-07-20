@@ -40,3 +40,19 @@ npx --yes pnpm@11.9.0 qt verify --report sample/public-target-direct.json
 ```
 
 Modified JSON, report/diff hashes, selection, evaluator passes, repeatability, absolute personal paths, or secret-like material fail nonzero. The original CLI demo remains `pnpm demo`.
+
+## Coordinated system path
+
+1. Open `/lab` locally and confirm the empty state contains no recorded result.
+2. Name a bundle, add the multi-repository proof producer and consumer, analyze, and inspect commits/tree hashes, components, graph, contract, commands, provenance, and frozen consumer.
+3. Approve the exact contract hash, then separately authorize repositories, commands, Codex, and the typed tournament phrase.
+4. Observe baseline, two real Codex worktrees, two clean evaluation passes, Direct’s frozen-client failure, Bridge selection, changed repositories, fresh run ID/hash, and evidence download.
+
+Fast credential-free verification:
+
+```bash
+pnpm test
+pnpm proof-matrix
+```
+
+Public fresh-run evidence: [`evidence/system-demo-run.json`](evidence/system-demo-run.json), source report SHA-256 `4b488bcc8eb69d8d149390e0a9cc82b3673edf2ba54146dacd6525efb0a9af16`, source report file SHA-256 `0dc74cc47cf87f871ebd135497ed0251b9b4550d6581e66302bab8ab33d0f9f4`, presentation SHA-256 `aa2860bf82ddc95aa59220a368f8d44738cef8521504975ee57eb87251fd1c73`.

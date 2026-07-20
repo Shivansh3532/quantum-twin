@@ -48,3 +48,18 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [ ] Public YouTube demo under 3 minutes with required audio.
 - [ ] Create/finalize Devpost project; add repository, demo URL, video, category, teammate state, and test instructions.
 - [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
+
+## Coordinated system workbench
+
+- [x] Empty `/lab`, isolated `/demo`, machine-readable `/support`, and hosted live-route 403 boundary.
+- [x] Contract-free 1–12 repository bundles, commits/tree hashes, npm/pnpm/Yarn/workspace/Compose discovery, provenance, and exact hash approval.
+- [x] System graph nodes/edges, sanitized runtime tracing, managed startup/loopback health/E2E/cleanup, and two clean candidate evaluations.
+- [x] Native ML-DSA-65 and ML-KEM-768 KEM-DEM positive/negative tests; deterministic Direct/Bridge/NO SAFE WINNER.
+- [x] Real Express, Fastify, NestJS, Next.js, CLI, pnpm monorepo, Yarn, multi-repository, envelope, and impossible proof fixtures pass on Windows.
+- [x] Fresh real two-Codex multi-repository run selected Bridge; public redacted artifact preserves source and presentation hashes.
+- [x] Independent MIT Myket verifier passed strict public intake and its frozen standalone test command; external producer kept the contract unapproved and no migration was attempted.
+- [x] Repository-grouped evidence export and typed, clean-tree, preflighted local branch creation without switching main or pushing.
+- [!] An authenticated refresh after the final observed-graph/output-measurement code was refused by the Codex account usage limit. The last successful fresh real run remains `2026-07-20T03-19-58-791Z`; the refused run is ignored local evidence and is not published.
+- [!] Docker Compose execution is unavailable locally; the row remains EXPERIMENTAL. Static graph discovery passes.
+- [ ] Updated branch CI must pass on Windows and Ubuntu before support rows can be promoted or release merged.
+- [ ] Browser/accessibility matrix, clean clone, hosted deploy exact-SHA, final main parity, and a new annotated tag remain release steps.

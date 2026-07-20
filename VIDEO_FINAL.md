@@ -1,53 +1,47 @@
-# Final video — 2:40 target
+# Final video — 2:58 target
 
-Recommended filename: `quantum-twin-repository-lab-2m40s.mp4`. Record `pnpm app` production mode in an extension-free browser. Make the time jump explicit and preserve the run ID on screen.
+Record the production local app in a clean browser. Make time jumps explicit. Never show credentials or claim certification.
 
-## 0:00–0:15 — public target intake
+## 0:00–0:12 — problem
 
-Show Local Repository Lab. Paste `https://github.com/Shivansh3532/quantum-twin-demo-target` and click **Analyze Repository**.
+“Changing one RSA call is easy. Coordinating every producer, consumer and deployment without breaking the system is the hard part.”
 
-Audio: “Quantum Twin accepts a strict public GitHub HTTPS URL locally. Public URL intake clones into private isolated storage and scans before any repository code can execute.”
+Show `/lab`: no preloaded winner, candidate, run ID, hash, gates, or sample report.
 
-## 0:15–0:35 — safe scan and contract
+## 0:12–0:30 — create bundle
 
-Show source URL, resolved commit `9cc00b69982ea5d0782ff5bf68267ba92d33311e`, native RSA signing/verification lines, reviewed contract, and external harness hash.
+Create a System Bundle with the producer and consumer repositories and name the frozen RSA client. Show pinned source/tree identities.
 
-Audio: “This separate project-owned Node release signer contains defensible native RSA signing and verification. Quantum Twin records the exact commit and findings, then validates the immutable commands, file boundaries, ML-DSA context, limits, and external compatibility harness. It never asks GPT to invent a contract.”
+## 0:30–0:50 — graph
 
-## 0:35–0:50 — permissions
+Show repositories, components, producers, consumers, sanitized key references, frozen-client edge, deployment units, and observed runtime crypto metadata. State that payloads and keys are never recorded.
 
-Show every command and all eight Permission and Trust Center statements. Check the three separate acknowledgements.
+## 0:50–1:05 — contract
 
-Audio: “Execution requires a reviewed contract and explicit trust. I separately authorize this repository, its declared commands, and two authenticated Codex builders changing only writable files inside isolated worktrees. The original repository is never modified or pushed.”
+Show inferred frozen commands, writable/protected paths, health/workflow, crypto targets, provenance, contract SHA-256, and exact approval.
 
-## 0:50–1:05 — real tournament and honest edit
+## 1:05–1:25 — baseline
 
-Click **Start Migration Tournament**, show real building/evaluating states, then cut to completed report while keeping its run ID visible.
+Show frozen installs, baseline business workflow, RSA trace metadata, and cleanup. Use an explicit edited time jump.
 
-Audio: “Codex built two isolated implementations using `@openai/codex-sdk` and exact GPT-5.6-sol. This is an edited time jump to the completed genuine run shown by this run ID—not simulated progress.”
+## 1:25–1:50 — two Codex builders
 
-## 1:05–1:35 — compatibility-required result
+Show authenticated `@openai/codex-sdk@0.144.6`, exact `gpt-5.6-sol`, isolated Direct/Bridge worktrees, network disabled, and both repositories changed. Do not imply GPT owns the decision.
 
-Show Direct versus Bridge, eligibility, decisive compatibility evidence, two evaluator passes, threads, commits, and Bridge selection in `sample/public-target-compatibility.json`.
+## 1:50–2:15 — full evaluation
 
-Audio: “Both builders received the same source commit and contract; only strategy differed. Direct produced valid ML-DSA but failed the frozen legacy consumer twice. Bridge preserved declared RSA continuity and passed every hard gate twice, so deterministic TypeScript selected Bridge. GPT cannot promote a failed candidate.”
+Show two clean passes. Direct fails the frozen-consumer strategy gate. Bridge passes protected crypto negatives, original workflows, boundaries, trace hygiene, integrity, cleanup, and repeatability.
 
-## 1:35–1:55 — compatibility-disabled result
+## 2:15–2:35 — deterministic decision
 
-Open hosted or local recorded `public-direct`. Show Direct and hash `192bdf82cf91aba77c9a82d04154799efd4df1f505b939d22cfd8adba0cff252`.
+Show Bridge, run `2026-07-20T03-19-58-791Z`, source report SHA-256 `4b488bcc…af16`, thread IDs, candidate commits/diff hashes, producer/consumer patch grouping, two clean evaluations, performance budget, and rollback gate.
 
-Audio: “With compatibility disabled, both candidates qualify. Deterministic TypeScript—not GPT—selects Direct because it retains zero RSA compatibility signatures.”
+## 2:35–2:48 — export and rollout
 
-## 1:55–2:20 — evidence and verifier
+Download the coordinated evidence bundle. Show upgrade order, key distribution, compatibility window, rollback, and RSA retirement condition. State that apply/commit/push/deploy are separate and never automatic.
 
-Expand candidate diff, gates, provenance, harness hash, and download. Run `pnpm verify-samples` if time permits.
+## 2:48–2:58 — authority and limits
 
-Audio: “Each report preserves source provenance, Codex threads, candidate commits, complete diffs and hashes, command evidence, negative cryptographic tests, two evaluator passes, limitations, and the final report hash. The standalone verifier rejects altered evidence.”
+“Codex built candidates. GPT-5.6 may explain evidence. Deterministic TypeScript alone approved the contract, gates, eligibility and result. Support claims come from the tested matrix; Docker Compose and external protocols remain experimental or discovery-only.”
 
-## 2:20–2:40 — refusal, boundaries, close
-
-Show **NO SAFE WINNER**, hosted explanation, exact supported/discovery-only scope, GitHub, and Vercel URL.
-
-Audio: “If nothing passes, Quantum Twin returns NO SAFE WINNER. Automatic migration stays narrow: reviewed Node repositories using native RSA and an external harness. Hosted mode remains read-only and never executes third-party code. GPT-5.6 classified and explained evidence; deterministic TypeScript controlled every gate and the result.”
-
-Recording checks: clear audio; duration below three minutes; public YouTube visibility; no credentials, personal paths, third-party logos/screenshots, unrelated tabs, extension-injected HTML, or misleading whole-system security claim.
+Final checks: under three minutes, clear audio, public YouTube, product visible, no secrets/personal paths, no third-party media, and no formal-verification/production-security claim.

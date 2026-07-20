@@ -1,0 +1,1 @@
+import { generateKeyPairSync, sign, verify } from "node:crypto"; export function run(){const keys=generateKeyPairSync("rsa",{modulusLength:2048}),data=Buffer.from("impossible-contract"),signature=sign("RSA-SHA256",data,keys.privateKey);return verify("RSA-SHA256",data,keys.publicKey,signature);}

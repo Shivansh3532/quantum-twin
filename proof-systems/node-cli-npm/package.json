@@ -1,0 +1,1 @@
+{"name":"qt-proof-cli","private":true,"version":"1.0.0","type":"module","bin":{"qt-proof":"src/cli.js"},"scripts":{"test":"node test/system.test.js"}}

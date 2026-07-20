@@ -15,6 +15,11 @@
 - [x] Reviewed contract, eight displayed permissions, and three backend-enforced acknowledgements gate isolated execution.
 - [x] Authentication uses official Codex login only; Quantum Twin has no API-key field or credential storage.
 - [x] Majority-core `/feedback` Session ID: `019f774d-0364-76a3-bd72-cb806fe0109a`.
+- [x] Contract-free System Bundle workbench, empty `/lab`, isolated `/demo`, and machine-readable `/support` prepared.
+- [x] Fresh real multi-repository `gpt-5.6-sol` run and redacted public evidence prepared; historical samples/tags unchanged.
+- [x] Framework/topology proof matrix and independent MIT third-party scan-only case study prepared.
+- [!] Docker Compose execution proof is incomplete; support row remains EXPERIMENTAL and must not be promoted.
+- [ ] Run updated Windows/Ubuntu CI, browser/accessibility checks, clean clone, exact Vercel deploy, merge, and new annotated tag.
 - [ ] Merge `repository-lab`, confirm Windows/Ubuntu CI and exact deployed main SHA, then create `build-week-repository-lab`.
 - [ ] Record and upload public YouTube video under 3 minutes.
 - [ ] Video visibly shows product and audio covers project, Codex, and GPT-5.6.

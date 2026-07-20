@@ -66,6 +66,20 @@ describe("general repository boundary", () => {
     expect(hits.some(hit => hit.snippet === "sign()" )).toBe(false);
   });
 
+  test("scanner resolves default crypto imports and locally derived RSA or RSA-PSS algorithms", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "qt-derived-rsa-"));
+    await writeFile(path.join(root, "signer.js"), 'import crypto from "node:crypto"; export function seal(data,key,alg){let hashAlg;if(alg.startsWith("RS"))hashAlg=alg.replace("RS","SHA");else if(alg.startsWith("PS")){hashAlg=alg.replace("PS","SHA");}return crypto.sign(hashAlg,data,{key,padding:crypto.constants.RSA_PKCS1_PSS_PADDING});}');
+    const hits = await scanRepository(root);
+    expect(hits).toHaveLength(1); expect(hits[0]).toMatchObject({ status: "supported", operation: "signing", importForm: "namespace" });
+  });
+
+  test("scanner follows a local async wrapper around native RSA sign", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "qt-wrapped-rsa-"));
+    await writeFile(path.join(root, "signer.cjs"), 'const crypto=require("node:crypto");const wrapped=(...args)=>crypto.sign(...args);function rsaSign(data,key,digest){const alg=("rsa-"+digest).toUpperCase();return wrapped(alg,data,{key,padding:crypto.constants.RSA_PKCS1_PSS_PADDING});}');
+    const hits = await scanRepository(root);
+    expect(hits.some(hit => hit.status === "supported" && hit.operation === "signing" && hit.snippet.startsWith("wrapped("))).toBe(true);
+  });
+
   test("ambiguous crypto blocks and discovery-only systems name required adapters", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "qt-discovery-"));
     await writeFile(path.join(root, "ambiguous.ts"), 'import { sign } from "node:crypto"; sign(algorithm, data, key);');

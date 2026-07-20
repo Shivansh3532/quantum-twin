@@ -14,7 +14,8 @@ export async function systemStatus() {
   checks.push({ name: "Node.js 24.18+", passed: nodePassed, detail: process.version, fix: "Install Node.js 24.18 or newer within major 24" });
   const git = await command("git", ["--version"], process.cwd(), 10_000);
   checks.push({ name: "Git", passed: git.exitCode === 0, detail: git.exitCode === 0 ? git.stdout.trim() : "not available", fix: "Install Git and restart Quantum Twin" });
-  checks.push({ name: "pnpm 11.9.0", passed: Boolean(process.env.npm_execpath?.includes("pnpm")), detail: process.env.npm_execpath?.includes("pnpm") ? "available" : "not detected", fix: "Launch with npx --yes pnpm@11.9.0 app" });
+  const pnpm = await command("pnpm", ["--version"], process.cwd(), 10_000), pnpmPassed = pnpm.exitCode === 0 && pnpm.stdout.trim() === "11.9.0";
+  checks.push({ name: "pnpm 11.9.0", passed: pnpmPassed, detail: pnpm.exitCode === 0 ? pnpm.stdout.trim() : "not detected", fix: "Launch with npx --yes pnpm@11.9.0 app" });
   let mlDsa = false;
   try { mlDsa = generateKeyPairSync("ml-dsa-65").publicKey.asymmetricKeyType === "ml-dsa-65"; } catch { /* Report failed check. */ }
   checks.push({ name: "ML-DSA-65 runtime", passed: mlDsa, detail: mlDsa ? "native node:crypto available" : "unavailable", fix: "Use the required Node.js 24.18 runtime" });
@@ -24,9 +25,10 @@ export async function systemStatus() {
   checks.push({ name: "Loopback binding", passed: true, detail: "127.0.0.1 only" });
   let authenticated = process.env.QT_PREFLIGHT_OK === "1", method = authenticated ? "Verified Codex SDK session" : "Not verified";
   if (!authenticated) {
-    const status = await command("codex", ["login", "status"], process.cwd(), 10_000);
+    const codexScript = process.platform === "win32" && process.env.APPDATA ? path.join(process.env.APPDATA, "npm", "node_modules", "@openai", "codex", "bin", "codex.js") : undefined;
+    const status = codexScript ? await command(process.execPath, [codexScript, "login", "status"], process.cwd(), 10_000) : await command("codex", ["login", "status"], process.cwd(), 10_000);
     authenticated = status.exitCode === 0;
-    if (authenticated) method = /chatgpt/i.test(status.stdout) ? "ChatGPT" : /api.?key/i.test(status.stdout) ? "OpenAI API key through Codex" : "Codex session";
+    if (authenticated) { const detail = `${status.stdout}\n${status.stderr}`; method = /chatgpt/i.test(detail) ? "ChatGPT" : /api.?key/i.test(detail) ? "OpenAI API key through Codex" : "Codex session"; }
   }
   checks.push({ name: "Codex authentication", passed: authenticated, detail: method, fix: "Run codex login for ChatGPT sign-in, or pipe a key to codex login --with-api-key in your terminal, then restart" });
   return { checks, authenticated, authenticationMethod: method, ready: checks.every(check => check.passed) };

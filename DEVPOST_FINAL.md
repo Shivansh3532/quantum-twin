@@ -18,6 +18,10 @@ Quantum Twin gives the same immutable repository contract to two isolated Codex 
 
 ## Full project description
 
+Final system-workbench description: Quantum Twin now treats a migration as a coordinated system transaction. A user creates a contract-free System Bundle from one repository, a monorepo, or multiple repositories; deterministic discovery maps services, producers, consumers, frozen clients, envelope boundaries and deployment relationships; runtime tracing adds sanitized observed metadata; and the user approves an exact generated contract hash. Two isolated Codex builders then coordinate Direct and Bridge changes across every approved repository. The whole baseline and both candidates run with frozen installs, managed services, loopback health checks, genuine workflows, protected crypto negatives, cleanup and two independent passes. Deterministic TypeScript selects only an all-pass candidate or returns NO SAFE WINNER.
+
+Fresh real evidence uses two authenticated `@openai/codex-sdk@0.144.6` threads with exact `gpt-5.6-sol`. Both changed producer and consumer repositories. Direct failed the named frozen RSA client; Bridge passed and was selected. GPT does not approve contracts, gates, thresholds, eligibility or selection. Support claims render from a machine-readable proof matrix; Docker Compose execution and external protocols remain explicitly non-full-support.
+
 Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
 
 Its local Repository Lab safely imports a strict public GitHub HTTPS URL, trusted folder, or ZIP into isolated storage and scans before any execution. Only defensible native RSA signing and verification plus a reviewed versioned contract and external harness can unlock two real `@openai/codex-sdk@0.144.6` builders using exact `gpt-5.6-sol`.

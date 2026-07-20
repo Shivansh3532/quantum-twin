@@ -40,7 +40,7 @@ export async function inspectRepository(source: string, configPath?: string, rep
       supported,
       discoveryOnly,
       blockers,
-      automaticMigrationSupported: Boolean(config && operations.has("signing") && operations.has("verification") && !discoveryOnly.length && !blockers.length),
+      automaticMigrationSupported: Boolean(operations.has("signing") && operations.has("verification") && !blockers.length),
       configuration: selectedConfig ? "found" : "needed"
     }
   };

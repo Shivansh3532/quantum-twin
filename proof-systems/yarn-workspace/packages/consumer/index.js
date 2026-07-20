@@ -1,0 +1,1 @@
+import { generateKeyPairSync, sign, verify } from "node:crypto";const keys=generateKeyPairSync("rsa",{modulusLength:2048}),data=Buffer.from("yarn-order"),signature=sign("RSA-SHA256",data,keys.privateKey);if(!verify("RSA-SHA256",data,keys.publicKey,signature))process.exit(2);

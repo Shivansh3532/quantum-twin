@@ -72,7 +72,8 @@ describe("public repository intake", () => {
     const intake = await createGitHubIntake("https://github.com/example/oversized-analysis-fixture", "github", { runner });
     try {
       const analysis = await analyzeIntake(intake.id);
-      expect(analysis.status).toBe("contract-missing");
+      expect(analysis.status).toBe("blocked");
+      expect(analysis.generatedContract.sha256).toMatch(/^[a-f0-9]{64}$/);
       expect(analysis.skippedFiles).toEqual([{ path: "tests/nocks.db", size: 2_000_001, reason: "Skipped from analysis: non-source artifact exceeds source-file limit" }]);
       expect(analysis.report.supported.map(hit => hit.operation)).toEqual(expect.arrayContaining(["signing", "verification"]));
       await expect(readyIntake(intake.id)).rejects.toMatchObject({ code: "intake_not_ready", status: 409 });
@@ -116,8 +117,8 @@ describe("local import safety", () => {
     const intake = await createFolderIntake([{ relativePath: "src/index.ts", data: Buffer.from('throw new Error("must never execute during analysis")') }], "no-contract");
     try {
       const analysis = await analyzeIntake(intake.id);
-      expect(analysis.status).toBe("contract-missing");
-      expect(analysis.message).toMatch(/Automatic migration is unavailable/);
+      expect(analysis.status).toBe("blocked");
+      expect(analysis.message).toMatch(/execution remains blocked/);
     } finally { await discardIntake(intake.id); }
   });
 
@@ -127,7 +128,7 @@ describe("local import safety", () => {
     await expect(createZipIntake(zipEntry("link", Buffer.from("target"), { mode: 0o120777 }))).rejects.toThrow(/symlinks|special/i);
     await expect(createZipIntake(zipEntry("nested.zip"))).rejects.toThrow(/Nested archives/);
     const intake = await createZipIntake(zipEntry("src/index.ts", Buffer.from("export {};")), "safe.zip");
-    try { expect((await analyzeIntake(intake.id)).status).toBe("contract-missing"); }
+    try { expect((await analyzeIntake(intake.id)).status).toBe("blocked"); }
     finally { await discardIntake(intake.id); }
   });
 

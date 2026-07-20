@@ -1,13 +1,11 @@
-import Dashboard from "./ui";
-import compatibilityRun from "@/sample/release-cli-compatibility.json";
-import directRun from "@/sample/release-cli-direct.json";
-import publicCompatibilityRun from "@/sample/public-target-compatibility.json";
-import publicDirectRun from "@/sample/public-target-direct.json";
-import { isRecordedMode } from "../src/mode.ts";
-import type { RunReport } from "../src/domain.ts";
+import Link from "next/link";
 
 export default function Page() {
-  const recorded = isRecordedMode();
-  const recordedReports = recorded ? { compatibility: compatibilityRun as RunReport, direct: directRun as RunReport, "public-compatibility": publicCompatibilityRun as RunReport, "public-direct": publicDirectRun as RunReport } : undefined;
-  return <Dashboard recorded={recorded} initialReport={recorded ? recordedReports!.compatibility : null} recordedReports={recordedReports} />;
+  return <><a className="skip-link" href="#main-content">Skip to main content</a><main id="main-content" tabIndex={-1}>
+    <header className="topbar"><Link className="brand" href="/" aria-label="Quantum Twin home"><span>QT</span><strong>Quantum <i>Twin</i></strong></Link><nav aria-label="Product"><Link href="/lab">Live lab</Link><Link href="/demo">Recorded demo</Link><Link href="/support">Support</Link></nav></header>
+    <section className="intro"><div><p className="eyebrow">COORDINATED POST-QUANTUM MIGRATION</p><h1>Migrate the boundary.<br/><i>Prove the system.</i></h1><p className="lede">Quantum Twin inventories supported Node.js cryptographic producers and consumers, synthesizes a reviewable system contract, builds two isolated coordinated migrations, and lets deterministic end-to-end evidence decide.</p><nav className="hero-actions" aria-label="Start"><Link className="primary" href="/lab">Open local workbench</Link><Link className="secondary" href="/demo">Inspect recorded evidence</Link></nav></div></section>
+    <section><div className="section-title"><span>01</span><div><p className="eyebrow">SYSTEM BUNDLES</p><h2>One repository is not always one system</h2></div></div><div className="comparison"><article><h3>Discover</h3><p>Map repositories, packages, services, supported crypto producers, consumers, and frozen boundaries.</p></article><article><h3>Compete</h3><p>Direct Cutover and Compatibility Bridge receive the same frozen contract and isolated source.</p></article><article><h3>Decide</h3><p>Complete baseline and candidate workflows, cryptographic negatives, cleanup, and repeatability own eligibility.</p></article></div></section>
+    <section className="scope"><div><p className="eyebrow">LIVE LAB</p><p>Starts empty. No sample result, winner, run ID, report hash, candidate, or gate evidence is loaded before a run.</p></div><div><p className="eyebrow">RECORDED DEMO</p><p>Committed judge evidence is isolated at <Link href="/demo">/demo</Link> and visibly labeled.</p></div><div><p className="eyebrow">HONEST SUPPORT</p><p>The <Link href="/support">support matrix</Link> separates tested automatic migration from discovery and migration-plan-only boundaries.</p></div></section>
+    <footer><strong>Quantum Twin</strong><span>Competing migrations. Independent evidence. Honest limits.</span></footer>
+  </main></>;
 }

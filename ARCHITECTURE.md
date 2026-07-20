@@ -2,27 +2,27 @@
 
 ```mermaid
 flowchart LR
-  U[Local demo, GitHub URL, folder, or ZIP] --> I[Bounded isolated intake]
-  I --> S[Analysis-only deterministic scan]
-  S --> C[Validated reviewed contract]
-  C --> P[Three explicit permissions]
-  P --> G[GPT-5.6 evidence classification]
-  G --> A[Codex Direct worktree]
-  G --> B[Codex Bridge worktree]
-  H[Copied external compatibility harness] --> E[Deterministic evaluator twice]
-  A --> E
-  B --> E
-  E --> D[Deterministic selection or NO SAFE WINNER]
-  D --> X[GPT-5.6 immutable-evidence explanation]
-  X --> O[Hashed report and evidence UI]
+  I[1-12 bounded intakes] --> B[System Bundle]
+  B --> G[Static crypto and service graph]
+  G --> C[Deterministic contract synthesis]
+  C --> R[Hash review and approval]
+  R --> L[Isolated baseline and runtime trace]
+  L --> D[Direct Codex worktree]
+  L --> K[Bridge Codex worktree]
+  D --> E[External system evaluator twice]
+  K --> E
+  E --> S[Deterministic select or refuse]
+  S --> X[Evidence, patches, rollout, rollback]
 ```
 
-`src/intake.ts` is the trust boundary before the existing engine. It accepts only strict public `https://github.com/{owner}/{repo}` URLs, controlled local copies, explicit browser folder manifests, or bounded ZIP data. Clone/import happens in private ignored `runs/intakes/` storage. Analysis scans files and validates JSON; it never installs dependencies or executes repository commands.
+`src/intake.ts` owns bounded intake, two-stage analysis, bundle revalidation, exact contract-hash approval, and the final strict execution boundary. `src/system-bundle.ts` discovers package managers, workspaces, entry points, scripts, loopback health checks, Compose relationships, crypto boundaries, components, and provenance. It synthesizes version-2 contracts outside candidate roots; GPT never approves a field.
 
-`src/config.ts` validates version-1 command arrays, boundaries, primitive/context, dependency policy, timeouts, and limits. `src/scanner.ts` separates supported, discovery-only, ambiguous, and blocking evidence. Automatic execution requires defensible RSA signing and verification, a valid reviewed contract, and a contained external harness.
+`src/runtime-trace.ts` installs a temporary Node preload only during approved workflows. It records operation, algorithm, key type, repository-relative call site, payload byte length, optional context metadata, and component ID. It never records payloads, plaintext, signatures, keys, tokens, or credentials.
 
-`src/engine.ts` receives only a backend-revalidated ready intake. It creates an isolated baseline and two worktrees, normalizes minimum writable permissions only inside the copy, records normalizations, freezes contract/harness hashes, and starts two authenticated Codex SDK threads with identical evidence. Only the Direct-versus-Bridge strategy differs.
+`src/system-execution.ts` assembles isolated repository copies, performs frozen install/typecheck/build, starts managed processes, waits only on approved loopback health checks, executes the genuine workflow, collects trace metadata, terminates process trees, and verifies cleanup. Each candidate is evaluated twice from separate Git worktrees.
 
-The parent process runs declared commands, writable/protected/dependency/secret/native-API gates, negative crypto checks, compatibility, and two full evaluator passes. Only all-pass candidates are eligible. Selection order is fewer RSA signatures, fewer changed lines, then smaller envelope. GPT cannot mutate evidence, eligibility, or selection.
+`src/system-engine.ts` gives Direct and Bridge identical frozen bundle/graph/contract evidence through `@openai/codex-sdk@0.144.6` with exact `gpt-5.6-sol`, network/web disabled, workspace-only writes, and approval `never`. Deterministic gates own path policy, protected files, dependencies, secrets, crypto adapters, frozen negative coverage, complete workflow, trace hygiene, evaluator integrity, repeatability, and selection. GPT/Codex cannot override a failed gate.
 
-`pnpm app` performs preflight and launches production Next.js on `127.0.0.1`. Vercel or `QT_RECORDED_MODE=1` bypasses every live intake/execution path and serves four strict-allowlist committed reports. Hosted POST endpoints return 403.
+`src/system-export.ts` groups the selected diff by repository and creates a downloadable evidence/rollout package. It does not modify originals, create risk acceptance, push, deploy, or submit.
+
+Historical version-1 single-repository execution remains in `src/engine.ts` for the committed Build Week samples and `pnpm demo`. Those reports and release tags are not rewritten. Hosted `/demo` imports samples; `/lab` imports none; all hosted live endpoints return 403.

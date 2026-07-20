@@ -11,6 +11,7 @@ import type { CapabilityReport } from "./domain.ts";
 import type { QuantumTwinConfig } from "./config.ts";
 import { assertDiskBudget, assertSafeTree, contained, copyRepository, safeRelativePath } from "./repository.ts";
 import { fileSha256 } from "./util.ts";
+import { approveSystemContract, createSystemBundle, type SystemContract, type SystemCryptoGraph } from "./system-bundle.ts";
 
 export type RepositoryLimits = { maxFiles: number; maxFileBytes: number; maxTotalBytes: number };
 export const INTAKE_LIMITS: RepositoryLimits = { maxFiles: 5_000, maxFileBytes: 2_000_000, maxTotalBytes: 50_000_000 };
@@ -194,8 +195,10 @@ async function loadRecord(id: string) {
 }
 
 export type IntakeAnalysis = {
-  intakeId: string; mode: IntakeMode; status: "ready" | "contract-missing" | "blocked"; report: CapabilityReport;
+  intakeId: string; mode: IntakeMode; status: "ready" | "review-required" | "blocked"; report: CapabilityReport;
   message: string; contract: { detected: boolean; valid: boolean; error?: string; path?: string; sha256?: string; harnessPath?: string; harnessSha256?: string; review?: QuantumTwinConfig };
+  generatedContract: SystemContract;
+  systemBundle: { version: 1; name: string; manifestSha256: string; repositories: Array<{ id: string; name: string; source: string; commit: string | null; treeSha256: string; packageManager: string; runtime: string; moduleType: string; commands: Record<string, string[]>; entryPoints: string[] }>; components: Array<{ id: string; repositoryId: string; name: string; kind: string; root: string; dependencies: string[]; ports: number[]; healthChecks: string[] }>; graph: SystemCryptoGraph };
   skippedFiles: Array<{ path: string; size: number; reason: "Skipped from analysis: non-source artifact exceeds source-file limit" }>;
   blockers: string[]; permissions: string[];
 };
@@ -260,16 +263,18 @@ export async function analyzeIntake(id: string): Promise<IntakeAnalysis> {
       } catch (error) { contract.valid = false; contract.error = error instanceof Error ? error.message : String(error); }
     } else { contract.valid = false; contract.error = "A reviewed external compatibility harness file is required"; }
   } else if (inspected.configError) contract.error = inspected.configError;
+  const bundle = await createSystemBundle(record.name, [{ root: repository, id: "repository", name: record.name, source: record.source, commit: record.resolvedCommit }]);
   const blockers = [
     ...inspected.report.discoveryOnly.map(hit => `${hit.technology} requires ${hit.requiredAdapter ?? "an adapter"}`),
     ...inspected.report.blockers.map(hit => `${hit.technology}: ${hit.reason ?? "ambiguous evidence"}`),
-    ...(!contract.detected ? ["Reviewed quantum-twin.config.json is missing"] : !contract.valid ? [contract.error ?? "Migration contract is invalid"] : []),
+    ...(!contract.detected ? ["Generated system contract requires review and approval"] : !contract.valid ? [contract.error ?? "Migration contract is invalid"] : []),
     ...(contract.valid && skippedFiles.length ? ["Execution is blocked because analysis skipped oversized artifacts that have not passed strict execution intake"] : []),
   ];
   const ready = inspected.report.automaticMigrationSupported && contract.valid && Boolean(contract.harnessSha256) && skippedFiles.length === 0;
+  const { root: _root, ...publicRepository } = bundle.repositories[0]!;
   return {
-    intakeId: id, mode: record.mode, status: ready ? "ready" : contract.detected ? "blocked" : "contract-missing", report: inspected.report, contract, skippedFiles, blockers,
-    message: ready ? "Repository analysis completed. Reviewed contract and external harness are ready for explicit authorization." : "Repository analysis completed. Automatic migration is unavailable until a reviewed Quantum Twin contract and external compatibility harness are provided.",
+    intakeId: id, mode: record.mode, status: ready ? "ready" : inspected.report.automaticMigrationSupported && skippedFiles.length === 0 && !contract.detected ? "review-required" : "blocked", report: inspected.report, contract, generatedContract: bundle.contract, systemBundle: { version: 1, name: bundle.name, manifestSha256: bundle.manifestSha256, repositories: [publicRepository], components: bundle.components, graph: bundle.graph }, skippedFiles, blockers,
+    message: ready ? "Repository analysis completed. Reviewed declared contract and external harness are ready for explicit authorization." : !contract.detected && inspected.report.automaticMigrationSupported ? "Analysis complete. Review and approve the generated system contract before execution." : "Analysis complete, but automatic execution remains blocked.",
     permissions: ["Read and copy repository files into isolated Quantum Twin storage", "Use network access only to clone the selected public GitHub repository", "Create Git worktrees inside the isolated copy", "Run the exact declared install, typecheck, test, build, and compatibility commands", "Allow two authenticated Codex builders to edit only declared writable paths in isolated worktrees", "Run the external evaluator twice", "Save hashed reports locally", "Never modify or push to the original repository"]
   };
 }
@@ -279,6 +284,59 @@ export async function readyIntake(id: string) {
   if (analysis.status !== "ready" || !analysis.contract.path) throw new IntakeError("intake_not_ready", 409, analysis.message);
   await assertSafeTree(loaded.repository, INTAKE_LIMITS);
   return { ...loaded, analysis, configPath: path.join(loaded.repository, analysis.contract.path) };
+}
+
+export type BundleAnalysis = {
+  status: "review-required" | "blocked";
+  message: string;
+  intakeIds: string[];
+  skippedFiles: Array<{ repositoryId: string; path: string; size: number; reason: typeof SKIPPED_REASON }>;
+  blockers: string[];
+  bundle: IntakeAnalysis["systemBundle"];
+  contract: SystemContract;
+};
+
+export async function analyzeSystemIntakes(name: string, ids: string[], frozenConsumers: string[] = []): Promise<BundleAnalysis> {
+  if (!name.trim()) throw new IntakeError("system_name_required", 400, "System name is required");
+  if (!ids.length) throw new IntakeError("repositories_required", 400, "At least one repository intake is required");
+  if (ids.length > 12 || new Set(ids).size !== ids.length) throw new IntakeError("invalid_bundle", 400, "A system bundle accepts 1-12 unique repository intakes");
+  const loaded = await Promise.all(ids.map(loadRecord));
+  const skippedFiles: BundleAnalysis["skippedFiles"] = [], blockers: string[] = [];
+  for (const [index, item] of loaded.entries()) {
+    const repositoryId = `repository-${index + 1}`;
+    for (const skipped of await validateAnalysisTree(item.repository)) skippedFiles.push({ repositoryId, ...skipped });
+  }
+  const built = await createSystemBundle(name, loaded.map((item, index) => ({ root: item.repository, id: `repository-${index + 1}`, name: item.record.name, source: item.record.source, commit: item.record.resolvedCommit })), { frozenConsumers });
+  for (const finding of built.graph.staticFindings) {
+    if (finding.status === "unknown") blockers.push(`${finding.file}:${finding.line}: ${finding.reason ?? "Ambiguous supported boundary"}`);
+    if (finding.status === "discovery-only") blockers.push(`${finding.file}:${finding.line}: ${finding.technology} remains discovery-only and requires ${finding.requiredAdapter ?? "an adapter"}`);
+  }
+  if (skippedFiles.length) blockers.push("Execution blocked: analysis skipped oversized artifacts that have not passed strict execution review");
+  if (!built.graph.staticFindings.some(item => item.status === "supported")) blockers.push("No fully supported Node cryptographic boundary was found");
+  const { repositories, ...rest } = built;
+  const publicRepositories = repositories.map(({ root: _root, ...repository }) => repository);
+  const executable = !skippedFiles.length && !built.graph.staticFindings.some(item => item.status === "unknown") && built.graph.staticFindings.some(item => item.status === "supported");
+  return { status: executable ? "review-required" : "blocked", message: executable ? "System analysis complete. Review and explicitly approve the synthesized contract before any commands execute." : "System analysis complete. Automatic execution is blocked; supported findings and remaining boundaries are still reported.", intakeIds: ids, skippedFiles, blockers, bundle: { ...rest, repositories: publicRepositories }, contract: built.contract };
+}
+
+export async function approveAnalyzedSystem(name: string, ids: string[], contractSha256: string, frozenConsumers: string[] = []) {
+  const analysis = await analyzeSystemIntakes(name, ids, frozenConsumers);
+  if (analysis.status !== "review-required") throw new IntakeError("bundle_blocked", 409, analysis.message);
+  if (analysis.contract.sha256 !== contractSha256) throw new IntakeError("contract_changed", 409, "Generated contract changed; review the new hash before approval");
+  return { ...analysis, contract: approveSystemContract(analysis.contract) };
+}
+
+export async function readySystemBundle(name: string, ids: string[], approvedContractSha256: string, frozenConsumers: string[] = []) {
+  const analysis = await analyzeSystemIntakes(name, ids, frozenConsumers);
+  if (analysis.status !== "review-required") throw new IntakeError("bundle_blocked", 409, analysis.message);
+  const approved = approveSystemContract(analysis.contract);
+  if (approved.sha256 !== approvedContractSha256) throw new IntakeError("contract_changed", 409, "Approved contract no longer matches current source and discovery; review it again");
+  const loaded = await Promise.all(ids.map(loadRecord));
+  for (const item of loaded) await assertSafeTree(item.repository, INTAKE_LIMITS);
+  const bundle = await createSystemBundle(name, loaded.map((item, index) => ({ root: item.repository, id: `repository-${index + 1}`, name: item.record.name, source: item.record.source, commit: item.record.resolvedCommit })), { frozenConsumers });
+  bundle.contract = approveSystemContract(bundle.contract);
+  if (bundle.contract.sha256 !== approvedContractSha256) throw new IntakeError("contract_changed", 409, "Approved contract changed during execution revalidation");
+  return bundle;
 }
 
 export async function discardIntake(id: string) {

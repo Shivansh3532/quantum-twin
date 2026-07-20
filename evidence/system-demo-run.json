@@ -1,0 +1,888 @@
+{
+  "version": 1,
+  "runId": "2026-07-20T03-19-58-791Z",
+  "startedAt": "2026-07-20T03:19:58.791Z",
+  "completedAt": "2026-07-20T03:24:38.582Z",
+  "nodeVersion": "v24.18.0",
+  "platform": "win32 10.0.26200 x64",
+  "codexSdkVersion": "0.144.6",
+  "model": "gpt-5.6-sol",
+  "bundleManifestSha256": "28bd245e1f36166070e0efe244cdcc71aba92179c95355a22f7f75d66cf0349a",
+  "graphSha256": "c469c6a1c3804bb44d77f6633dcd1a3649e8660532cd7afddc4cb9f5537f22c4",
+  "contractSha256": "b24b7b18e07fe28edcdce9c6107b4bafc63cd23c55a1a4ec02c091558636d648",
+  "baseline": {
+    "pass": 0,
+    "gates": [
+      {
+        "name": "install · producer",
+        "passed": true,
+        "detail": "exit 0",
+        "durationMs": 1199
+      },
+      {
+        "name": "install · consumer",
+        "passed": true,
+        "detail": "exit 0",
+        "durationMs": 1958
+      },
+      {
+        "name": "service health",
+        "passed": true,
+        "detail": "No long-running service is declared for this system"
+      },
+      {
+        "name": "test · producer",
+        "passed": true,
+        "detail": "exit 0",
+        "durationMs": 864
+      },
+      {
+        "name": "test · consumer",
+        "passed": true,
+        "detail": "exit 0",
+        "durationMs": 1212
+      },
+      {
+        "name": "API and schema workflow",
+        "passed": true,
+        "detail": "Not applicable: the approved contract declares no service API"
+      },
+      {
+        "name": "database and state workflow",
+        "passed": true,
+        "detail": "Not applicable: the approved contract declares no database or mutable state command"
+      },
+      {
+        "name": "runtime trace hygiene",
+        "passed": true,
+        "detail": "16 sanitized crypto events; payload bytes only"
+      },
+      {
+        "name": "cleanup",
+        "passed": true,
+        "detail": "No managed processes remained"
+      },
+      {
+        "name": "source integrity",
+        "passed": true,
+        "detail": "f1b84a753153741682b70159ae2f6962a056faa1"
+      },
+      {
+        "name": "system pass 0",
+        "passed": true,
+        "detail": "Complete approved workflow and cleanup"
+      }
+    ],
+    "commands": [
+      {
+        "repositoryId": "producer",
+        "stage": "install",
+        "command": "npm ci",
+        "exitCode": 0,
+        "durationMs": 1199
+      },
+      {
+        "repositoryId": "consumer",
+        "stage": "install",
+        "command": "npm ci",
+        "exitCode": 0,
+        "durationMs": 1958
+      },
+      {
+        "repositoryId": "producer",
+        "stage": "test",
+        "command": "npm run test",
+        "exitCode": 0,
+        "durationMs": 864
+      },
+      {
+        "repositoryId": "consumer",
+        "stage": "test",
+        "command": "npm run test",
+        "exitCode": 0,
+        "durationMs": 1212
+      }
+    ],
+    "runtimeEvents": [
+      {
+        "operation": "sign",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at signEnvelope (<repository>/producer/src/index.js:4:157)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "sign",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at signEnvelope (<repository>/producer/src/index.js:4:157)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:5:166)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:5:166)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:5:166)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:5:166)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:5:166)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:5:166)",
+        "componentId": "producer"
+      },
+      {
+        "operation": "sign",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at signEnvelope (<repository>/consumer/src/index.js:4:157)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "sign",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at signEnvelope (<repository>/consumer/src/index.js:4:157)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:5:166)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:5:166)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:5:166)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:5:166)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:5:166)",
+        "componentId": "consumer"
+      },
+      {
+        "operation": "verify",
+        "algorithm": "RSA-SHA256",
+        "keyType": "rsa",
+        "payloadBytes": 11,
+        "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:5:166)",
+        "componentId": "consumer"
+      }
+    ],
+    "cleanup": [],
+    "logs": []
+  },
+  "candidates": [
+    {
+      "strategy": "direct",
+      "commit": null,
+      "diff": "diff --git a<repository>/consumer/src/index.js\nindex 8aa1449..ec7ccc0 100644\n--- a/repositories/consumer/src/index.js\n+++ b/repositories/consumer/src/index.js\n@@ -1,6 +1,7 @@\n import { generateKeyPairSync, sign, verify } from \"node:crypto\";\n export const context = \"quantum-twin:update-manifest:v1\";\n-export function createKeys() { return generateKeyPairSync(\"rsa\", { modulusLength: 2048 }); }\n-export function signEnvelope(payload, privateKey) { return { version: \"rsa-v1\", algorithm: \"RSA-SHA256\", context, payload: Buffer.from(payload), signature: sign(\"RSA-SHA256\", payload, privateKey) }; }\n-export function verifyEnvelope(envelope, publicKey) { return envelope.version === \"rsa-v1\" && envelope.algorithm === \"RSA-SHA256\" && envelope.context === context && verify(\"RSA-SHA256\", envelope.payload, publicKey, envelope.signature); }\n+const signatureContext = Buffer.from(context);\n+export function createKeys() { return generateKeyPairSync(\"ml-dsa-65\"); }\n+export function signEnvelope(payload, privateKey) { const data = Buffer.from(payload); return { version: \"ml-dsa-65-v1\", algorithm: \"ML-DSA-65\", context, payload: data, signature: sign(null, data, { key: privateKey, context: signatureContext }) }; }\n+export function verifyEnvelope(envelope, publicKey) { return envelope.version === \"ml-dsa-65-v1\" && envelope.algorithm === \"ML-DSA-65\" && envelope.context === context && verify(null, envelope.payload, { key: publicKey, context: signatureContext }, envelope.signature); }\n export function run() { const keys = createKeys(), envelope = signEnvelope(Buffer.from(\"multi-order\"), keys.privateKey); return verifyEnvelope(envelope, keys.publicKey); }\ndiff --git a<repository>/producer/src/index.js\nindex 8aa1449..ec7ccc0 100644\n--- a/repositories/producer/src/index.js\n+++ b/repositories/producer/src/index.js\n@@ -1,6 +1,7 @@\n import { generateKeyPairSync, sign, verify } from \"node:crypto\";\n export const context = \"quantum-twin:update-manifest:v1\";\n-export function createKeys() { return generateKeyPairSync(\"rsa\", { modulusLength: 2048 }); }\n-export function signEnvelope(payload, privateKey) { return { version: \"rsa-v1\", algorithm: \"RSA-SHA256\", context, payload: Buffer.from(payload), signature: sign(\"RSA-SHA256\", payload, privateKey) }; }\n-export function verifyEnvelope(envelope, publicKey) { return envelope.version === \"rsa-v1\" && envelope.algorithm === \"RSA-SHA256\" && envelope.context === context && verify(\"RSA-SHA256\", envelope.payload, publicKey, envelope.signature); }\n+const signatureContext = Buffer.from(context);\n+export function createKeys() { return generateKeyPairSync(\"ml-dsa-65\"); }\n+export function signEnvelope(payload, privateKey) { const data = Buffer.from(payload); return { version: \"ml-dsa-65-v1\", algorithm: \"ML-DSA-65\", context, payload: data, signature: sign(null, data, { key: privateKey, context: signatureContext }) }; }\n+export function verifyEnvelope(envelope, publicKey) { return envelope.version === \"ml-dsa-65-v1\" && envelope.algorithm === \"ML-DSA-65\" && envelope.context === context && verify(null, envelope.payload, { key: publicKey, context: signatureContext }, envelope.signature); }\n export function run() { const keys = createKeys(), envelope = signEnvelope(Buffer.from(\"multi-order\"), keys.privateKey); return verifyEnvelope(envelope, keys.publicKey); }\n",
+      "diffSha256": "1c31a3737b1b67271daeac7d2d131a172598532076f40ddcf00bb9de3b318e51",
+      "changedFiles": [
+        "repositories/consumer/src/index.js",
+        "repositories/producer/src/index.js"
+      ],
+      "changedRepositories": [
+        "consumer",
+        "producer"
+      ],
+      "gates": [
+        {
+          "name": "writable path policy",
+          "passed": true,
+          "detail": "repositories/consumer/src/index.js, repositories/producer/src/index.js"
+        },
+        {
+          "name": "protected-file policy",
+          "passed": true,
+          "detail": "all frozen package, lock, CI, test, and evaluator paths match baseline"
+        },
+        {
+          "name": "dependency policy",
+          "passed": true,
+          "detail": "forbid"
+        },
+        {
+          "name": "secret hygiene",
+          "passed": true,
+          "detail": "candidate diff scanned"
+        },
+        {
+          "name": "contract integrity",
+          "passed": true,
+          "detail": "b24b7b18e07fe28edcdce9c6107b4bafc63cd23c55a1a4ec02c091558636d648"
+        },
+        {
+          "name": "ML-DSA-65 adapter",
+          "passed": true,
+          "detail": "native algorithm-null sign and verify with context binding"
+        },
+        {
+          "name": "strategy contract",
+          "passed": false,
+          "detail": "direct cutover cannot satisfy frozen consumers: frozen-rsa-client-v1"
+        },
+        {
+          "name": "protected cryptographic negative coverage",
+          "passed": true,
+          "detail": "tamper, wrong-key, context, truncation, and downgrade cases are frozen outside candidate write roots"
+        }
+      ],
+      "passes": [],
+      "eligible": false,
+      "threadId": "019f7d89-b9ef-7ed2-b925-556dbcf770c0",
+      "generationStatus": "generated",
+      "generationDurationMs": 255210
+    },
+    {
+      "strategy": "bridge",
+      "commit": "fb6ccb5eabfb6d69c2850995f1d81f381a19add6",
+      "diff": "diff --git a<repository>/consumer/src/index.js\nindex 8aa1449..3752c20 100644\n--- a/repositories/consumer/src/index.js\n+++ b/repositories/consumer/src/index.js\n@@ -1,6 +1,79 @@\n import { generateKeyPairSync, sign, verify } from \"node:crypto\";\n-export const context = \"quantum-twin:update-manifest:v1\";\n-export function createKeys() { return generateKeyPairSync(\"rsa\", { modulusLength: 2048 }); }\n-export function signEnvelope(payload, privateKey) { return { version: \"rsa-v1\", algorithm: \"RSA-SHA256\", context, payload: Buffer.from(payload), signature: sign(\"RSA-SHA256\", payload, privateKey) }; }\n-export function verifyEnvelope(envelope, publicKey) { return envelope.version === \"rsa-v1\" && envelope.algorithm === \"RSA-SHA256\" && envelope.context === context && verify(\"RSA-SHA256\", envelope.payload, publicKey, envelope.signature); }\n-export function run() { const keys = createKeys(), envelope = signEnvelope(Buffer.from(\"multi-order\"), keys.privateKey); return verifyEnvelope(envelope, keys.publicKey); }\n+\n+export const context = \"quantum-twin:update-manifest:v2\";\n+export const frozenRsaConsumers = Object.freeze([\"frozen-rsa-client-v1\"]);\n+export const rsaRetirementCondition = Object.freeze({\n+  type: \"all-frozen-consumers-migrated\",\n+  consumers: frozenRsaConsumers,\n+});\n+\n+const VERSION = 2;\n+const ALGORITHM = \"ML-DSA-65\";\n+const ML_DSA_CONTEXT = Buffer.from(context, \"utf8\");\n+const RSA_VERSION = \"rsa-v1\";\n+const RSA_ALGORITHM = \"RSA-SHA256\";\n+const RSA_CONTEXT = \"quantum-twin:update-manifest:v1\";\n+\n+export function isRsaRetirementReady(activeConsumers = frozenRsaConsumers) {\n+  return frozenRsaConsumers.every(consumer => !activeConsumers.includes(consumer));\n+}\n+\n+export function createKeys() {\n+  return generateKeyPairSync(\"ml-dsa-65\");\n+}\n+\n+export function createRsaKeys() {\n+  return generateKeyPairSync(\"rsa\", { modulusLength: 2048 });\n+}\n+\n+export function signEnvelope(payload, privateKey) {\n+  const data = Buffer.from(payload);\n+  return {\n+    version: VERSION,\n+    algorithm: ALGORITHM,\n+    context,\n+    payload: data,\n+    signature: sign(null, data, { key: privateKey, context: ML_DSA_CONTEXT }),\n+  };\n+}\n+\n+export function signRsaEnvelope(payload, privateKey, consumerId) {\n+  if (!frozenRsaConsumers.includes(consumerId)) throw new Error(\"RSA is restricted to frozen consumers\");\n+  const data = Buffer.from(payload);\n+  return {\n+    version: RSA_VERSION,\n+    algorithm: RSA_ALGORITHM,\n+    context: RSA_CONTEXT,\n+    consumerId,\n+    payload: data,\n+    signature: sign(RSA_ALGORITHM, data, privateKey),\n+  };\n+}\n+\n+export function verifyRsaEnvelope(envelope, publicKey, consumerId) {\n+  if (!frozenRsaConsumers.includes(consumerId) || envelope?.consumerId !== consumerId) return false;\n+  if (envelope.version !== RSA_VERSION || envelope.algorithm !== RSA_ALGORITHM || envelope.context !== RSA_CONTEXT) return false;\n+  if (!Buffer.isBuffer(envelope.payload) || !Buffer.isBuffer(envelope.signature)) return false;\n+  try {\n+    return verify(RSA_ALGORITHM, envelope.payload, publicKey, envelope.signature);\n+  } catch {\n+    return false;\n+  }\n+}\n+\n+export function verifyEnvelope(envelope, publicKey, compatibilityConsumer) {\n+  const consumerId = typeof compatibilityConsumer === \"string\" ? compatibilityConsumer : compatibilityConsumer?.consumerId;\n+  if (envelope?.version === RSA_VERSION) return verifyRsaEnvelope(envelope, publicKey, consumerId);\n+  if (envelope?.version !== VERSION || envelope.algorithm !== ALGORITHM || envelope.context !== context) return false;\n+  if (!Buffer.isBuffer(envelope.payload) || !Buffer.isBuffer(envelope.signature)) return false;\n+  try {\n+    return verify(null, envelope.payload, { key: publicKey, context: ML_DSA_CONTEXT }, envelope.signature);\n+  } catch {\n+    return false;\n+  }\n+}\n+\n+export function run() {\n+  const keys = createKeys();\n+  return verifyEnvelope(signEnvelope(Buffer.from(\"multi-order\"), keys.privateKey), keys.publicKey);\n+}\ndiff --git a<repository>/producer/src/index.js\nindex 8aa1449..3752c20 100644\n--- a/repositories/producer/src/index.js\n+++ b/repositories/producer/src/index.js\n@@ -1,6 +1,79 @@\n import { generateKeyPairSync, sign, verify } from \"node:crypto\";\n-export const context = \"quantum-twin:update-manifest:v1\";\n-export function createKeys() { return generateKeyPairSync(\"rsa\", { modulusLength: 2048 }); }\n-export function signEnvelope(payload, privateKey) { return { version: \"rsa-v1\", algorithm: \"RSA-SHA256\", context, payload: Buffer.from(payload), signature: sign(\"RSA-SHA256\", payload, privateKey) }; }\n-export function verifyEnvelope(envelope, publicKey) { return envelope.version === \"rsa-v1\" && envelope.algorithm === \"RSA-SHA256\" && envelope.context === context && verify(\"RSA-SHA256\", envelope.payload, publicKey, envelope.signature); }\n-export function run() { const keys = createKeys(), envelope = signEnvelope(Buffer.from(\"multi-order\"), keys.privateKey); return verifyEnvelope(envelope, keys.publicKey); }\n+\n+export const context = \"quantum-twin:update-manifest:v2\";\n+export const frozenRsaConsumers = Object.freeze([\"frozen-rsa-client-v1\"]);\n+export const rsaRetirementCondition = Object.freeze({\n+  type: \"all-frozen-consumers-migrated\",\n+  consumers: frozenRsaConsumers,\n+});\n+\n+const VERSION = 2;\n+const ALGORITHM = \"ML-DSA-65\";\n+const ML_DSA_CONTEXT = Buffer.from(context, \"utf8\");\n+const RSA_VERSION = \"rsa-v1\";\n+const RSA_ALGORITHM = \"RSA-SHA256\";\n+const RSA_CONTEXT = \"quantum-twin:update-manifest:v1\";\n+\n+export function isRsaRetirementReady(activeConsumers = frozenRsaConsumers) {\n+  return frozenRsaConsumers.every(consumer => !activeConsumers.includes(consumer));\n+}\n+\n+export function createKeys() {\n+  return generateKeyPairSync(\"ml-dsa-65\");\n+}\n+\n+export function createRsaKeys() {\n+  return generateKeyPairSync(\"rsa\", { modulusLength: 2048 });\n+}\n+\n+export function signEnvelope(payload, privateKey) {\n+  const data = Buffer.from(payload);\n+  return {\n+    version: VERSION,\n+    algorithm: ALGORITHM,\n+    context,\n+    payload: data,\n+    signature: sign(null, data, { key: privateKey, context: ML_DSA_CONTEXT }),\n+  };\n+}\n+\n+export function signRsaEnvelope(payload, privateKey, consumerId) {\n+  if (!frozenRsaConsumers.includes(consumerId)) throw new Error(\"RSA is restricted to frozen consumers\");\n+  const data = Buffer.from(payload);\n+  return {\n+    version: RSA_VERSION,\n+    algorithm: RSA_ALGORITHM,\n+    context: RSA_CONTEXT,\n+    consumerId,\n+    payload: data,\n+    signature: sign(RSA_ALGORITHM, data, privateKey),\n+  };\n+}\n+\n+export function verifyRsaEnvelope(envelope, publicKey, consumerId) {\n+  if (!frozenRsaConsumers.includes(consumerId) || envelope?.consumerId !== consumerId) return false;\n+  if (envelope.version !== RSA_VERSION || envelope.algorithm !== RSA_ALGORITHM || envelope.context !== RSA_CONTEXT) return false;\n+  if (!Buffer.isBuffer(envelope.payload) || !Buffer.isBuffer(envelope.signature)) return false;\n+  try {\n+    return verify(RSA_ALGORITHM, envelope.payload, publicKey, envelope.signature);\n+  } catch {\n+    return false;\n+  }\n+}\n+\n+export function verifyEnvelope(envelope, publicKey, compatibilityConsumer) {\n+  const consumerId = typeof compatibilityConsumer === \"string\" ? compatibilityConsumer : compatibilityConsumer?.consumerId;\n+  if (envelope?.version === RSA_VERSION) return verifyRsaEnvelope(envelope, publicKey, consumerId);\n+  if (envelope?.version !== VERSION || envelope.algorithm !== ALGORITHM || envelope.context !== context) return false;\n+  if (!Buffer.isBuffer(envelope.payload) || !Buffer.isBuffer(envelope.signature)) return false;\n+  try {\n+    return verify(null, envelope.payload, { key: publicKey, context: ML_DSA_CONTEXT }, envelope.signature);\n+  } catch {\n+    return false;\n+  }\n+}\n+\n+export function run() {\n+  const keys = createKeys();\n+  return verifyEnvelope(signEnvelope(Buffer.from(\"multi-order\"), keys.privateKey), keys.publicKey);\n+}\n",
+      "diffSha256": "d6e2c2edbbe10e7e51ae6d04ff49b42e49e5214bc72dd89c9ea948b650155eb0",
+      "changedFiles": [
+        "repositories/consumer/src/index.js",
+        "repositories/producer/src/index.js"
+      ],
+      "changedRepositories": [
+        "consumer",
+        "producer"
+      ],
+      "gates": [
+        {
+          "name": "writable path policy",
+          "passed": true,
+          "detail": "repositories/consumer/src/index.js, repositories/producer/src/index.js"
+        },
+        {
+          "name": "protected-file policy",
+          "passed": true,
+          "detail": "all frozen package, lock, CI, test, and evaluator paths match baseline"
+        },
+        {
+          "name": "dependency policy",
+          "passed": true,
+          "detail": "forbid"
+        },
+        {
+          "name": "secret hygiene",
+          "passed": true,
+          "detail": "candidate diff scanned"
+        },
+        {
+          "name": "contract integrity",
+          "passed": true,
+          "detail": "b24b7b18e07fe28edcdce9c6107b4bafc63cd23c55a1a4ec02c091558636d648"
+        },
+        {
+          "name": "ML-DSA-65 adapter",
+          "passed": true,
+          "detail": "native algorithm-null sign and verify with context binding"
+        },
+        {
+          "name": "strategy contract",
+          "passed": true,
+          "detail": "RSA continuity limited to frozen-rsa-client-v1"
+        },
+        {
+          "name": "protected cryptographic negative coverage",
+          "passed": true,
+          "detail": "tamper, wrong-key, context, truncation, and downgrade cases are frozen outside candidate write roots"
+        },
+        {
+          "name": "clean evaluator pass 1",
+          "passed": true,
+          "detail": "11/11 gates passed"
+        },
+        {
+          "name": "clean evaluator pass 2",
+          "passed": true,
+          "detail": "11/11 gates passed"
+        },
+        {
+          "name": "repeatability",
+          "passed": true,
+          "detail": "two independent worktrees completed the approved system workflow"
+        },
+        {
+          "name": "performance budget",
+          "passed": true,
+          "detail": "baseline 2076 ms; candidate mean 1355 ms; approved limit 3595 ms"
+        },
+        {
+          "name": "rollback",
+          "passed": true,
+          "detail": "Baseline commit restored in an independent worktree and approved workflow repeated"
+        },
+        {
+          "name": "evaluator integrity",
+          "passed": true,
+          "detail": "7039149ec9038bd3ce918386cfb08f8c5decaf1e96df0a54f218d27f1e9409d0"
+        }
+      ],
+      "passes": [
+        {
+          "pass": 1,
+          "gates": [
+            {
+              "name": "install · producer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 1898
+            },
+            {
+              "name": "install · consumer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 1808
+            },
+            {
+              "name": "service health",
+              "passed": true,
+              "detail": "No long-running service is declared for this system"
+            },
+            {
+              "name": "test · producer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 658
+            },
+            {
+              "name": "test · consumer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 666
+            },
+            {
+              "name": "API and schema workflow",
+              "passed": true,
+              "detail": "Not applicable: the approved contract declares no service API"
+            },
+            {
+              "name": "database and state workflow",
+              "passed": true,
+              "detail": "Not applicable: the approved contract declares no database or mutable state command"
+            },
+            {
+              "name": "runtime trace hygiene",
+              "passed": true,
+              "detail": "16 sanitized crypto events; payload bytes only"
+            },
+            {
+              "name": "cleanup",
+              "passed": true,
+              "detail": "No managed processes remained"
+            },
+            {
+              "name": "source integrity",
+              "passed": true,
+              "detail": "fb6ccb5eabfb6d69c2850995f1d81f381a19add6"
+            },
+            {
+              "name": "system pass 1",
+              "passed": true,
+              "detail": "Complete approved workflow and cleanup"
+            }
+          ],
+          "commands": [
+            {
+              "repositoryId": "producer",
+              "stage": "install",
+              "command": "npm ci",
+              "exitCode": 0,
+              "durationMs": 1898
+            },
+            {
+              "repositoryId": "consumer",
+              "stage": "install",
+              "command": "npm ci",
+              "exitCode": 0,
+              "durationMs": 1808
+            },
+            {
+              "repositoryId": "producer",
+              "stage": "test",
+              "command": "npm run test",
+              "exitCode": 0,
+              "durationMs": 658
+            },
+            {
+              "repositoryId": "consumer",
+              "stage": "test",
+              "command": "npm run test",
+              "exitCode": 0,
+              "durationMs": 666
+            }
+          ],
+          "runtimeEvents": [
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/producer/src/index.js:36:16)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/producer/src/index.js:36:16)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/consumer/src/index.js:36:16)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/consumer/src/index.js:36:16)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            }
+          ],
+          "cleanup": [],
+          "logs": []
+        },
+        {
+          "pass": 2,
+          "gates": [
+            {
+              "name": "install · producer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 1889
+            },
+            {
+              "name": "install · consumer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 1832
+            },
+            {
+              "name": "service health",
+              "passed": true,
+              "detail": "No long-running service is declared for this system"
+            },
+            {
+              "name": "test · producer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 688
+            },
+            {
+              "name": "test · consumer",
+              "passed": true,
+              "detail": "exit 0",
+              "durationMs": 698
+            },
+            {
+              "name": "API and schema workflow",
+              "passed": true,
+              "detail": "Not applicable: the approved contract declares no service API"
+            },
+            {
+              "name": "database and state workflow",
+              "passed": true,
+              "detail": "Not applicable: the approved contract declares no database or mutable state command"
+            },
+            {
+              "name": "runtime trace hygiene",
+              "passed": true,
+              "detail": "16 sanitized crypto events; payload bytes only"
+            },
+            {
+              "name": "cleanup",
+              "passed": true,
+              "detail": "No managed processes remained"
+            },
+            {
+              "name": "source integrity",
+              "passed": true,
+              "detail": "fb6ccb5eabfb6d69c2850995f1d81f381a19add6"
+            },
+            {
+              "name": "system pass 2",
+              "passed": true,
+              "detail": "Complete approved workflow and cleanup"
+            }
+          ],
+          "commands": [
+            {
+              "repositoryId": "producer",
+              "stage": "install",
+              "command": "npm ci",
+              "exitCode": 0,
+              "durationMs": 1889
+            },
+            {
+              "repositoryId": "consumer",
+              "stage": "install",
+              "command": "npm ci",
+              "exitCode": 0,
+              "durationMs": 1832
+            },
+            {
+              "repositoryId": "producer",
+              "stage": "test",
+              "command": "npm run test",
+              "exitCode": 0,
+              "durationMs": 688
+            },
+            {
+              "repositoryId": "consumer",
+              "stage": "test",
+              "command": "npm run test",
+              "exitCode": 0,
+              "durationMs": 698
+            }
+          ],
+          "runtimeEvents": [
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/producer/src/index.js:36:16)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/producer/src/index.js:36:16)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/producer/src/index.js:70:12)",
+              "componentId": "producer"
+            },
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/consumer/src/index.js:36:16)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "sign",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at signEnvelope (<repository>/consumer/src/index.js:36:16)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            },
+            {
+              "operation": "verify",
+              "algorithm": "null",
+              "keyType": "ml-dsa-65",
+              "payloadBytes": 11,
+              "callSite": "at verifyEnvelope (<repository>/consumer/src/index.js:70:12)",
+              "componentId": "consumer"
+            }
+          ],
+          "cleanup": [],
+          "logs": []
+        }
+      ],
+      "eligible": true,
+      "threadId": "019f7d89-b9a8-74a3-8fe6-900fe3d64c0f",
+      "generationStatus": "generated",
+      "generationDurationMs": 245607
+    }
+  ],
+  "selectedCandidate": "bridge",
+  "decision": "bridge is the only or smallest fully eligible coordinated migration.",
+  "rollout": {
+    "upgradeOrder": [
+      "qt-multi-producer",
+      "qt-multi-consumer"
+    ],
+    "keyGeneration": [
+      "Generate ML-DSA-65 and, where declared, ML-KEM-768 keys in the deployment secret manager; never in the repository"
+    ],
+    "publicKeyDistribution": [
+      "Distribute versioned public keys to every controlled verifier before producer cutover"
+    ],
+    "privateKeyHandling": [
+      "Keep private keys non-exportable where possible; never place key material in patches or evidence"
+    ],
+    "environmentChanges": [
+      "Supply only deployment-specific key references after operator review"
+    ],
+    "envelopeVersions": [],
+    "compatibilityWindow": "Keep the reviewed bridge only until every named frozen consumer upgrades",
+    "healthSignals": [],
+    "rollback": [
+      "Stop rollout",
+      "restore previous key references",
+      "revert coordinated repository patches in reverse upgrade order",
+      "repeat baseline E2E"
+    ],
+    "rsaRetirementCondition": "Remove RSA only after frozen-rsa-client-v1 accept the post-quantum version and downgrade tests still pass",
+    "remainingBoundaries": []
+  },
+  "reportSha256": "4b488bcc8eb69d8d149390e0a9cc82b3673edf2ba54146dacd6525efb0a9af16",
+  "presentation": {
+    "publicPresentation": true,
+    "statement": "Public presentation artifact — local filesystem paths redacted; not byte-identical to the source run report.",
+    "redactions": [
+      "Local temporary filesystem prefix before repository-relative call sites"
+    ],
+    "sourceReportFileSha256": "0dc74cc47cf87f871ebd135497ed0251b9b4550d6581e66302bab8ab33d0f9f4",
+    "sourceReportSha256": "4b488bcc8eb69d8d149390e0a9cc82b3673edf2ba54146dacd6525efb0a9af16"
+  },
+  "presentationReportSha256": "aa2860bf82ddc95aa59220a368f8d44738cef8521504975ee57eb87251fd1c73"
+}

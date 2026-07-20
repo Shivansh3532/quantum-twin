@@ -1,0 +1,1 @@
+import { generateKeyPairSync, sign } from "node:crypto"; import { consume } from "./index.js"; const keys=generateKeyPairSync("rsa",{modulusLength:2048}),data=Buffer.from("order"),signature=sign("RSA-SHA256",data,keys.privateKey);if(!consume({data,signature,publicKey:keys.publicKey}))process.exit(2);

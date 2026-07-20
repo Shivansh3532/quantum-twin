@@ -1,0 +1,2 @@
+import { generateKeyPairSync, sign, verify } from "node:crypto";
+export function workflow() { const keys = generateKeyPairSync("rsa", { modulusLength: 2048 }); const payload = Buffer.from("fastify-order"); const signature = sign("RSA-SHA256", payload, keys.privateKey); return { accepted: verify("RSA-SHA256", payload, keys.publicKey, signature), bytes: signature.length }; }

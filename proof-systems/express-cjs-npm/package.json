@@ -1,0 +1,1 @@
+{"name":"qt-proof-express","private":true,"version":"1.0.0","type":"commonjs","scripts":{"start":"node src/server.cjs","test":"node test/system.test.cjs"},"dependencies":{"express":"5.1.0"}}

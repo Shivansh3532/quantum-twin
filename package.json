@@ -22,7 +22,11 @@
     "verify-samples": "tsx tools/verify-samples.ts",
     "corepack-regression": "tsx tools/corepack-scan-regression.ts",
     "smoke": "tsx tools/smoke.ts",
-    "secret-scan": "tsx tools/secret-scan.ts"
+    "secret-scan": "tsx tools/secret-scan.ts",
+    "proof-matrix": "tsx tools/proof-matrix.ts",
+    "system-demo": "tsx tools/system-demo.ts",
+    "apply-system": "tsx tools/apply-system-bundle.ts",
+    "redact-system-report": "tsx tools/redact-system-report.ts"
   },
   "dependencies": {
     "@openai/codex-sdk": "0.144.6",
