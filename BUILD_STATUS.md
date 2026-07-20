@@ -41,7 +41,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] Genuine public-target compatibility-disabled report selects Direct: `192bdf82cf91aba77c9a82d04154799efd4df1f505b939d22cfd8adba0cff252`.
 - [x] Existing report hashes `077f8dfc…` and `02546c9b…` remain valid.
 - [x] Local browser inspection: genuine clone/scan, contract, permission gating, desktop/tablet/mobile no-overflow, focus, labels, aria-live, and no console errors.
-- [ ] Final branch/main CI, Vercel exact-SHA parity, and `build-week-repository-lab` tag (release step).
+- [x] Final main CI, Vercel exact-SHA parity, and annotated release tag completed (see Coordinated system workbench release entries below).
 
 ## Submission blockers
 
@@ -61,5 +61,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 - [x] Repository-grouped evidence export and typed, clean-tree, preflighted local branch creation without switching main or pushing.
 - [!] An authenticated refresh after the final observed-graph/output-measurement code was refused by the Codex account usage limit. The last successful fresh real run remains `2026-07-20T03-19-58-791Z`; the refused run is ignored local evidence and is not published.
 - [!] Docker Compose execution is unavailable locally; the row remains EXPERIMENTAL. Static graph discovery passes.
-- [ ] Updated branch CI must pass on Windows and Ubuntu before support rows can be promoted or release merged.
-- [ ] Browser/accessibility matrix, clean clone, hosted deploy exact-SHA, final main parity, and a new annotated tag remain release steps.
+- [x] Coordinated-system release merged: `main` fast-forwarded to `784d5529d738c35e5191fad9c188c482b1cf9996` and pushed; `origin/main` and new annotated tag `build-week-system-e2e` both target that exact SHA; six prior tags unchanged.
+- [x] Windows and Ubuntu `Non-Codex verification` CI both passed on pushed `main` (run `29721617224`): typecheck, test (57/57), proof-matrix, corepack-regression, verify-samples, build, secret-scan.
+- [x] Hosted Vercel deploy of the exact SHA verified live: `/`, `/lab`, `/support` return 200; new `POST /api/bundles/run` and `/api/bundles/analyze` execution routes return 403 (hosted execution boundary intact).
+- [x] Local browser QA of the running production build: `/`, `/lab` (empty live mode), `/demo` (labeled recorded Codex run), `/support` (matrix from `support-matrix.json`) render with no console errors.
