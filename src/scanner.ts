@@ -83,11 +83,11 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
     }
   }
   const hits: ScannerHit[] = [];
-  const add = (node: ts.Node | number, operation: ScannerHit["operation"], technology: string, status: ScannerHit["status"], algorithmEvidence: string, reason?: string, requiredAdapter?: string) => {
+  const add = (node: ts.Node | number, operation: ScannerHit["operation"], technology: string, status: ScannerHit["status"], algorithmEvidence: string, reason?: string, requiredAdapter?: string, primitive?: ScannerHit["primitive"]) => {
     const position = typeof node === "number" ? node : node.getStart(ast);
     const line = ast.getLineAndCharacterOfPosition(position).line + 1;
     const snippet = typeof node === "number" ? source.slice(position, source.indexOf("\n", position) < 0 ? source.length : source.indexOf("\n", position)).trim() : node.getText(ast).slice(0, 240);
-    hits.push({ file: relative, line, operation, technology, importForm, algorithmEvidence, confidence: status === "supported" ? .98 : status === "discovery-only" ? .9 : .55, status, snippet, reason, requiredAdapter });
+    hits.push({ file: relative, line, operation, technology, importForm, algorithmEvidence, confidence: status === "supported" ? .98 : status === "discovery-only" ? .9 : .55, status, snippet, reason, requiredAdapter, ...(primitive ? { primitive } : {}) });
   };
   const visit = (node: ts.Node) => {
     if (ts.isCallExpression(node)) {
@@ -102,13 +102,42 @@ function scanSource(root: string, file: string, source: string, config?: Quantum
         const scopes: string[] = []; let scope: ts.Node | undefined = node.parent; while (scope) { if (ts.isFunctionLike(scope)) scopes.push(scope.getText(ast)); scope = scope.parent; } const scopeText = scopes.slice(0, 4).join("\n");
         const derivedRsa = ts.isIdentifier(node.arguments[0]) ? new RegExp(`${node.arguments[0].text}\\s*=|(?:let|const)\\s+${node.arguments[0].text}`).test(scopeText) && /startsWith\(["'](?:RS|PS)["']\)|RSA_PKCS1(?:_PSS)?_PADDING|["']rsa-/i.test(scopeText) : false;
         const rsaEvidence = encryption || /rsa/i.test(algorithm) || derivedRsa || node.arguments.slice(2).some(argument => /rsa/i.test(argument.getText(ast))) || config?.sourcePrimitive === "RSA";
+        const argsText = node.arguments.map(argument => argument.getText(ast)).join(" ");
+        const mlEvidence = /ml-?dsa|ml-?kem/i.test(`${algorithm} ${argsText} ${scopeText}`);
+        const ecToken = /\becdsa\b|prime256v1|secp(?:224|256|384|521)[rk]1|namedCurve|["'`]p-(?:256|384|521)["'`]/i;
+        const ecStrong = ecToken.test(source);
+        const ecEvidence = !encryption && !mlEvidence && (ecToken.test(`${algorithm} ${argsText} ${scopeText}`) || (ecStrong && algorithm === "null"));
         if (rsaEvidence) add(node, operation, encryption ? `native node:crypto RSA ${cryptoName}` : "native node:crypto RSA", "supported", encryption ? "RSA encryption envelope" : algorithm);
+        else if (ecEvidence) add(node, operation, "native node:crypto ECDSA", "supported", algorithm === "null" ? "ECDSA (implicit hash)" : algorithm, undefined, undefined, "ECDSA");
         else if (algorithm !== "null") add(node, operation, "node:crypto ambiguous algorithm", "unknown", algorithm, "Algorithm cannot be proven as supported RSA", "Explicit algorithm and repository contract");
       }
     }
     ts.forEachChild(node, visit);
   };
   visit(ast);
+  // Expanded NIST coverage detection: elliptic-curve, Diffie-Hellman, Web Crypto,
+  // and common RSA/ECDSA libraries. Each fires once per file (like the discovery
+  // pass) and only on tokens absent from native RSA sign/verify code, so existing
+  // RSA fixtures produce byte-identical hits.
+  const webCrypto = /\bsubtle\b/.test(source) || /webcrypto/i.test(source);
+  const extra: Array<[RegExp, ScannerHit["operation"], string, ScannerHit["status"], string, NonNullable<ScannerHit["primitive"]>, boolean]> = [
+    [/\bcreateECDH\s*\(/, "key-management", "native node:crypto ECDH key agreement", "unknown", "ECDH", "ECDH", true],
+    [/\bcreateDiffieHellman(?:Group)?\s*\(/, "key-management", "native node:crypto Diffie-Hellman", "unknown", "modp group", "DH", true],
+    [/\.diffieHellman\s*\(\s*\{/, "key-management", "native node:crypto ECDH (one-shot)", "unknown", "diffieHellman", "ECDH", true],
+    [/["'`]RSA-OAEP["'`]/, "transport", "Web Crypto RSA-OAEP envelope", "unknown", "RSA-OAEP", "RSA-KEM", webCrypto],
+    [/["'`]RSA-PSS["'`]|["'`]RSASSA-PKCS1-v1_5["'`]/, "signing", "Web Crypto RSA signature", "unknown", "RSA-PSS/PKCS1", "RSA-SIG", webCrypto],
+    [/["'`]ECDSA["'`]/, "signing", "Web Crypto ECDSA signature", "unknown", "ECDSA", "ECDSA", webCrypto],
+    [/["'`]ECDH["'`]/, "key-management", "Web Crypto ECDH key agreement", "unknown", "ECDH", "ECDH", webCrypto],
+    [/\bnew\s+NodeRSA\b|["'`]node-rsa["'`]/, "signing", "node-rsa library RSA", "discovery-only", "RSA", "RSA-SIG", true],
+    [/\bJSEncrypt\b|["'`]jsencrypt["'`]/, "signing", "JSEncrypt library RSA", "discovery-only", "RSA", "RSA-SIG", true],
+    [/["'`](?:RS256|RS384|RS512|PS256|PS384|PS512)["'`]/, "token", "JWT RSA signature algorithm", "discovery-only", "RS/PS", "RSA-SIG", true],
+    [/["'`](?:ES256|ES384|ES512)["'`]/, "token", "JWT ECDSA signature algorithm", "discovery-only", "ES", "ECDSA", true],
+  ];
+  for (const [pattern, operation, technology, status, algo, primitive, enabled] of extra) {
+    if (!enabled) continue;
+    const match = pattern.exec(source);
+    if (match?.index !== undefined) add(match.index, operation, technology, status, algo, status === "discovery-only" ? "Detected boundary; migration requires owner scope confirmation" : "Detected boundary; confirm application ownership to migrate", undefined, primitive);
+  }
   const discovery = [
     [/\b(?:tls|x509|X509Certificate)\b/, "TLS/X.509", "transport", "TLS/certificate adapter and certificate lifecycle input"],
     [/\b(?:jsonwebtoken|jose|jwt)\b/i, "JWT library", "token", "JWT adapter and token compatibility contract"],

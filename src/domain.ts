@@ -5,6 +5,7 @@ export const SDK_VERSION = "0.144.6";
 export const CONTEXT = "quantum-twin:update-manifest:v1";
 
 export type FindingStatus = "supported" | "discovery-only" | "unknown";
+export type NistPrimitive = "RSA-SIG" | "RSA-KEM" | "ECDSA" | "ECDH" | "DH" | "EXTERNAL" | "SYMMETRIC" | "UNKNOWN";
 export type ScannerHit = {
   file: string;
   line: number;
@@ -17,6 +18,9 @@ export type ScannerHit = {
   snippet: string;
   reason?: string;
   requiredAdapter?: string;
+  // Optional NIST primitive annotation. Set only by the expanded detector for
+  // non-RSA boundaries; existing RSA hits omit it and stay byte-identical.
+  primitive?: NistPrimitive;
 };
 
 export type CapabilityReport = {
