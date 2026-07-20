@@ -5,7 +5,7 @@ Status values: `[x]` verified, `[ ]` pending, `[!]` external blocker.
 ## Verified core and productization
 
 - [x] Original annotated `build-week-core-p0` tag preserved at `c306aa6be09f7d5a38526f55a0cbc4f4821a0a8c`.
-- [x] Node 24.18.0, `@openai/codex-sdk@0.144.6`, exact `gpt-5.6-sol`, native ML-DSA-65.
+- [x] Node 24.18.0, `@openai/codex-sdk@0.144.6`, Codex model `gpt-5-codex` (override `QT_MODEL`), native ML-DSA-65.
 - [x] Authenticated Codex SDK preflight without `OPENAI_API_KEY`; optional Responses API auth reported separately.
 - [x] Local-path isolated repository copy, versioned config, containment, symlink rejection, scan limits, and command arrays.
 - [x] Recursive TypeScript/JavaScript scanner: named, namespace, CommonJS, direct sign/verify, createSign/createVerify, false-positive and unsupported handling.

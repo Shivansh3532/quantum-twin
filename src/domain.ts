@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-export const MODEL = "gpt-5.6-sol";
+// ponytail: gpt-5.6-sol only accepts API-billing Codex; ChatGPT-account login (the documented judge path) rejects it.
+// Default to a ChatGPT-Codex-compatible model; QT_MODEL overrides for API-billing users who want gpt-5.6-sol.
+export const MODEL = process.env.QT_MODEL ?? "gpt-5-codex";
 export const SDK_VERSION = "0.144.6";
 export const CONTEXT = "quantum-twin:update-manifest:v1";
 
