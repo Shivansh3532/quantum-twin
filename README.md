@@ -76,6 +76,14 @@ Invalid JSON, altered hashes or diffs, invalid selection, missing evaluator pass
 
 ## How to Use!
 
+## One-click Windows install and run
+
+Double-click [`INSTALL-AND-RUN.bat`](INSTALL-AND-RUN.bat) in the repository root (it self-elevates to administrator). It installs everything for you — **Node.js 24.18.0** (from the official MSI), **Git** (winget), and **pnpm 11.9.0** — then runs `pnpm install --frozen-lockfile` and launches the app. You do **not** need to install Node, Git, or pnpm yourself.
+
+The app starts on an available **`127.0.0.1`** port (not 3000) and opens a browser tab automatically; press Ctrl+C in the window to stop. Sign in to Codex once with `codex login` (see below) so the builders can run.
+
+## Install and authenticate Codex
+
 Quantum Twin drives Codex through `@openai/codex-sdk@0.144.6`. The Codex CLI binary ships as an optional dependency of that SDK, so `pnpm install --frozen-lockfile` already puts the correct binary for your OS in `node_modules` — the app locates it automatically, with no PATH setup and no `OPENAI_API_KEY`. You only sign in once, and **either** sign-in method works:
 
 ```bash
