@@ -15,6 +15,8 @@ Built with Codex and GPT-5.6, guided and reviewed by humans. The human owns the 
 
 If you have questions about the name, the reason I picked this was that we are making a twin of the system which is quantum-proof, so I thought of combining those two worlds.
 
+For how to use, scroll all the way down.
+
 ## For judges
 
 - **Hosted evidence explorer:** https://quantum-twin.vercel.app — no credentials, no execution, immutable reports.
