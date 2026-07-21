@@ -74,7 +74,7 @@ pnpm verify-samples
 
 Invalid JSON, altered hashes or diffs, invalid selection, missing evaluator passes, contradictory repeatability, absolute personal paths, and obvious secret material return a nonzero exit code.
 
-## Install and authenticate Codex
+## How to Use!
 
 Quantum Twin drives Codex through `@openai/codex-sdk@0.144.6`. The Codex CLI binary ships as an optional dependency of that SDK, so `pnpm install --frozen-lockfile` already puts the correct binary for your OS in `node_modules` — the app locates it automatically, with no PATH setup and no `OPENAI_API_KEY`. You only sign in once, and **either** sign-in method works:
 
@@ -97,9 +97,15 @@ codex login status        # prints "Logged in" with the ChatGPT or API-key metho
 - **Model:** the default `gpt-5.6-terra` runs on free ChatGPT accounts during the hackathon. On an API-billing account set `QT_MODEL=gpt-5.6-sol`.
 - **If `codex` is not on your PATH** (you want the standalone CLI as well), install it globally and re-run the login: `npm install -g @openai/codex`.
 
-## Local Repository Lab
+### Installing the Repo 
 
 Requirements: Node.js 24.18.0, Git, pnpm 11.9.0, and authenticated Codex. `OPENAI_API_KEY` is not required for the Codex SDK path. Bare `pnpm …` commands below assume pnpm is on your PATH — run `corepack enable` once (bundled with Node) to get the pinned `pnpm@11.9.0`, or prefix any command with `npx --yes pnpm@11.9.0`.
+
+```bash
+winget install --id OpenJS.NodeJS --version 24.18.0 --exact --accept-package-agreements --accept-source-agreements
+winget install --id Git.Git --exact --accept-package-agreements --accept-source-agreements
+npm install --global pnpm@11.9.0
+```bash
 
 ```bash
 git clone https://github.com/Shivansh3532/quantum-twin.git
