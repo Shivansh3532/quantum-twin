@@ -12,11 +12,15 @@ export async function POST(request: Request) {
     const { runSystemTournament } = await import("../../../../src/system-engine.ts");
     const bundle = await readySystemBundle(body.name ?? "", body.intakeIds ?? [], body.approvedContractSha256 ?? "", body.frozenConsumers ?? []), encoder = new TextEncoder();
     const stream = new ReadableStream({ start(controller) {
-      const send = (value: unknown) => controller.enqueue(encoder.encode(`${JSON.stringify(value)}\n`));
+      let closed = false;
+      // Agent events fire concurrently from both builders; guard every enqueue/close so a late
+      // event after completion never throws "Controller is already closed" (surfaces as a client network error).
+      const send = (value: unknown) => { if (closed) return; try { controller.enqueue(encoder.encode(`${JSON.stringify(value)}\n`)); } catch { closed = true; } };
+      const finish = () => { if (!closed) { closed = true; try { controller.close(); } catch { /* already closed */ } } };
       void runSystemTournament(bundle, { allowExec: true, onEvent: (stage, detail) => send({ stage, detail }), onAgentEvent: (strategy, event) => send({ stage: "agent", strategy, event }) })
-        .then(report => { send({ stage: report.selectedCandidate ? "selected" : "no-safe-winner", report }); controller.close(); })
-        .catch(error => { send({ stage: "failed", error: error instanceof Error ? error.message : String(error) }); controller.close(); });
-    }});
+        .then(report => { send({ stage: report.selectedCandidate ? "selected" : "no-safe-winner", report }); finish(); })
+        .catch(error => { send({ stage: "failed", error: error instanceof Error ? error.message : String(error) }); finish(); });
+    }, cancel() { /* client disconnected */ }});
     return new Response(stream, { headers: { "content-type": "application/x-ndjson; charset=utf-8", "cache-control": "no-store" } });
   } catch (error) {
     if (error instanceof IntakeError) return Response.json({ error: error.message, code: error.code }, { status: error.status });

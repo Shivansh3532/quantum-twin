@@ -43,6 +43,12 @@ body{background:radial-gradient(1100px 560px at 72% -8%,rgba(215,255,63,.10),tra
 .decision strong{text-shadow:0 0 24px rgba(215,255,63,.5)}
 .agent-live{box-shadow:0 30px 80px -40px rgba(0,0,0,.85),0 0 0 1px rgba(215,255,63,.05)}
 section{border-top-color:rgba(255,255,255,.06)}.topbar{border-bottom-color:rgba(255,255,255,.08)}
+/* Form controls: dark, rounded, acid focus (fixes the plain white boxes) */
+.lab-intake input,.lab-intake select,.trust-center input,.trust-center select,.recorded-panel input,.recorded-panel select,.run-form input{background:#0e100d;color:#e9ebe3;border:1px solid #2b2f28;border-radius:10px;padding:13px}
+.lab-intake input::placeholder,.trust-center input::placeholder,.run-form input::placeholder{color:#6b6f64}
+.lab-intake input:focus-visible,.lab-intake select:focus-visible,.trust-center input:focus-visible,.trust-center select:focus-visible,.run-form input:focus-visible{outline:2px solid var(--acid);outline-offset:2px;border-color:var(--acid)}
+.run-form input:checked,.trust-center input[type="checkbox"],.run-form input[type="checkbox"]{accent-color:var(--acid)}
+.trust-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.trust-head h3{margin:0}
 @media(max-width:520px){main{padding:0 14px}.topbar nav{gap:12px}.topbar nav a:last-child{display:none}.intro h1{font-size:50px}.intro{padding:40px 0}.section-title{display:block}.section-title>span{display:block;margin-bottom:12px}.candidate{padding:19px}.candidate-head{display:block}.candidate-head .badge{margin-top:8px}dl{grid-template-columns:105px 1fr}.recorded-panel,.run-form,.decision>div{padding:20px}.scope{gap:18px}footer{display:grid;gap:8px}}
 @media(max-width:520px){.judge-path ol,.verdict-grid{grid-template-columns:1fr}.hero-actions a{width:100%;text-align:center}.local-grid a{display:block;margin:14px 0 0}}
 @media(max-width:520px){.mode-grid{grid-template-columns:1fr}.lab-system,.lab-intake,.lab-analysis{padding:16px}.trust-center select{margin:8px 0 0;width:100%}.trust-center label{display:grid}}
