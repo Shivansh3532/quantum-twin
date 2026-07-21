@@ -13,7 +13,7 @@
 - Strict public GitHub/folder/ZIP analysis-before-execution intake: `src/intake.ts`; Permission and Trust Center: `app/repository-lab.tsx`.
 - Copied external harness, two passes, immutable boundaries, deterministic selection, NO SAFE WINNER, hashes: `src/engine.ts`.
 - Independent machine-readable verifier and negative cases: `src/report.ts`, `test/report.test.ts`, `pnpm verify-samples`.
-- Cross-platform CI: frozen install, typecheck, 37 tests, five-report verification, build, secret scan on Windows and Ubuntu.
+- Cross-platform CI: frozen install, typecheck, 85 tests, five-report verification, build, secret scan on Windows and Ubuntu.
 
 ## Design
 

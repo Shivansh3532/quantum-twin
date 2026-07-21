@@ -61,7 +61,7 @@ Invalid JSON, altered hashes or diffs, invalid selection, missing evaluator pass
 
 ## Local Repository Lab
 
-Requirements: Node.js 24.18.0, Git, pnpm 11.9.0, and authenticated Codex. `OPENAI_API_KEY` is not required for the Codex SDK path.
+Requirements: Node.js 24.18.0, Git, pnpm 11.9.0, and authenticated Codex. `OPENAI_API_KEY` is not required for the Codex SDK path. Bare `pnpm …` commands below assume pnpm is on your PATH — run `corepack enable` once (bundled with Node) to get the pinned `pnpm@11.9.0`, or prefix any command with `npx --yes pnpm@11.9.0`.
 
 ```bash
 git clone https://github.com/Shivansh3532/quantum-twin.git

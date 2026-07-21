@@ -28,7 +28,7 @@ Expected: hosted mode explains Local Repository Lab but exposes no executable UR
 
 ## Local Repository Lab
 
-Requirements: Windows, macOS, or Linux; Node.js 24.18+ within major 24; Git; authenticated Codex. Sign in with ChatGPT using `codex login`, or use API billing through `codex login --with-api-key` in a terminal. Never enter an API key into Quantum Twin.
+Requirements: Windows, macOS, or Linux; Node.js 24.18+ within major 24; Git; authenticated Codex. Bare `pnpm …` commands assume pnpm is on your PATH — run `corepack enable` once, or prefix any command with `npx --yes pnpm@11.9.0`. Sign in with ChatGPT using `codex login`, or use API billing through `codex login --with-api-key` in a terminal. Never enter an API key into Quantum Twin.
 
 ```bash
 git clone https://github.com/Shivansh3532/quantum-twin.git

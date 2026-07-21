@@ -26,7 +26,16 @@ export async function preflight() {
     await command("git", ["-c", "user.name=Quantum Twin", "-c", "user.email=quantum-twin@local", "commit", "-m", "preflight"], temp);
     const codex = new Codex();
     const thread = codex.startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: temp, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
-    const turn = await thread.run("Reply with exactly SDK_OK. Do not modify files.");
+    let turn;
+    try {
+      turn = await thread.run("Reply with exactly SDK_OK. Do not modify files.");
+    } catch (error) {
+      const raw = error instanceof Error ? error.message : String(error);
+      if (/not supported when using Codex with a ChatGPT account|invalid_request_error|"status":\s*400/i.test(raw)) {
+        throw new Error(`Codex rejected model "${MODEL}". A free ChatGPT account has no Codex model entitlement — use a paid ChatGPT plan, or API billing via "codex login --with-api-key", or set QT_MODEL to a model your account allows. The full UI (no Codex needed) is live at https://quantum-twin.vercel.app. Original error: ${raw}`);
+      }
+      throw error;
+    }
     const controller = new AbortController();
     controller.abort();
     let abortSignalCancelled = false;
