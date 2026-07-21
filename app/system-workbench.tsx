@@ -39,7 +39,7 @@ export default function SystemWorkbench() {
     setBuilds(previous => {
       const build: Build = { items: [...previous[strategy].items], usage: previous[strategy].usage };
       if (event.type === "turn.completed") build.usage = { reasoning: event.usage.reasoning_output_tokens, output: event.usage.output_tokens };
-      else if (event.type === "item.started" || event.type === "item.completed") {
+      else if (event.type === "item.started" || event.type === "item.updated" || event.type === "item.completed") {
         const index = build.items.findIndex(item => item.id === event.item.id);
         if (index >= 0) build.items[index] = event.item; else build.items.push(event.item);
       }

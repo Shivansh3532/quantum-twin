@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { Nav, SiteFooter, REPO_URL } from "./nav";
 
 const FLOW = [
@@ -29,11 +27,6 @@ const CHECKS = [
 ];
 
 export default function Page() {
-  const hasVideo = existsSync(join(process.cwd(), "public/demo/quantum-twin-demo.mp4"));
-  const hasPoster = existsSync(join(process.cwd(), "public/demo/quantum-twin-demo-poster.webp"));
-  const previewShot = ["public/demo/screens/home-desktop.png", "public/demo/screens/demo-decision.png"]
-    .find(path => existsSync(join(process.cwd(), path)));
-
   return <><a className="skip-link" href="#main-content">Skip to main content</a><main id="main-content" tabIndex={-1}>
     <Nav current="/"/>
 
@@ -73,12 +66,8 @@ export default function Page() {
     </section>
 
     <section aria-labelledby="preview-title"><div className="section-title"><span>04</span><div><p className="eyebrow">REAL PRODUCT PREVIEW</p><h2 id="preview-title">See a complete migration.</h2></div></div>
-      <p className="lede">Watch Quantum Twin find RSA signatures, create two upgrades, test both, and return the verified result.</p>
-      {hasVideo
-        ? <video className="hm-video" controls preload="metadata" poster={hasPoster ? "/demo/quantum-twin-demo-poster.webp" : undefined}><source src="/demo/quantum-twin-demo.mp4" type="video/mp4"/><track kind="captions" label="Description" srcLang="en"/>Your browser cannot play this video. <Link href="/demo">Open the recorded demo</Link> instead.</video>
-        : previewShot
-          ? <Link className="hm-preview-shot" href="/demo"><img src={`/${previewShot.replace("public/", "")}`} alt="Quantum Twin demo screen: two migrations compared with verification evidence" loading="lazy"/><span>Open the recorded demo →</span></Link>
-          : <div className="hm-preview-fallback"><p>The recorded walkthrough video is coming soon.</p><Link className="primary-link" href="/demo">Open the recorded demo</Link></div>}
+      <p className="lede">See Quantum Twin find RSA signatures, create two upgrades, test both, and return the verified result — in the recorded demo.</p>
+      <nav className="hero-actions" aria-label="Recorded demo"><Link className="primary-link" href="/demo">Open the recorded demo</Link><Link href="/demo?scenario=compatibility">Explore recorded evidence</Link></nav>
     </section>
 
     <section aria-labelledby="two-title"><div className="section-title"><span>05</span><div><p className="eyebrow">WHY TWO BUILDERS</p><h2 id="two-title">Do not trust the first generated patch.</h2></div></div>

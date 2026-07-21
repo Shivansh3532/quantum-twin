@@ -28,7 +28,7 @@ const defaultBuilder: CandidateBuilder = async (strategy, worktree, evidence, ti
     for await (const event of events) {
       if (event.type === "turn.failed") failure = event.error.message;
       else if (event.type === "error") failure = event.message;
-      if (event.type === "item.started" || event.type === "item.completed" || event.type === "turn.completed" || event.type === "turn.failed") onEvent?.(event);
+      if (event.type === "item.started" || event.type === "item.updated" || event.type === "item.completed" || event.type === "turn.completed" || event.type === "turn.failed") onEvent?.(event);
     }
     if (failure) return { threadId: thread.id, status: "failed", durationMs: Math.round(performance.now() - started), error: failure };
     return { threadId: thread.id, status: "generated", durationMs: Math.round(performance.now() - started) };

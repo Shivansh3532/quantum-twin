@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import Dashboard from "../ui";
 import { Nav, SiteFooter, REPO_URL } from "../nav";
 import compatibilityRun from "@/sample/release-cli-compatibility.json";
@@ -25,15 +23,12 @@ function EvidenceExplorer() {
 export default async function DemoPage({ searchParams }: { searchParams: Promise<{ scenario?: string }> }) {
   if ((await searchParams).scenario) return <EvidenceExplorer/>;
 
-  const hasVideo = existsSync(join(process.cwd(), "public/demo/quantum-twin-demo.mp4"));
-  const hasPoster = existsSync(join(process.cwd(), "public/demo/quantum-twin-demo-poster.webp"));
-
   return <><a className="skip-link" href="#main-content">Skip to main content</a><main id="main-content" tabIndex={-1}>
     <Nav current="/demo"/>
     <section className="intro compact-intro"><div>
       <p className="eyebrow">DEMO</p>
       <h1>See it run.</h1>
-      <p className="lede">A short video shows Quantum Twin finding RSA, building two migrations with Codex, testing both, and returning the verified winner. The full source is public — read it, clone it, run it yourself.</p>
+      <p className="lede">The recorded demo shows Quantum Twin finding RSA, building two migrations with Codex, testing both, and returning the verified winner. The full source is public — read it, clone it, run it yourself.</p>
       <nav className="hero-actions" aria-label="Demo actions">
         <a className="primary-link" href={REPO_URL} rel="noreferrer">View the code on GitHub</a>
         <Link href="/#run-locally">Run it locally</Link>
@@ -41,10 +36,9 @@ export default async function DemoPage({ searchParams }: { searchParams: Promise
       </nav>
     </div></section>
 
-    <section aria-labelledby="watch-title"><div className="section-title"><span>01</span><div><p className="eyebrow">WALKTHROUGH</p><h2 id="watch-title">Watch a complete migration.</h2></div></div>
-      {hasVideo
-        ? <video className="hm-video" controls preload="metadata" poster={hasPoster ? "/demo/quantum-twin-demo-poster.webp" : undefined}><source src="/demo/quantum-twin-demo.mp4" type="video/mp4"/><track kind="captions" label="Description" srcLang="en"/>Your browser cannot play this video. <a href={REPO_URL} rel="noreferrer">View the code on GitHub</a> instead.</video>
-        : <div className="hm-preview-fallback"><p>The walkthrough video is coming soon. In the meantime, read the code or explore the recorded evidence.</p><a className="primary-link" href={REPO_URL} rel="noreferrer">View the code on GitHub</a></div>}
+    <section aria-labelledby="watch-title"><div className="section-title"><span>01</span><div><p className="eyebrow">WALKTHROUGH</p><h2 id="watch-title">See a complete migration.</h2></div></div>
+      <p className="lede">Explore the recorded run: two migrations built, both tested, and the verified winner returned — every hash and gate visible.</p>
+      <nav className="hero-actions" aria-label="Recorded run"><Link href="/demo?scenario=compatibility">Explore recorded evidence</Link><a className="primary-link" href={REPO_URL} rel="noreferrer">View the code on GitHub</a></nav>
     </section>
 
     <section aria-labelledby="repo-title"><div className="section-title"><span>02</span><div><p className="eyebrow">SOURCE</p><h2 id="repo-title">Everything is public.</h2></div></div>
