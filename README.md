@@ -113,7 +113,7 @@ Use this link to install Node.js and go through the installation process https:/
 ```bash
 winget install --id Git.Git --exact --accept-package-agreements --accept-source-agreements
 npm install --global pnpm@11.9.0
-```bash
+```
 
 ```bash
 git clone https://github.com/Shivansh3532/quantum-twin.git
