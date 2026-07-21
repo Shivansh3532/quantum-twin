@@ -3,8 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import type { CandidateResult, RunReport, ScannerHit } from "../src/domain.ts";
 import { parseScenario, type Scenario } from "../src/scenario.ts";
 import RepositoryLab from "./repository-lab";
+import { Nav } from "./nav";
 
 const GITHUB = "https://github.com/Shivansh3532/quantum-twin";
+const DEMO_STAGES = ["Choose repository", "Discover cryptography", "Review GPT-5.6 plan", "Build two candidates", "Verify both", "Review the result"];
 type RecordedReports = Record<Scenario, RunReport>;
 
 function Copy({ value, label = "Copy" }: { value: string; label?: string }) {
@@ -71,7 +73,7 @@ function EvidenceDetails({ report }: { report: RunReport }) {
   </div>;
 }
 
-export default function Dashboard({ recorded = false, initialReport = null, recordedReports }: { recorded?: boolean; initialReport?: RunReport | null; recordedReports?: RecordedReports }) {
+export default function Dashboard({ recorded = false, initialReport = null, recordedReports, banner }: { recorded?: boolean; initialReport?: RunReport | null; recordedReports?: RecordedReports; banner?: React.ReactNode }) {
   const [scenario, setScenario] = useState<Scenario>("compatibility"), [report, setReport] = useState<RunReport | null>(initialReport), [announcement, setAnnouncement] = useState("");
   const busy = false;
   const load = () => fetch("/api/runs/latest").then(response => response.ok ? response.json() as Promise<RunReport> : null).then(value => { if (value) setReport(value); }).catch(() => undefined);
@@ -90,8 +92,10 @@ export default function Dashboard({ recorded = false, initialReport = null, reco
   const localCommands = "npx --yes pnpm@11.9.0 install --frozen-lockfile\nnpx --yes pnpm@11.9.0 app";
   const download = recorded ? `/api/runs/latest?scenario=${scenario}` : "/api/runs/latest";
   return <><a className="skip-link" href="#main-content">Skip to main content</a><main id="main-content" tabIndex={-1}>
-    <header className="topbar"><a className="brand" href="#top" aria-label="Quantum Twin home"><span>QT</span><strong>Quantum <i>Twin</i></strong></a><nav aria-label="Project links"><a href={GITHUB}>GitHub</a><a href={`${GITHUB}#readme`}>Documentation</a></nav></header>
-    <section id="top" className="intro"><div><p className="eyebrow">EVIDENCE-BACKED POST-QUANTUM MIGRATION</p><h1>Two migrations enter.<br/><i>External proof decides.</i></h1><p className="lede">Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.</p><nav className="hero-actions" aria-label="Primary actions"><a className="primary-link" href="#verified-demo">Explore verified demo</a><a href="#run-locally">Run locally</a><a href={GITHUB}>View source</a></nav><div className="badges"><Badge tone={recorded ? "recorded" : "live"}>{recorded ? "Recorded Verified Run" : "Live Local"}</Badge>{recorded && <Badge>Genuine Recorded Codex Run</Badge>}<Badge>Node.js 24 · native RSA</Badge></div></div><aside><span className="index">01</span><p>Same repository. Same strategies. Change one declared constraint; deterministic evidence changes eligible winner.</p></aside></section>
+    <Nav current="/demo"/>
+    {recorded && <ol className="demo-stages" aria-label="The six stages of a Quantum Twin migration (this recorded run completed all six)"><li className="anchor"><span>Recorded run</span><a href="/demo">Restart demo</a></li>{DEMO_STAGES.map((stage, index) => <li key={stage} className="done"><span aria-hidden="true">✓</span><small>Stage {index + 1}</small>{stage}</li>)}</ol>}
+    {banner}
+    <section id="top" className="intro"><div><p className="eyebrow">EVIDENCE-BACKED POST-QUANTUM MIGRATION</p><h1>Two migrations enter.<br/><i>External proof decides.</i></h1><p className="lede">Quantum Twin builds two independent migrations with Codex, tests both with the same repeatable checks, and lets the evidence choose the winner — or refuse them both.</p><nav className="hero-actions" aria-label="Primary actions"><a className="primary-link" href="#verified-demo">Explore verified demo</a><a href="#run-locally">Run locally</a><a href={GITHUB}>View source</a></nav><div className="badges"><Badge tone={recorded ? "recorded" : "live"}>{recorded ? "Recorded Verified Run" : "Live Local"}</Badge>{recorded && <Badge>Genuine Recorded Codex Run</Badge>}<Badge>Node.js 24 · native RSA</Badge></div></div><aside><span className="index">01</span><p>Same repository. Same strategies. Change one declared constraint; deterministic evidence changes eligible winner.</p></aside></section>
     <ol className="product-flow" aria-label="Quantum Twin product flow"><li><span>01 / SCAN</span><strong>Find supported RSA signing and verification.</strong></li><li><span>02 / COMPETE</span><strong>Direct and Bridge build from one immutable contract.</strong></li><li><span>03 / PROVE</span><strong>External gates select—or refuse—twice-tested results.</strong></li></ol>
 
     <section className="start" id="verified-demo"><div className="section-title"><span>02</span><div><p className="eyebrow">START / INSPECT</p><h2>{recorded ? "Compare two genuine recorded scenarios" : "Run against an isolated repository copy"}</h2></div></div>
@@ -117,7 +121,7 @@ export default function Dashboard({ recorded = false, initialReport = null, reco
       {report && <><div className="provenance"><div><small>Model</small><code>{report.model}</code></div><div><small>Codex SDK</small><code>{report.codexSdkVersion}</code></div><div><small>Node / platform</small><code>{report.nodeVersion} · {report.platform}</code></div><div><small>Baseline</small><code>{report.baselineCommit}</code></div><div><small>Compatibility harness</small><code>{report.verifierManifestSha256}</code></div><div><small>Completed</small><code>{report.completedAt}</code></div></div><EvidenceDetails report={report}/></>}
     </section>
 
-    <section><div className="section-title"><span>07</span><div><p className="eyebrow">WHY THIS IS DIFFERENT</p><h2>One patch is not a migration decision</h2></div></div><p className="differentiator">Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.</p><div className="comparison"><article><h3>Traditional scanner</h3><p>Finds crypto locations but does not implement and independently compare migrations.</p></article><article><h3>One coding-agent patch</h3><p>Creates one plausible implementation but does not prove it against an immutable external compatibility contract.</p></article><article><h3>Quantum Twin</h3><p>Creates isolated competing implementations, evaluates both outside their worktrees, deterministically disqualifies failures, preserves provenance, changes results with constraints, and refuses when nothing qualifies.</p></article></div></section>
+    <section><div className="section-title"><span>07</span><div><p className="eyebrow">WHY THIS IS DIFFERENT</p><h2>One patch is not a migration decision</h2></div></div><p className="differentiator">One generated patch is not a migration decision. Quantum Twin builds two, tests both the same way, and keeps the proof behind whichever one it picks.</p><div className="comparison"><article><h3>Traditional scanner</h3><p>Finds crypto locations but does not implement and independently compare migrations.</p></article><article><h3>One coding-agent patch</h3><p>Creates one plausible implementation but does not prove it against an immutable external compatibility contract.</p></article><article><h3>Quantum Twin</h3><p>Creates isolated competing implementations, evaluates both outside their worktrees, deterministically disqualifies failures, preserves provenance, changes results with constraints, and refuses when nothing qualifies.</p></article></div></section>
 
     <section><div className="section-title"><span>08</span><div><p className="eyebrow">NO SAFE WINNER</p><h2>Refusal is a product state.</h2></div></div><div className="no-winner"><p>If every candidate fails a hard gate, Quantum Twin refuses to select a migration.</p><p>GPT-5.6 cannot turn a failed candidate into a winner. Deterministic TypeScript owns this tested behavior.</p></div></section>
 

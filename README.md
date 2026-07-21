@@ -1,6 +1,17 @@
 # Quantum Twin
 
-> Quantum Twin turns post-quantum migration from one generated patch into a constraint-driven tournament whose winner is selected by external deterministic evidence.
+**Upgrade old cryptography safely.** Quantum Twin is a developer tool that finds RSA signatures in your Node.js code, plans a move to NIST-standardized ML-DSA, builds two independent migrations with Codex, tests both with the same repeatable checks, and gives you the verified result to review.
+
+It does not stop at "here is where the crypto is." It builds the change twice, proves each one, and refuses to pick a winner if neither passes.
+
+**Discover → Explain → Build twice → Prove**
+
+1. **Discover** — find cryptographic code and everything connected to it (signing sites, verifiers, keys, tests, dependent services).
+2. **Explain** — GPT-5.6 writes a migration plan a developer can read: what changes, why, what may break, how it is tested.
+3. **Build twice** — two isolated Codex builders implement the same plan independently (Direct Cutover and Compatibility Bridge).
+4. **Prove** — the same external checks run against both. A candidate is chosen only if it passes; if neither does, the result is **NO SAFE WINNER**.
+
+Built with Codex and GPT-5.6, guided and reviewed by humans. The human owns the idea, goals, product decisions, and every review; Codex and GPT-5.6 wrote the implementation, detector, builders, verifier, tests, and docs. Deterministic TypeScript — not GPT — owns every gate and the final selection.
 
 ## For judges
 

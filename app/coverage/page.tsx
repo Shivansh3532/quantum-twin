@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Nav, SiteFooter } from "../nav";
 import { supportMatrix } from "../../src/support.ts";
 
 const mapping = [
@@ -19,7 +20,7 @@ const states = [
 
 export default function CoveragePage() {
   return <><a className="skip-link" href="#main-content">Skip to main content</a><main id="main-content" tabIndex={-1}>
-    <header className="topbar"><Link className="brand" href="/" aria-label="Quantum Twin home"><span>QT</span><strong>Quantum <i>Twin</i></strong></Link><nav aria-label="Product"><Link href="/lab">Live lab</Link><Link href="/support">Support</Link><Link href="/demo">Recorded demo</Link></nav></header>
+    <Nav/>
 
     <section className="intro compact-intro"><div>
       <p className="eyebrow">NIST PQC COVERAGE</p>
@@ -50,5 +51,6 @@ export default function CoveragePage() {
     <section><h2>Proven boundaries</h2><div className="table-wrap" tabIndex={0}><table><thead><tr><th>Boundary</th><th>Level</th></tr></thead><tbody>
       {supportMatrix.rows.filter(row => /ML-DSA|ML-KEM|ECDSA|ECDH|Web Crypto/i.test(row.boundary)).map(row => <tr key={row.boundary}><th>{row.boundary}</th><td><span className={`badge ${row.level === "FULLY_SUPPORTED" ? "live" : "plain"}`}>{row.level.replaceAll("_", " ")}</span></td></tr>)}
     </tbody></table></div><p className="lede">Levels render from the same <code>support-matrix.json</code> as <Link href="/support">/support</Link>. Claims cannot drift from what the tests prove.</p></section>
+    <SiteFooter/>
   </main></>;
 }
