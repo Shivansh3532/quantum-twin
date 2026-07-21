@@ -13,6 +13,8 @@ It does not stop at "here is where the crypto is." It builds the change twice, p
 
 Built with Codex and GPT-5.6, guided and reviewed by humans. The human owns the idea, goals, product decisions, and every review; Codex and GPT-5.6 wrote the implementation, detector, builders, verifier, tests, and docs. Deterministic TypeScript — not GPT — owns every gate and the final selection.
 
+If you have questions about the name, the reason I picked this was that we are making a twin of the system which is quantum-proof, so I thought of combining those two worlds.
+
 ## For judges
 
 - **Hosted evidence explorer:** https://quantum-twin.vercel.app — no credentials, no execution, immutable reports.
