@@ -5,8 +5,9 @@ export const REPO_URL = "https://github.com/Shivansh3532/quantum-twin";
 const LINKS: Array<{ href: string; label: string }> = [
   { href: "/", label: "Home" },
   { href: "/#how-it-works", label: "How It Works" },
-  { href: "/demo", label: "Demo" },
+  { href: "/demo", label: "Watch Demo" },
   { href: "/support", label: "Supported" },
+  { href: "/background", label: "Background" },
   { href: REPO_URL, label: "Repository" },
 ];
 
