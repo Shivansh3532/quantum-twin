@@ -15,12 +15,37 @@ export function safeCommandEnvironment(additions: Partial<NodeJS.ProcessEnv> = {
   return { ...environment, ...additions } as NodeJS.ProcessEnv;
 }
 
+// Node's bundled corepack shim for pnpm/yarn/corepack (dist/<program>.js).
+function corepackEntry(program: string) {
+  const js = path.join(path.dirname(process.execPath), "node_modules", "corepack", "dist", `${program}.js`);
+  return existsSync(js) ? js : undefined;
+}
+
+// Node's bundled npm/npx CLI, tried across Windows, Linux/mac prefix, and npm_execpath layouts,
+// so a broken global `npm` shim on the host is bypassed entirely.
+function npmCli(program: "npm" | "npx") {
+  const cli = program === "npx" ? "npx-cli.js" : "npm-cli.js";
+  const dir = path.dirname(process.execPath), execpath = process.env.npm_execpath;
+  return [
+    execpath && /npm-cli\.js$/i.test(execpath) ? path.join(path.dirname(execpath), cli) : undefined,
+    path.join(dir, "node_modules", "npm", "bin", cli),
+    path.join(dir, "..", "lib", "node_modules", "npm", "bin", cli)
+  ].find((candidate): candidate is string => Boolean(candidate) && existsSync(candidate!));
+}
+
+// npm verbs → their pnpm equivalents for the broken-npm fallback (pnpm mirrors most).
+function npmArgsToPnpm(args: string[]) { return args[0] === "ci" ? ["install", "--frozen-lockfile", ...args.slice(1)] : args; }
+
 export function resolvedCommand(program: string, args: string[]) {
-  const nodeModules = path.join(path.dirname(process.execPath), "node_modules");
-  const corepack = path.join(nodeModules, "corepack", "dist", `${program}.js`);
-  const npm = path.join(nodeModules, "npm", "bin", program === "npx" ? "npx-cli.js" : "npm-cli.js");
-  const entrypoint = program === "pnpm" ? process.env.npm_execpath ?? (existsSync(corepack) ? corepack : undefined) : program === "corepack" ? (existsSync(path.join(nodeModules, "corepack", "dist", "corepack.js")) ? path.join(nodeModules, "corepack", "dist", "corepack.js") : undefined) : ["npm", "npx"].includes(program) && existsSync(npm) ? npm : undefined;
-  return entrypoint ? { executable: process.execPath, args: [entrypoint, ...args] } : { executable: program, args };
+  if (program === "pnpm") { const entry = process.env.npm_execpath ?? corepackEntry("pnpm"); return entry ? { executable: process.execPath, args: [entry, ...args] } : { executable: program, args }; }
+  if (program === "corepack") { const entry = corepackEntry("corepack"); return entry ? { executable: process.execPath, args: [entry, ...args] } : { executable: program, args }; }
+  if (program === "npm" || program === "npx") {
+    const cli = npmCli(program);
+    if (cli) return { executable: process.execPath, args: [cli, ...args] };
+    const pnpm = corepackEntry("pnpm"); // npm missing/broken → fall back to Node's bundled corepack pnpm
+    if (pnpm) return { executable: process.execPath, args: [pnpm, ...(program === "npm" ? npmArgsToPnpm(args) : ["dlx", ...args])] };
+  }
+  return { executable: program, args };
 }
 
 export async function command(program: string, args: string[], cwd: string, timeout = 120_000, environment?: NodeJS.ProcessEnv) {
