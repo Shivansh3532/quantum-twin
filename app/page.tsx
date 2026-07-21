@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { Nav, SiteFooter } from "./nav";
+import { Nav, SiteFooter, REPO_URL } from "./nav";
 
 const FLOW = [
   { k: "01", t: "Repository", d: "Your Node.js code" },
@@ -42,7 +42,7 @@ export default function Page() {
         <p className="eyebrow">POST-QUANTUM MIGRATION FOR NODE.JS</p>
         <h1 id="hero-title">Upgrade old cryptography <i>safely.</i></h1>
         <p className="lede">Quantum Twin finds RSA signatures in your code, plans a move to NIST-standardized ML-DSA, creates two independent migrations with Codex, tests both, and gives you the verified result to review.</p>
-        <nav className="hero-actions" aria-label="Get started"><Link className="primary-link" href="/demo">Try the Demo</Link><Link href="/#how-it-works">See How It Works</Link></nav>
+        <nav className="hero-actions" aria-label="Get started"><Link className="primary-link" href="/demo">Try the Demo</Link><Link href="/#how-it-works">See How It Works</Link><Link href="/#run-locally">Run Quantum Twin Locally</Link></nav>
         <p className="hm-trust">Built with Codex and GPT-5.6, guided and reviewed by humans.</p>
       </div>
       <div className="hm-hero-art">
@@ -102,6 +102,17 @@ export default function Page() {
         <ul className="hm-support-grid">{["Detector", "Adapter", "Verifier", "Windows", "Ubuntu"].map(item => <li key={item}><span aria-hidden="true">✓</span>{item}<small>Supported</small></li>)}</ul>
       </div>
       <p className="hm-note">Experimental and discovery-only boundaries are listed honestly on the <Link href="/support">full support matrix</Link> — never dressed up as more than they are.</p>
+    </section>
+
+    <section id="run-locally" aria-labelledby="run-title"><div className="section-title"><span>09</span><div><p className="eyebrow">RUN IT ON YOUR OWN CODE</p><h2 id="run-title">The demo uses a sample. The workspace uses yours.</h2></div></div>
+      <p className="lede">This site and the guided demo run on a prepared repository. To analyze your own Node.js code, run the local <strong>Migration Workspace</strong> — a developer console that imports your repositories, shows what the detector found, and runs the tournament only after you approve.</p>
+      <div className="hm-install"><ol><li>Install <strong>Node.js 24</strong> and authenticate Codex once: <code>codex login</code>.</li><li>Clone and start the workspace:</li></ol>
+        <pre>{`git clone ${REPO_URL}.git
+cd quantum-twin
+npx --yes pnpm@11.9.0 install --frozen-lockfile
+npx --yes pnpm@11.9.0 app`}</pre>
+        <p className="hm-note">The command builds when needed, starts the app on a local <code>127.0.0.1</code> port, and opens it. Full setup and platform notes: <a href={`${REPO_URL}#readme`} rel="noreferrer">README</a>.</p>
+      </div>
     </section>
 
     <section className="hm-cta" aria-labelledby="cta-title"><h2 id="cta-title">Practice your migration before you trust it.</h2><Link className="primary-link" href="/demo">Try the Demo</Link></section>
