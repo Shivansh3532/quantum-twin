@@ -7,6 +7,42 @@
 
 @media(max-width:850px){main{padding:0 20px}.intro{grid-template-columns:1fr;gap:25px;padding:52px 0 36px}.product-flow,.recorded-panel,.run-form,.candidate-grid,.decision,.scope,.comparison,.evidence-grid,.local-grid,.no-winner{grid-template-columns:1fr}.product-flow li{border-right:0;border-bottom:1px solid var(--ink)}.product-flow li:last-child{border-bottom:0}.judge-path ol{grid-template-columns:1fr 1fr}.report-hash{border-left:0;border-top:1px solid #555}.repo-summary,.provenance{grid-template-columns:1fr}.repo-summary>div,.provenance>div{border-right:0}.section-title{grid-template-columns:45px 1fr}.run-form .acknowledgement,.primary{grid-column:auto}}
 @media(max-width:850px){.mode-grid{grid-template-columns:repeat(2,1fr)}.lab-system ul,.contract-grid{grid-template-columns:1fr}.lab-status{grid-template-columns:1fr}.agent-cols{grid-template-columns:1fr}}
+
+/* ── Dark theme — Cartesium-inspired, Quantum Twin ink/acid palette. Page + panels go dark; existing dark cards (var(--ink)) stay dark; text lightened for contrast. ── */
+:root{--paper:#07080a;--panel:#14171b;--muted:#9ea296;--line:#2b2f28}
+body{background:var(--paper);color:#e9ebe3}
+.eyebrow,.strategy,.section-title>span{color:#8f9488}
+.intro h1 i,.hm-hero-copy h1 i{color:#c3e85c}
+.lede,.scope p,.comparison p,.differentiator,.detail-body p,.detail-body li,.impact p,.mode-explainer{color:#b7bbae}
+.hm-flow small,.hm-flow span,.hm-graph small,.hm-stages article p,.findings p,.findings small,.legacy-finding p,.candidate>p,.verdict-grid span{color:#9ea296}
+.decision p,.report-hash code,.run-form small,.field-help,.local-grid pre{color:#c9ccc1}
+table,.candidate,.findings article,.legacy-finding,.empty,.verdict-grid article,.evidence-grid>details,.comparison article,.hm-graph li,.hm-stages article,.hm-hero-art,.lab-system,.lab-intake,.lab-analysis,.contract-grid>div,.contract-review,.trust-center,.judge-path,.gate-disclosure,.repo-summary,.provenance,.product-flow,.hm-support-card{background:var(--panel)}
+thead{background:#1c201a;color:#e9ebe3}
+th{color:#c3e85c}
+.lab-intake input[type="url"],.lab-intake input:not([type]),.lab-intake input[type="file"]{background:#0e100d;color:#e9ebe3;border-color:#2b2f28}
+.hero-actions a{border-color:#2b2f28}
+.badge.live,.primary,.lab-steps{color:#0b0d0a}
+.notice{background:#26331a;color:#dfeab8;border-color:#3f5a1f}
+.error,.inline-error,.lab-blockers,.check-fail{background:#2a1512;color:#ffc2b5;border-color:var(--red)}
+.decisive-failure{background:#2a1512;color:#ffc2b5}
+.decisive-failure.clear{background:#1f2f14;color:#cfe6a6;border-color:var(--green)}
+.topbar,section{border-color:#23271f}
+.scope>div,.hm-graph li,.intro aside{border-top-color:#2b2f28}
+.gate-count strong,.pass strong{color:#8fd35a}.gate-count span,.fail strong{color:#ff8b76}
+
+/* ── Cartesium-style depth: glow, gradient, rounded surfaces (acid/ink) ── */
+body{background:radial-gradient(1100px 560px at 72% -8%,rgba(215,255,63,.10),transparent 60%),radial-gradient(820px 460px at 8% -4%,rgba(120,150,255,.05),transparent 55%),var(--paper);background-attachment:fixed;min-height:100vh}
+.hm-hero-copy>.eyebrow::before,.intro .eyebrow::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acid);margin-right:9px;vertical-align:middle;box-shadow:0 0 10px 1px rgba(215,255,63,.7)}
+.hm-hero-art,.candidate,.decision,.recorded-panel,.run-form,.lab-system,.lab-intake,.lab-analysis,.hm-stages article,.findings article,.legacy-finding,.judge-path,.trust-center,.contract-review,.contract-grid>div,.local-grid>div,.hm-graph li,.hm-support-card,.comparison article,.verdict-grid article,.evidence-grid>details,.gate-disclosure,.no-winner p,.repo-summary,.provenance,.product-flow,.table-wrap,.lab-blockers,.notice,.error,.agent-live{border-radius:16px}
+.badge,.hero-actions a,.primary,.copy,.lab-steps,.download,.lab-intake input,.recorded-panel select,.run-form input,.trust-center select{border-radius:10px}
+.table-wrap,.agent-live,.product-flow,.repo-summary,.provenance{overflow:hidden}
+.hm-hero-art{border-color:rgba(215,255,63,.16);background:linear-gradient(180deg,#191d16,#101309);box-shadow:0 0 0 1px rgba(215,255,63,.05),0 40px 90px -40px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.04)}
+.hm-logo{border-radius:16px;box-shadow:0 0 34px -6px rgba(215,255,63,.45)}
+.candidate,.lab-system,.lab-intake,.lab-analysis,.hm-stages article,.findings article,.judge-path,.trust-center,.hm-graph li,.hm-support-card,.comparison article,.verdict-grid article{background:linear-gradient(180deg,#171b15,#12150f)}
+.hero-actions .primary-link,.primary{background:linear-gradient(180deg,#e4ff5a,#c8ee2f);color:#0b0d0a;border:0;box-shadow:0 10px 34px -10px rgba(215,255,63,.5)}
+.decision strong{text-shadow:0 0 24px rgba(215,255,63,.5)}
+.agent-live{box-shadow:0 30px 80px -40px rgba(0,0,0,.85),0 0 0 1px rgba(215,255,63,.05)}
+section{border-top-color:rgba(255,255,255,.06)}.topbar{border-bottom-color:rgba(255,255,255,.08)}
 @media(max-width:520px){main{padding:0 14px}.topbar nav{gap:12px}.topbar nav a:last-child{display:none}.intro h1{font-size:50px}.intro{padding:40px 0}.section-title{display:block}.section-title>span{display:block;margin-bottom:12px}.candidate{padding:19px}.candidate-head{display:block}.candidate-head .badge{margin-top:8px}dl{grid-template-columns:105px 1fr}.recorded-panel,.run-form,.decision>div{padding:20px}.scope{gap:18px}footer{display:grid;gap:8px}}
 @media(max-width:520px){.judge-path ol,.verdict-grid{grid-template-columns:1fr}.hero-actions a{width:100%;text-align:center}.local-grid a{display:block;margin:14px 0 0}}
 @media(max-width:520px){.mode-grid{grid-template-columns:1fr}.lab-system,.lab-intake,.lab-analysis{padding:16px}.trust-center select{margin:8px 0 0;width:100%}.trust-center label{display:grid}}
