@@ -1,4 +1,4 @@
-import { Codex } from "@openai/codex-sdk";
+import { codexClient } from "./codex-client.ts";
 import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
@@ -20,7 +20,7 @@ const pathMatches = (file: string, allowed: string[]) => allowed.some(item => fi
 async function buildCandidate(strategy: typeof strategies[number], worktree: string, config: QuantumTwinConfig, evidence: unknown) {
   const started = performance.now(), controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), config.timeouts.candidateMs);
-  const thread = new Codex().startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
+  const thread = codexClient().startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
   const shared = `Implement this immutable repository migration contract. Modify only writablePaths. Never edit protectedPaths, tests, evaluator, package manifest, lockfile, or configuration. Use native node:crypto, target ml-dsa-65, sign/verify algorithm null, and exact context binding via Buffer.from(context). Do not add dependencies. Run declared checks. Contract:\n${JSON.stringify(evidence)}`;
   const different = strategy === "direct"
     ? "Strategy: Direct Cutover. Emit and verify ML-DSA-65 only; remove RSA signing from writable paths."
@@ -88,7 +88,7 @@ async function verifyCandidate(strategy: typeof strategies[number], worktree: st
 async function repairCandidate(threadId: string, worktree: string, config: QuantumTwinConfig, failedGates: Gate[]) {
   const controller = new AbortController(), timer = setTimeout(() => controller.abort(), config.timeouts.candidateMs);
   try {
-    const thread = new Codex().resumeThread(threadId, { model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
+    const thread = codexClient().resumeThread(threadId, { model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
     await thread.run(`One repair turn. Modify only ${JSON.stringify(config.writablePaths)}. Immutable failed gates:\n${JSON.stringify(failedGates)}\nDo not edit protected files or dependencies.`, { signal: controller.signal });
     return true;
   } catch { return false; } finally { clearTimeout(timer); }

@@ -1,4 +1,4 @@
-import { Codex } from "@openai/codex-sdk";
+import { codexClient } from "./codex-client.ts";
 import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -17,7 +17,7 @@ export type CandidateBuilder = (strategy: Strategy, worktree: string, evidence: 
 
 const defaultBuilder: CandidateBuilder = async (strategy, worktree, evidence, timeoutMs) => {
   const started = performance.now(), controller = new AbortController(), timer = setTimeout(() => controller.abort(), timeoutMs);
-  const thread = new Codex().startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
+  const thread = codexClient().startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
   const plan = strategy === "direct"
     ? "Direct Cutover: coordinate every controlled producer and consumer; use ML-DSA-65 for signatures and ML-KEM-768 plus HKDF-SHA256 plus AES-256-GCM for declared RSA encryption envelopes; remove RSA only inside migrated controlled boundaries."
     : "Compatibility Bridge: add the same post-quantum paths, retain only RSA required by frozen consumers, version the envelope, reject downgrade, and encode an explicit RSA retirement condition.";

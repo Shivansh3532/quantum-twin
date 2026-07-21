@@ -1,4 +1,4 @@
-import { Codex } from "@openai/codex-sdk";
+import { codexClient } from "./codex-client.ts";
 import { cryptoFindingSchema, explanationSchema, MODEL, type CryptoFinding, type ScannerHit } from "./domain.ts";
 
 const findingJsonSchema = {
@@ -18,7 +18,7 @@ const explanationJsonSchema = {
   }, required: ["summary", "whySelected", "limitations"], additionalProperties: false
 } as const;
 
-const readOnlyThread = (workingDirectory: string) => new Codex().startThread({
+const readOnlyThread = (workingDirectory: string) => codexClient().startThread({
   model: MODEL, modelReasoningEffort: "high", workingDirectory,
   sandboxMode: "read-only", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never"
 });

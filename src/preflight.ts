@@ -1,4 +1,4 @@
-import { Codex } from "@openai/codex-sdk";
+import { codexClient } from "./codex-client.ts";
 import { generateKeyPairSync, sign, verify } from "node:crypto";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -24,7 +24,7 @@ export async function preflight() {
     await command("git", ["init"], temp);
     await command("git", ["add", "."], temp);
     await command("git", ["-c", "user.name=Quantum Twin", "-c", "user.email=quantum-twin@local", "commit", "-m", "preflight"], temp);
-    const codex = new Codex();
+    const codex = codexClient();
     const thread = codex.startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: temp, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
     let turn;
     try {
