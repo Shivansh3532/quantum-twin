@@ -100,9 +100,9 @@ codex login status        # prints "Logged in" with the ChatGPT or API-key metho
 ### Installing the Repo 
 
 Requirements: Node.js 24.18.0, Git, pnpm 11.9.0, and authenticated Codex. `OPENAI_API_KEY` is not required for the Codex SDK path. Bare `pnpm …` commands below assume pnpm is on your PATH — run `corepack enable` once (bundled with Node) to get the pinned `pnpm@11.9.0`, or prefix any command with `npx --yes pnpm@11.9.0`.
+Use this link to install node.js https://nodejs.org/dist/v24.18.0/node-v24.18.0-x64.msi
 
 ```bash
-winget install --id OpenJS.NodeJS --version 24.18.0 --exact --accept-package-agreements --accept-source-agreements
 winget install --id Git.Git --exact --accept-package-agreements --accept-source-agreements
 npm install --global pnpm@11.9.0
 ```bash
