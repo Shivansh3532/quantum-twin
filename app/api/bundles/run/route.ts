@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const bundle = await readySystemBundle(body.name ?? "", body.intakeIds ?? [], body.approvedContractSha256 ?? "", body.frozenConsumers ?? []), encoder = new TextEncoder();
     const stream = new ReadableStream({ start(controller) {
       const send = (value: unknown) => controller.enqueue(encoder.encode(`${JSON.stringify(value)}\n`));
-      void runSystemTournament(bundle, { allowExec: true, onEvent: (stage, detail) => send({ stage, detail }) })
+      void runSystemTournament(bundle, { allowExec: true, onEvent: (stage, detail) => send({ stage, detail }), onAgentEvent: (strategy, event) => send({ stage: "agent", strategy, event }) })
         .then(report => { send({ stage: report.selectedCandidate ? "selected" : "no-safe-winner", report }); controller.close(); })
         .catch(error => { send({ stage: "failed", error: error instanceof Error ? error.message : String(error) }); controller.close(); });
     }});

@@ -2,9 +2,25 @@
 import { useState } from "react";
 import type { BundleAnalysis } from "../src/intake.ts";
 import type { SystemRunReport } from "../src/system-engine.ts";
+import type { ThreadEvent, ThreadItem } from "@openai/codex-sdk";
 
 type SourceRow = { id: number; mode: "github" | "local" | "demo"; value: string };
+type Strategy = "direct" | "bridge";
+type Build = { items: ThreadItem[]; usage?: { reasoning: number; output: number } };
 const DEMO = "https://github.com/Shivansh3532/quantum-twin-demo-target";
+const EMPTY_BUILDS: Record<Strategy, Build> = { direct: { items: [] }, bridge: { items: [] } };
+
+// One row of real Codex activity: reasoning summary, command, file edit, plan, or message.
+function AgentRow({ item }: { item: ThreadItem }) {
+  if (item.type === "reasoning") return <li className="ar think"><span>THINKING</span><p>{item.text}</p></li>;
+  if (item.type === "command_execution") return <li className={`ar cmd${typeof item.exit_code === "number" && item.exit_code !== 0 ? " bad" : ""}`}><span>RUN</span><code>{item.command}</code>{typeof item.exit_code === "number" && <em>exit {item.exit_code}</em>}</li>;
+  if (item.type === "file_change") return <li className="ar edit"><span>EDIT</span><code>{item.changes.map(change => `${change.kind[0]!.toUpperCase()} ${change.path}`).join("   ")}</code></li>;
+  if (item.type === "todo_list") return <li className="ar plan"><span>PLAN</span><ul>{item.items.map((todo, index) => <li key={index} className={todo.completed ? "done" : ""}>{todo.completed ? "✓" : "○"} {todo.text}</li>)}</ul></li>;
+  if (item.type === "agent_message") return <li className="ar note"><span>NOTE</span><p>{item.text}</p></li>;
+  if (item.type === "web_search") return <li className="ar"><span>SEARCH</span><code>{item.query}</code></li>;
+  if (item.type === "error") return <li className="ar bad"><span>ERROR</span><p>{item.message}</p></li>;
+  return null;
+}
 
 async function responseJson<T>(response: Response) {
   const value = await response.json() as T & { error?: string };
@@ -15,8 +31,19 @@ async function responseJson<T>(response: Response) {
 export default function SystemWorkbench() {
   const [name, setName] = useState(""), [rows, setRows] = useState<SourceRow[]>([{ id: 1, mode: "github", value: "" }]), [nextId, setNextId] = useState(2);
   const [frozen, setFrozen] = useState(""), [analysis, setAnalysis] = useState<BundleAnalysis | null>(null), [approved, setApproved] = useState<BundleAnalysis | null>(null);
-  const [typed, setTyped] = useState(""), [executionText, setExecutionText] = useState(""), [trust, setTrust] = useState(false), [commands, setCommands] = useState(false), [codex, setCodex] = useState(false), [report, setReport] = useState<SystemRunReport | null>(null), [state, setState] = useState<"idle" | "importing" | "analyzing" | "review" | "approved" | "baseline" | "building" | "evaluating" | "selected" | "no-safe-winner" | "failed">("idle"), [message, setMessage] = useState("No system exists in this live session."), [error, setError] = useState("");
+  const [typed, setTyped] = useState(""), [executionText, setExecutionText] = useState(""), [trust, setTrust] = useState(false), [commands, setCommands] = useState(false), [codex, setCodex] = useState(false), [report, setReport] = useState<SystemRunReport | null>(null), [state, setState] = useState<"idle" | "importing" | "analyzing" | "review" | "approved" | "baseline" | "building" | "evaluating" | "selected" | "no-safe-winner" | "failed">("idle"), [message, setMessage] = useState("No system exists in this live session."), [error, setError] = useState(""), [builds, setBuilds] = useState<Record<Strategy, Build>>(EMPTY_BUILDS);
   const consumers = frozen.split(/\r?\n/).map(value => value.trim()).filter(Boolean);
+  function applyAgentEvent(strategy: Strategy, event: ThreadEvent) {
+    setBuilds(previous => {
+      const build: Build = { items: [...previous[strategy].items], usage: previous[strategy].usage };
+      if (event.type === "turn.completed") build.usage = { reasoning: event.usage.reasoning_output_tokens, output: event.usage.output_tokens };
+      else if (event.type === "item.started" || event.type === "item.completed") {
+        const index = build.items.findIndex(item => item.id === event.item.id);
+        if (index >= 0) build.items[index] = event.item; else build.items.push(event.item);
+      }
+      return { ...previous, [strategy]: build };
+    });
+  }
   function change(id: number, patch: Partial<SourceRow>) { setRows(current => current.map(row => row.id === id ? { ...row, ...patch, value: patch.mode === "demo" ? DEMO : patch.mode && patch.mode !== row.mode ? "" : patch.value ?? row.value } : row)); setAnalysis(null); setApproved(null); }
   function add() { setRows(current => [...current, { id: nextId, mode: "github", value: "" }]); setNextId(value => value + 1); }
   async function analyze(event: React.FormEvent) {
@@ -44,7 +71,7 @@ export default function SystemWorkbench() {
   }
   async function startTournament() {
     if (!approved) return;
-    setError(""); setReport(null);
+    setError(""); setReport(null); setBuilds(EMPTY_BUILDS);
     try {
       const response = await fetch("/api/bundles/run", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, intakeIds: approved.intakeIds, frozenConsumers: consumers, approvedContractSha256: approved.contract.sha256, trustRepositories: trust, allowCommands: commands, allowCodex: codex, typedApproval: executionText }) });
       if (!response.ok || !response.body) throw new Error(String((await response.json() as { error?: string }).error ?? `HTTP ${response.status}`));
@@ -53,9 +80,10 @@ export default function SystemWorkbench() {
         const chunk = await reader.read(); pending += decoder.decode(chunk.value, { stream: !chunk.done });
         const lines = pending.split("\n"); pending = lines.pop() ?? "";
         for (const line of lines.filter(Boolean)) {
-          const event = JSON.parse(line) as { stage: typeof state; detail?: string; error?: string; report?: SystemRunReport };
-          setState(event.stage); setMessage(event.detail ?? event.error ?? event.stage.replaceAll("-", " "));
-          if (event.error) setError(event.error); if (event.report) setReport(event.report);
+          const parsed = JSON.parse(line) as { stage: string; strategy?: Strategy; event?: ThreadEvent; detail?: string; error?: string; report?: SystemRunReport };
+          if (parsed.stage === "agent" && parsed.strategy && parsed.event) { applyAgentEvent(parsed.strategy, parsed.event); continue; }
+          setState(parsed.stage as typeof state); setMessage(parsed.detail ?? parsed.error ?? parsed.stage.replaceAll("-", " "));
+          if (parsed.error) setError(parsed.error); if (parsed.report) setReport(parsed.report);
         }
         if (chunk.done) break;
       }
@@ -65,6 +93,13 @@ export default function SystemWorkbench() {
     <div className="lab-steps" aria-label="System Lab journey">CREATE BUNDLE · ADD SOURCES · ANALYZE · CRYPTO GRAPH · CONTRACT · PERMISSIONS · BASELINE · TOURNAMENT · SYSTEM TESTS · DECISION · EXPORT</div>
     <form className="lab-intake" onSubmit={analyze}><label>System name<input value={name} onChange={event => setName(event.target.value)} required placeholder="Payments system"/></label><fieldset><legend>Repositories and services</legend>{rows.map((row, index) => <div className="bundle-source" key={row.id}><label>Source {index + 1}<select value={row.mode} onChange={event => change(row.id, { mode: event.target.value as SourceRow["mode"] })}><option value="demo">Independent public demo</option><option value="github">Public GitHub HTTPS URL</option><option value="local">Trusted local folder</option></select></label><label>Location<input type={row.mode === "github" || row.mode === "demo" ? "url" : "text"} value={row.value} readOnly={row.mode === "demo"} required onChange={event => change(row.id, { value: event.target.value })}/></label>{rows.length > 1 && <button type="button" className="copy" onClick={() => setRows(current => current.filter(item => item.id !== row.id))}>Remove</button>}</div>)}<button type="button" className="secondary" onClick={add}>Add repository or service</button></fieldset><label>Frozen external consumers, one per line<textarea value={frozen} onChange={event => setFrozen(event.target.value)} placeholder="mobile-client-v1"/></label><button className="primary" disabled={state === "importing" || state === "analyzing"}>Analyze System</button></form>
     <div className="lab-status" aria-live="polite"><strong>{state.replaceAll("-", " ").toUpperCase()}</strong><span>{message}</span>{error && <p className="error">{error}</p>}</div>
+    {(builds.direct.items.length > 0 || builds.bridge.items.length > 0 || ["baseline", "building", "evaluating"].includes(state)) && <section className="agent-live" aria-label="Live Codex builder activity">
+      <div className="agent-live-head"><span className="badge live">LIVE</span><strong>Two Codex builders, in real time</strong><span>{state.replaceAll("-", " ").toUpperCase()}</span></div>
+      <div className="agent-cols">{(["direct", "bridge"] as const).map(strategy => <div className="agent-col" key={strategy}>
+        <header><strong>{strategy === "direct" ? "Builder A · Direct Cutover" : "Builder B · Compatibility Bridge"}</strong>{builds[strategy].usage && <span>{builds[strategy].usage!.reasoning} reasoning · {builds[strategy].usage!.output} output tokens</span>}</header>
+        <ol className="agent-feed">{builds[strategy].items.map(item => <AgentRow key={item.id} item={item}/>)}{builds[strategy].items.length === 0 && <li className="agent-wait">Waiting for the builder to start…</li>}</ol>
+      </div>)}</div>
+    </section>}
     {analysis && <div className="lab-analysis"><h3>System Bundle</h3><dl><dt>Name</dt><dd>{analysis.bundle.name}</dd><dt>Manifest SHA-256</dt><dd>{analysis.bundle.manifestSha256}</dd><dt>Repositories</dt><dd>{analysis.bundle.repositories.length}</dd><dt>Components</dt><dd>{analysis.bundle.components.length}</dd><dt>Graph SHA-256</dt><dd>{analysis.bundle.graph.sha256}</dd><dt>Contract SHA-256</dt><dd>{analysis.contract.sha256}</dd></dl>
       <details open><summary>Repositories and pinned source</summary><ul className="lab-findings">{analysis.bundle.repositories.map(repository => <li key={repository.id}><strong>{repository.name} · {repository.packageManager} · {repository.moduleType}</strong><code>{repository.source} · {repository.commit ?? "local tree"}</code><span>tree {repository.treeSha256}</span></li>)}</ul></details>
       <details open><summary>System Crypto Graph ({analysis.bundle.graph.nodes.length} nodes · {analysis.bundle.graph.edges.length} edges)</summary><ul className="lab-findings">{analysis.bundle.graph.nodes.map(node => <li key={node.id}><strong>{node.kind} · {node.controlled ? "controlled" : "frozen"}</strong><code>{node.location ?? node.id}</code><span>{node.label}</span></li>)}</ul></details>

@@ -1,4 +1,5 @@
 import { codexClient } from "./codex-client.ts";
+import type { ThreadEvent } from "@openai/codex-sdk";
 import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -13,16 +14,23 @@ type Strategy = typeof strategies[number];
 export type SystemCandidate = { strategy: Strategy; threadId: string | null; generationStatus: "generated" | "failed" | "timed_out"; generationDurationMs: number; commit: string | null; diff: string; diffSha256: string; changedFiles: string[]; changedRepositories: string[]; gates: Gate[]; passes: SystemPass[]; measurements?: { baselineCommandMs: number; candidateMeanCommandMs: number; baselineCryptoOutputBytes: number; candidateMeanCryptoOutputBytes: number; payloadExpansionPercent: number | null }; eligible: boolean; error?: string };
 export type RolloutPackage = { upgradeOrder: string[]; keyGeneration: string[]; publicKeyDistribution: string[]; privateKeyHandling: string[]; environmentChanges: string[]; envelopeVersions: string[]; compatibilityWindow: string; healthSignals: string[]; performanceAndPayload: string[]; rollback: string[]; rsaRetirementCondition: string; remainingBoundaries: string[] };
 export type SystemRunReport = { version: 1; runId: string; startedAt: string; completedAt: string; nodeVersion: string; platform: string; codexSdkVersion: string; model: string; bundleManifestSha256: string; graphSha256: string; observedGraph: SystemCryptoGraph; contractSha256: string; baseline: SystemPass; candidates: SystemCandidate[]; selectedCandidate: Strategy | null; decision: string; rollout: RolloutPackage; reportSha256: string };
-export type CandidateBuilder = (strategy: Strategy, worktree: string, evidence: unknown, timeoutMs: number) => Promise<{ threadId: string | null; status: "generated" | "failed" | "timed_out"; durationMs: number; error?: string }>;
+export type CandidateBuilder = (strategy: Strategy, worktree: string, evidence: unknown, timeoutMs: number, onEvent?: (event: ThreadEvent) => void) => Promise<{ threadId: string | null; status: "generated" | "failed" | "timed_out"; durationMs: number; error?: string }>;
 
-const defaultBuilder: CandidateBuilder = async (strategy, worktree, evidence, timeoutMs) => {
+const defaultBuilder: CandidateBuilder = async (strategy, worktree, evidence, timeoutMs, onEvent) => {
   const started = performance.now(), controller = new AbortController(), timer = setTimeout(() => controller.abort(), timeoutMs);
   const thread = codexClient().startThread({ model: MODEL, modelReasoningEffort: "high", workingDirectory: worktree, sandboxMode: "workspace-write", networkAccessEnabled: false, webSearchMode: "disabled", approvalPolicy: "never" });
   const plan = strategy === "direct"
     ? "Direct Cutover: coordinate every controlled producer and consumer; use ML-DSA-65 for signatures and ML-KEM-768 plus HKDF-SHA256 plus AES-256-GCM for declared RSA encryption envelopes; remove RSA only inside migrated controlled boundaries."
     : "Compatibility Bridge: add the same post-quantum paths, retain only RSA required by frozen consumers, version the envelope, reject downgrade, and encode an explicit RSA retirement condition.";
   try {
-    await thread.run(`Implement one coordinated system migration. ${plan}\nModify only contract writablePaths. Never edit protected paths, package metadata, lockfiles, tests, evaluator, or contract. Never add dependencies, keys, credentials, network calls, deployment, commits, or pushes. Use native node:crypto. ML-DSA sign/verify must use algorithm null and exact Buffer context. Preserve unrelated behavior. Run approved checks. Frozen immutable evidence:\n${JSON.stringify(evidence)}`, { signal: controller.signal });
+    const { events } = await thread.runStreamed(`Implement one coordinated system migration. ${plan}\nModify only contract writablePaths. Never edit protected paths, package metadata, lockfiles, tests, evaluator, or contract. Never add dependencies, keys, credentials, network calls, deployment, commits, or pushes. Use native node:crypto. ML-DSA sign/verify must use algorithm null and exact Buffer context. Preserve unrelated behavior. Run approved checks. Frozen immutable evidence:\n${JSON.stringify(evidence)}`, { signal: controller.signal });
+    let failure: string | null = null;
+    for await (const event of events) {
+      if (event.type === "turn.failed") failure = event.error.message;
+      else if (event.type === "error") failure = event.message;
+      if (event.type === "item.started" || event.type === "item.completed" || event.type === "turn.completed" || event.type === "turn.failed") onEvent?.(event);
+    }
+    if (failure) return { threadId: thread.id, status: "failed", durationMs: Math.round(performance.now() - started), error: failure };
     return { threadId: thread.id, status: "generated", durationMs: Math.round(performance.now() - started) };
   } catch (error) { return { threadId: thread.id, status: controller.signal.aborted ? "timed_out" : "failed", durationMs: Math.round(performance.now() - started), error: error instanceof Error ? error.message : String(error) }; }
   finally { clearTimeout(timer); }
@@ -132,7 +140,7 @@ function rollout(bundle: SystemBundle, selected: SystemCandidate | null): Rollou
   return { upgradeOrder: bundle.components.filter(component => component.kind !== "service").map(component => component.name).concat(bundle.components.filter(component => component.kind === "service").map(component => component.name)), keyGeneration: ["Generate ML-DSA-65 and, where declared, ML-KEM-768 keys in the deployment secret manager; never in the repository"], publicKeyDistribution: ["Distribute versioned public keys to every controlled verifier before producer cutover"], privateKeyHandling: ["Keep private keys non-exportable where possible; never place key material in patches or evidence"], environmentChanges: ["Supply only deployment-specific key references after operator review"], envelopeVersions: bundle.contract.envelopeVersions.value, compatibilityWindow: selected?.strategy === "bridge" ? "Keep the reviewed bridge only until every named frozen consumer upgrades" : "No legacy compatibility window selected", healthSignals: bundle.contract.healthChecks.value, performanceAndPayload: measurement ? [`Approved workflow command time: baseline ${measurement.baselineCommandMs} ms; candidate mean ${measurement.candidateMeanCommandMs} ms`, `Observed maximum crypto output: baseline ${measurement.baselineCryptoOutputBytes} bytes; candidate mean ${measurement.candidateMeanCryptoOutputBytes} bytes; expansion ${measurement.payloadExpansionPercent ?? "unavailable"}%`] : ["No eligible candidate measurements"], rollback: ["Stop rollout", "restore previous key references", "revert coordinated repository patches in reverse upgrade order", "repeat baseline E2E"], rsaRetirementCondition: selected?.strategy === "bridge" ? `Remove RSA only after ${bundle.contract.frozenConsumers.value.join(", ") || "all frozen consumers"} accept the post-quantum version and downgrade tests still pass` : "RSA is removed from the migrated controlled boundary after direct-cutover gates pass", remainingBoundaries: bundle.graph.staticFindings.filter(item => item.status !== "supported").map(item => `${item.file}:${item.line} ${item.technology}`) };
 }
 
-export async function runSystemTournament(bundle: SystemBundle, options: { allowExec: boolean; builder?: CandidateBuilder; candidateTimeoutMs?: number; onEvent?: (stage: "baseline" | "building" | "evaluating", detail: string) => void } = { allowExec: false }): Promise<SystemRunReport> {
+export async function runSystemTournament(bundle: SystemBundle, options: { allowExec: boolean; builder?: CandidateBuilder; candidateTimeoutMs?: number; onEvent?: (stage: "baseline" | "building" | "evaluating", detail: string) => void; onAgentEvent?: (strategy: Strategy, event: ThreadEvent) => void } = { allowExec: false }): Promise<SystemRunReport> {
   if (!options.allowExec) throw new Error("System execution blocked: explicit command and Codex authorization is required");
   if (!bundle.contract.approved) throw new Error("System execution blocked: contract is not approved");
   const startedAt = new Date().toISOString(), runId = startedAt.replace(/[:.]/g, "-");
@@ -153,7 +161,7 @@ export async function runSystemTournament(bundle: SystemBundle, options: { allow
     const evidence = { contract: bundle.contract, graph: bundle.graph, baselineCommit, baselineManifest: await manifest(baselineRoot), candidatePolicy: { model: MODEL, network: false, approval: "never" } };
     const builder = options.builder ?? defaultBuilder;
     options.onEvent?.("building", "Two isolated Codex builders are coordinating repository changes");
-    const generations = await Promise.all(strategies.map(strategy => builder(strategy, worktrees[strategy], evidence, options.candidateTimeoutMs ?? 1_200_000)));
+    const generations = await Promise.all(strategies.map(strategy => builder(strategy, worktrees[strategy], evidence, options.candidateTimeoutMs ?? 1_200_000, event => options.onAgentEvent?.(strategy, event))));
     options.onEvent?.("evaluating", "Deterministic system gates are running twice from independent worktrees");
     const candidates: SystemCandidate[] = [], requiredRepositories = [...new Set(bundle.graph.nodes.filter(node => node.controlled && (node.kind === "producer" || node.kind === "consumer") && node.repositoryId).map(node => node.repositoryId!))];
     for (const [index, strategy] of strategies.entries()) {
